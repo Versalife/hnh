@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Napkins</title>
+    <style>
+        body {
+            font-family: Palatino;
+        }
+
+        /* .folder-item {
+            cursor: pointer;
+        } */
+
+        .folder-list, .sub-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .sub-list {
+            display: block;
+            list-style: none;
+        }
+
+        .folder-item {
+            text-decoration: none;
+            color: rgb(220, 40, 40);
+            border: 1px solid #ccc;
+            padding: 2px;
+        }
+    </style>
+</head>
+
+<body>
+    <ul class="folder-list">
+        <li>
+            <div class="folder-item">
+                Algebra
+            </div>
+            <ul class="sub-list">
+                <li><a onclick="navigate('./sidebar-content/book/index.html')">Linear Algebra</a></li>
+                <li>Abstract Algebra I</li>
+                <li>Abstract Algebra II</li>
+                <li>Abstract Algebra III</li>
+                <li>Category Theory</li>
+                <!-- Add more sub-items here -->
+            </ul>
+        </li>
+        <li>
+            <div class="folder-item">
+                Analysis
+            </div>
+            <ul class="sub-list">
+                <li>Real Analysis</li>
+                <li>Metric Spaces</li>
+                <li>Point-Set Topology</li>
+                <li>Vector Calculus</li>
+                <li>Manifolds</li>
+                <li>Differential Forms</li>
+                <li>Complex Analysis</li>
+                <li>Measure & Lebesgue Theory</li>
+                <li>Functional Analysis</li>
+                <li>Probability Theory I</li>
+                <li>Probability Theory II</li>
+                <!-- Add more sub-items here -->
+            </ul>
+        </li>
+
+        <li>
+            <div class="folder-item">
+                Algorithms
+            </div>
+            <ul class="sub-list">
+                <li>Data Structures</li>
+                <li>Numerical Algorithms</li>
+                <li>Optimization</li>
+            </ul>
+        </li>
+
+        <li>
+            <div class="folder-item">
+                Biology
+            </div>
+            <ul class="sub-list">
+                <li>Cancer Biology</li>
+                <li>Developmental Biology</li>
+                <li>Experimental Techniques</li>
+            </ul>
+        </li>
+
+    </ul>
+    <script src="../script.js"></script>
+</body>
+
+</html>

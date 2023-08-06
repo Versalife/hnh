@@ -1,0 +1,465 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="./styles.css" type="text/css">
+</head>
+
+<body class="vsc-initialized">
+    <header>
+        <h1>
+            Okonda, Joseph L.
+        </h1>
+        <hr>
+    </header>
+
+    <ul class="links">
+        <li><a href="https://github.com/jlikhuva" target="_blank">[GitHub]</a></li>
+        <li><a href="https://www.linkedin.com/in/jlikhuva" target="_blank">[LinkedIn]</a></li>
+        <li><a href="cv.pdf" target="_blank">[CV]</a></li>
+    </ul>
+
+    <div class="bio-box">
+        <div class="bio-img">
+            <img src="https://avatars.githubusercontent.com/u/16214289?s=400&u=42de88b3dcc13b455d039012ef29d4bec2bb6498&v=4"
+                class="photo">
+        </div>
+
+        <div class="bio-text" , style="padding: 2px;">
+            <h3>About the Author </h3>
+            <p class="bio">I'm a Research Engineer at <a href="https://www.broadinstitute.org/" target="_blank">
+                    The Broad Institute
+                </a> , where I work on generative models. My work includes
+                diffusion
+                models, text-to-3D with NeRFs, and scalable ML systems.
+            </p>
+            <p class="bio">Previously, I was at <a href="https://www.gsam.com/content/gsam/global/en/homepage.html"
+                    target="_blank">
+                    Goldman Sachs</a>, building computational systems in the asset management division. I graduated
+                from Stanford with a B.S. in Computer Science.
+            </p>
+
+            <h3>About this Website </h3>
+
+            <h3>About the Name</h3>
+        </div>
+    </div>
+    <p class="email">Email: jlikhuva at alumni dot stanford dot edu</p>
+
+
+
+    <!-- <h3>News</h3>
+    <section class="news">
+        <h5><span class="new">New!</span> <b>July 2022:</b> Dream Fields wins the Best Poster award at <a
+                href="https://ai4cc.net/">AI4CC</a></h5>
+        <h5><span class="new">New!</span> <b>May 2022:</b> AdaCat accepted to UAI 2022</h5>
+        <h5><b>March 2022:</b> Dream Fields accepted to CVPR 2022</h5>
+        <h5><b>Aug 2021:</b> ContraCode accepted to EMNLP 2021</h5>
+        <h5><b>July 2021:</b> DietNeRF accepted to ICCV 2021</h5>
+    </section> -->
+
+    <h3>Featured Projects <span class="note">* indicates equal contribution</span></h3>
+    <section>
+        <section class="citation featured">
+            <div class="description">
+                <h4>VectorFusion: Text-to-SVG by Abstracting Pixel-Based Diffusion Models</h4>
+                <h5><b>Ajay Jain</b>*, Amber Xie*, Pieter Abbeel</h5>
+                <h6><span class="conference arxiv">arXiv 2022</span></h6>
+                <p>Generate vector graphics (SVGs), pixel art and sketches from text using the pretrained Stable
+                    Diffusion model.</p>
+                <ul>
+                    <li><a href="/vectorfusion/">[Website]</a></li>
+                    <li><a href="/vectorfusion/gallery.html">[Gallery]</a></li>
+                    <li><a href="https://arxiv.org/abs/2211.11319">[Paper]</a></li>
+                </ul>
+            </div>
+            <a href="/vectorfusion/" class="citation-media">
+                <div class="vsc-controller"></div>
+                <video height="110" muted="" autoplay="" loop=""
+                    poster="https://pub-751dccf31fca4af7b5a452d19d49cf43.r2.dev/optimization/submarine.jpeg"
+                    playsinline="">
+                    <source src="https://pub-751dccf31fca4af7b5a452d19d49cf43.r2.dev/optimization/submarine_encode.mp4"
+                        type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </a>
+        </section>
+
+        <section class="citation featured">
+            <div class="description">
+                <h4>DreamFusion: Text-to-3D using 2D Diffusion</h4>
+                <h5>Ben Poole, <b>Ajay Jain</b>, Jonathan T. Barron, Ben Mildenhall</h5>
+                <h6><span class="conference arxiv">arXiv 2022</span></h6>
+                <p>We optimize a NeRF from scratch using a pretrained text-to-image diffusion model to do text-to-3D
+                    generative modeling.</p>
+                <ul>
+                    <li><a href="https://dreamfusion3d.github.io/">[Website]</a></li>
+                    <li><a href="https://dreamfusion3d.github.io/gallery.html">[Gallery]</a></li>
+                    <li><a href="https://arxiv.org/abs/2209.14988">[Paper]</a></li>
+                </ul>
+            </div>
+            <a href="https://dreamfusion3d.github.io/" class="citation-media">
+                <div class="vsc-controller"></div>
+                <video height="110" muted="" autoplay="" loop=""
+                    poster="https://dreamfusion-cdn.ajayj.com/dreamfusion_square_teaser.jpg" playsinline="">
+                    <source src="https://dreamfusion-cdn.ajayj.com/dreamfusion_square_teaser.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </a>
+        </section>
+
+        <section class="citation featured">
+            <div class="description">
+                <h4>Zero-Shot Text-Guided Object Generation with Dream Fields</h4>
+                <h5><b>Ajay Jain</b>, Ben Mildenhall, Jon Barron, Pieter Abbeel, Ben Poole</h5>
+                <h6><span class="conference cvpr">CVPR 2022</span> Conference on Computer Vision and Pattern Recognition
+                </h6>
+                <p>We combine neural rendering with multi-modal image and text representations to synthesize diverse 3D
+                    objects solely from natural language descriptions.</p>
+                <ul>
+                    <li><a href="/dreamfields/">[Website]</a></li>
+                    <li><a href="https://arxiv.org/abs/2112.01455">[arXiv]</a></li>
+                    <li><a href="https://www.youtube.com/watch?v=1Fke6w46tv4">[Overview video]</a></li>
+                    <li><a href="https://github.com/google-research/google-research/tree/master/dreamfields">[Code]</a>
+                    </li>
+                    <li><a href="https://colab.research.google.com/drive/17GtPqdUCbG5CsmTnQFecPpoq_zpNKX7A?usp=sharing">[Colab
+                            demo]</a></li>
+                    <li><a href="/dreamfields/assets/dreamfields_cvpr_poster.pdf">[Poster]</a></li>
+                </ul>
+            </div>
+            <a href="/dreamfields/" class="citation-media">
+                <div class="vsc-controller"></div>
+                <video height="110" muted="" autoplay="" loop="" class="bordered" alt="a sculpture of a rooster"
+                    poster="https://dreamfusion-cdn.ajayj.com/dreamfield_after.jpg">
+                    <source src="https://dreamfusion-cdn.ajayj.com/dreamfield_after.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </a>
+            <!-- <p><em>"a sculpture of a rooster"</em></p> -->
+        </section>
+
+        <section class="citation featured" id="DDPM">
+            <div class="description">
+                <h4>Denoising Diffusion Probabilistic Models</h4>
+                <h5>Jonathan Ho, <b>Ajay Jain</b>, Pieter Abbeel</h5>
+                <h6><span class="conference neurips">NeurIPS 2020</span> 34th Conference on Neural Information
+                    Processing Systems</h6>
+                <p>High-quality likelihood-based image generation; connect diffusion models to denoising score matching
+                    and Langevin dynamics; compression, reconstruction and interpolation</p>
+                <ul>
+                    <li><a href="https://hojonathanho.github.io/diffusion/">[Website]</a></li>
+                    <li><a href="https://arxiv.org/abs/2006.11239">[arXiv]</a></li>
+                    <li><a href="https://slideslive.com/38936172">[Talk]</a></li>
+                    <li><a href="images/diffusion_face_and_bedroom_video.mp4">[Sample video]</a></li>
+                    <li><a href="https://github.com/hojonathanho/diffusion">[Code]</a></li>
+                </ul>
+            </div>
+            <a class="citation-media" href="images/diffusion_face_and_bedroom_video.mp4">
+                <img src="https://d33wubrfki0l68.cloudfront.net/52717fb07257d1729a14abaeb44505067bab084a/cce70/images/diffusion_face_video_small_square.gif"
+                    alt="Sampling four 256x256 px photos of faces from a Denoising Diffusion Probabilistic Model."
+                    height="110">
+            </a>
+        </section>
+
+    </section>
+
+    <h3>More publications</h3>
+    <section>
+        <section class="citation">
+            <div class="description">
+                <h4>Journey to the BAOAB-limit: finding effective MCMC samplers for score-based models</h4>
+                <h5><b>Ajay Jain</b>*, Ben Poole*</h5>
+                <h6><span class="conference workshop">Score-based Methods @ NeurIPS 2022</span></h6>
+                <p>Sample diffusion models with a single noise level + high diversity.</p>
+                <ul>
+                    <li><a href="/journey/">[Website]</a></li>
+                    <li><a
+                            href="https://colab.research.google.com/drive/17kesyBVqubV_Zzchf2XoR-7MHk5jxTuo?usp=sharing">[Colab]</a>
+                    </li>
+                    <li><a href="https://github.com/ajayjain/journey-diffusion-samplers">[Code]</a></li>
+                    <li><a
+                            href="/journey/Journey to the BAOAB-limit finding effective MCMC samplers for score-based models.pdf">[Paper]</a>
+                    </li>
+                </ul>
+            </div>
+            <a href="/journey/" class="citation-media">
+                <div class="vsc-controller"></div>
+                <video height="110" muted="" autoplay="" loop=""
+                    poster="https://pub-14c9ec3d906f4413affd3ae6bba970a7.r2.dev/macarons.jpeg" playsinline="">
+                    <source
+                        src="https://pub-14c9ec3d906f4413affd3ae6bba970a7.r2.dev/macarons gs 3, 5k steps, baoab-limit, t300 encoded.mp4"
+                        type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </a>
+        </section>
+
+        <section class="citation">
+            <div class="description">
+                <h4>Adaptive Categorical Discretization for Autoregressive Models</h4>
+                <h5>Colin Li, <b>Ajay Jain</b>, Pieter Abbeel</h5>
+                <h6><span class="conference uai">UAI 2022</span> Conference on Uncertainty in Artificial Intelligence
+                </h6>
+                <p>AdaCat learns expressive autoregressive models by capturing fine-grained variation in continuous
+                    distributions with discrete density estimators.</p>
+                <ul>
+                    <li><a href="https://openreview.net/forum?id=HMzzPOLs9l5">[Paper]</a></li>
+                    <li><a href="https://colinqiyangli.github.io/adacat/">[Website]</a></li>
+                    <li><a href="https://github.com/ColinQiyangLi/AdaCat">[Code]</a></li>
+                    <li><a href="/adacat/adacat_uai_poster.pdf">[Poster]</a></li>
+                </ul>
+            </div>
+            <a href="https://colinqiyangli.github.io/adacat/" class="citation-media">
+                <img src="https://d33wubrfki0l68.cloudfront.net/9c9b711dd48615853cfc84ab6b399a2a56b7f1b7/b31eb/adacat/demo.gif"
+                    alt="Optimizing a flexible 1D AdaCat distribution." width="110">
+            </a>
+        </section>
+
+        <section class="citation">
+            <div class="description">
+                <h4>Contrastive Code Representation Learning</h4>
+                <h5>Paras Jain*, <b>Ajay Jain</b>*, Tianjun Zhang, Pieter Abbeel, Joseph E. Gonzalez, Ion Stoica</h5>
+                <h6><span class="conference emnlp">EMNLP 2021</span> Empirical Methods in Natural Language Processing
+                </h6>
+                <p>Learn to represent software functionality for automated software engineering tasks like type
+                    inference, clone detection and summarization. Improving robustness of ML4Code.</p>
+                <ul>
+                    <li><a href="https://parasj.github.io/contracode/">[Website]</a></li>
+                    <li><a href="https://aclanthology.org/2021.emnlp-main.482/">[ACL]</a></li>
+                    <li><a href="https://arxiv.org/abs/2007.04973">[arXiv]</a></li>
+                    <li><a href="https://ajayjain.github.io/assets/2021-contracode-poster-emnlp.pdf">[Poster]</a></li>
+                    <li><a href="https://ajayjain.github.io/assets/2021.10.11-contracode-slides-emnlp.pdf">[Slides]</a>
+                    </li>
+                    <li><a href="https://www.youtube.com/watch?v=0deUDO6BqYY">[Talk]</a></li>
+                    <li><a href="https://github.com/parasj/contracode/">[Code]</a></li>
+                </ul>
+            </div>
+            <a href="https://parasj.github.io/contracode/" class="citation-media">
+                <img src="https://d33wubrfki0l68.cloudfront.net/541535e70398430a3025313fe619fb3e84420422/80d72/images/contracode.png"
+                    alt="Conceptual diagram illustrating Contrastive Code Representation Learning." width="110">
+            </a>
+        </section>
+
+        <section class="citation">
+            <div class="description">
+                <h4>Putting NeRF on a Diet: Semantically Consistent Few-Shot View Synthesis</h4>
+                <h5><b>Ajay Jain</b>, Matthew Tancik, Pieter Abbeel</h5>
+                <h6><span class="conference iccv">ICCV 2021</span> International Conference on Computer Vision</h6>
+                <p>CLIP + NeRF: Given only a few images of an object or scene, we reconstruct its 3D structure &amp;
+                    render novel views using prior knowledge contained in large image encoders.</p>
+                <ul>
+                    <li><a href="/dietnerf/">[Website]</a></li>
+                    <li><a href="https://arxiv.org/abs/2104.00677">[arXiv]</a></li>
+                    <li><a href="https://github.com/ajayjain/DietNeRF/">[Code]</a></li>
+                    <li><a href="https://www.youtube.com/watch?v=RF_3hsNizqw">[Overview video]</a></li>
+                </ul>
+            </div>
+            <a href="/dietnerf/" class="citation-media">
+                <img src="https://d33wubrfki0l68.cloudfront.net/8f2a5fbbb0ccbae01a0f5402cef18a682db8905a/1c039/dietnerf/assets/img/dietnerf_method_anim_25p.gif"
+                    alt="Overview of DietNeRF's semantic consistency loss." width="110">
+            </a>
+        </section>
+
+        <section class="citation" id="SGM">
+            <div class="description">
+                <h4>Sparse Graphical Memory for Robust Planning</h4>
+                <h5>Scott Emmons*, <b>Ajay Jain</b>*, Michael Laskin*, Thanard Kurutach, Pieter Abbeel, Deepak Pathak
+                </h5>
+                <h6><span class="conference neurips">NeurIPS 2020</span> 34th Conference on Neural Information
+                    Processing Systems</h6>
+                <p>Provably robust+efficient long-horizon monocular navigation combining sparse graph planning and RL.
+                    Propose two-way consistency to find landmark memories and create a topological map.</p>
+                <ul>
+                    <li><a href="https://mishalaskin.github.io/sgm/">[Website]</a></li>
+                    <li><a href="https://arxiv.org/abs/2003.06417">[arXiv]</a></li>
+                    <li><a
+                            href="https://papers.nips.cc/paper/2020/hash/385822e359afa26d52b5b286226f2cea-Abstract.html">[NeurIPS]</a>
+                    </li>
+                    <li><a href="https://slideslive.com/38936447">[Talk]</a></li>
+                    <li><a href="https://youtu.be/n3F3i7F3Lcg">[Video]</a></li>
+                    <li><a href="https://github.io/ajayjain/assets/2020-sgm-poster-neurips.pdf">[Poster]</a></li>
+                    <li><a href="https://github.com/scottemmons/sgm">[Code]</a></li>
+                </ul>
+            </div>
+            <a href="https://mishalaskin.github.io/sgm/" class="citation-media">
+                <img src="https://d33wubrfki0l68.cloudfront.net/b71e320294b25174b29a3d092cd2836848929075/dd313/images/sgm_cleanup.gif"
+                    alt="Cleaning up errors in the sparse graphical memory data structure." height="110">
+            </a>
+        </section>
+
+        <section class="citation" id="LMConv">
+            <div class="description">
+                <h4>Locally Masked Convolution for Autoregressive Models</h4>
+                <h5><b>Ajay Jain</b>, Pieter Abbeel, Deepak Pathak</h5>
+                <h6><span class="conference uai">UAI 2020</span> 36th Conference on Uncertainty in Artificial
+                    Intelligence</h6>
+                <p>Outpainting with PixelCNNs. Our efficent op allows PixelCNNs to generate images in arbitrary orders.
+                </p>
+                <ul>
+                    <li><a href="https://ajayjain.github.io/lmconv/">[Website]</a></li>
+                    <li><a href="https://arxiv.org/abs/2006.12486">[arXiv]</a></li>
+                    <li><a href="https://proceedings.mlr.press/v124/jain20b.html">[PMLR]</a></li>
+                    <li><a href="https://www.youtube.com/watch?v=uGRRv3SExSs">[Talk]</a></li>
+                    <li><a href="https://github.com/ajayjain/lmconv">[Code]</a></li>
+                </ul>
+            </div>
+            <a href="https://ajayjain.github.io/lmconv/" class="citation-media">
+                <img src="https://d33wubrfki0l68.cloudfront.net/4061396a135d425092ec9d4f251914f0151bbae9/0e60a/images/lmconv.png"
+                    alt="Locally Masked Convolution applies customizable masks to patches of an image" width="110">
+            </a>
+        </section>
+
+        <section class="citation" id="Checkmate">
+            <div class="description">
+                <h4>Checkmate: Breaking the Memory Wall with Optimal Tensor Rematerialization</h4>
+                <h5>Paras Jain*, <b>Ajay Jain</b>*, Aniruddha Nrusimha, Amir Gholami, Pieter Abbeel, Kurt Keutzer, Ion
+                    Stoica, Joseph E. Gonzalez</h5>
+                <h6><span class="conference mlsys">MLSys 2020</span> 3rd Conference on Machine Learning and Systems</h6>
+                <p>Use up to 5x less memory when training DNNs by recomputing activations</p>
+                <ul>
+                    <li><a href="https://checkmateai.github.io/">[Website]</a></li>
+                    <li><a href="https://arxiv.org/abs/1910.02653">[arXiv]</a></li>
+                    <li><a href="https://ajayjain.github.io/assets/2020-checkmate-slides-mlsys.pdf">[Slides]</a></li>
+                    <li><a href="slides/checkmate_slides.pptx">[PPTX]</a></li>
+                    <li><a href="https://github.com/parasj/checkmate">[Code]</a></li>
+                </ul>
+            </div>
+            <a href="https://checkmateai.github.io/" class="citation-media">
+                <img src="https://d33wubrfki0l68.cloudfront.net/54d5e3a3619df537c9095ad229acfe1e06e2721e/50ed7/images/2_illustrated_example.svg"
+                    alt="" width="110">
+            </a>
+        </section>
+
+        <section class="citation" id="DRF-Net">
+            <div class="description">
+                <h4>Discrete Residual Flow for Probabilistic Pedestrian Behavior Prediction</h4>
+                <h5><b>Ajay Jain</b>*, Sergio Casas Romero*, Renjie Liao*, Yuwen Xiong*, Song Feng, Sean Segal, Raquel
+                    Urtasun</h5>
+                <h6><span class="conference corl">CoRL 2019</span> 3rd Conference on Robot Learning, <span
+                        style="color: red">Spotlight talk</span></h6>
+                <p>Multimodal, long-range behavior forecasts by predicting state marginals</p>
+                <ul>
+                    <li><a href="https://arxiv.org/abs/1910.08041">[arXiv]</a></li>
+                    <li><a href="posters/DRFNet_CoRL2019_poster.pdf">[Poster]</a></li>
+                    <li><a href="https://youtu.be/n1ehwLhKOLo">[Talk]</a></li>
+                    <li><a href="https://ajayjain.github.io/assets/2019-drfnet-slides-corl.pdf">[Slides]</a></li>
+                </ul>
+            </div>
+            <img class="citation-media"
+                src="https://d33wubrfki0l68.cloudfront.net/d032ae9595340c8e0f67c26c1dec27b29cfda82e/f5971/images/drfnet_square.png"
+                alt="DRF-Net 10 second forecast" width="110">
+        </section>
+
+        <section class="citation" id="Revec">
+            <div class="description">
+                <h4>Revec: Program Rejuvenation through Revectorization</h4>
+                <h5>Charith Mendis*, <b>Ajay Jain</b>*, Paras Jain, Saman Amarasinghe</h5>
+                <h6><span class="conference cc">CC 2019</span> 28th International Conference on Compiler Construction
+                </h6>
+                <p>Achieve performance portability for hand-vectorized programs, with up to 1.88x speedup</p>
+                <ul>
+                    <li><a href="https://www.nextgenvec.org">[Website]</a></li>
+                    <li><a href="https://dl.acm.org/citation.cfm?id=3307357">[Paper]</a></li>
+                    <li><a href="https://arxiv.org/abs/1902.02816">[arXiv]</a></li>
+                    <li><a href="https://www.youtube.com/watch?v=EoVozNOnr4k">[Talk]</a></li>
+                    <li><a href="slides/revec_cc19_slides.pdf">[Slides]</a></li>
+                    <li><a href="https://github.com/revec">[Code]</a></li>
+                </ul>
+            </div>
+            <a href="https://www.nextgenvec.org" class="citation-media"><img
+                    src="https://d33wubrfki0l68.cloudfront.net/2b2c967fd48df681f264ed1cd971eaacad637c7b/9de39/images/revec.png"
+                    alt="" height="110"></a>
+        </section>
+
+        <section class="citation">
+            <div class="description">
+                <h4>Autonomy for Surface Ship Interception</h4>
+                <h5>C. Mirabito, D.N. Subramani, T. Lolla, J. P.J. Haley, <b>A. Jain</b>, P.F.J. Lermusiaux, C. Li, D.
+                    Yue, Y. Liu, F. Hover, N. Pulsone, J. Edwards, K. Railey, and G. Shaw</h5>
+                <h6><span class="conference oceans">OCEANS 2017</span> 60th OCEANS Conference, MTS/IEEE Aberdeen</h6>
+                <p>Time-optimal path planning for underwater robots</p>
+                <ul>
+                    <li><a href="https://ieeexplore.ieee.org/document/8084817">[Paper]</a></li>
+                    <li><a href="http://mseas.mit.edu/publications/PDF/mirabito_etal_autonomy_intercept_Oceans2017.pdf">[Open
+                            access]</a></li>
+                </ul>
+            </div>
+            <img class="citation-media"
+                src="https://d33wubrfki0l68.cloudfront.net/740f4ab1407eb9d570a34c8d4cd2e7bb3237284e/10523/images/paths.png"
+                alt="" height="110">
+        </section>
+    </section>
+
+    <h3>Short papers</h3>
+    <section>
+        <section class="citation" id="POCSNet">
+            <div class="description">
+                <h4>Learning Automatic Schedulers with Projective Reparameterization</h4>
+                <h5><b>Ajay Jain</b>, Saman Amarasinghe</h5>
+                <h6><span class="conference workshop isca">ISCA 2019</span> 46th International Symposium on Computer
+                    Architecture</h6>
+                <h6>Workshop on Machine Learning for Systems, Jun 2019, Talk</h6>
+                <p>Supervised learning of schedulers, with correctness constraints</p>
+                <ul>
+                    <li><a href="papers/projective_isca19.pdf">[Paper]</a></li>
+                    <li><a href="slides/pocsnet_isca19_slides.pdf">[Slides]</a></li>
+                    <li><a
+                            href="http://mlforsystems.org/assets/slides/isca2019/MLforSystems2019_Talk_Ajay_Jain.pptx">[PPTX]</a>
+                    </li>
+                </ul>
+            </div>
+            <img class="citation-media"
+                src="https://d33wubrfki0l68.cloudfront.net/5a60dc1ba36c5b616d64384c234811806ba95ceb/7e6dc/images/projection.png"
+                alt="" height="110">
+        </section>
+
+        <section class="citation">
+            <div class="description">
+                <h4>Using effective dimension to analyze feature transformations in deep neural networks</h4>
+                <h5>Kavya Ravichandran, <b>Ajay Jain</b>, Alexander Rakhlin</h5>
+                <h6><span class="conference workshop icml">ICML 2019</span> 36th International Conference on Machine
+                    Learning</h6>
+                <h6>Workshop on Identifying and Understanding Deep Learning Phenomena, Jun 2019</h6>
+                <ul>
+                    <li><a href="https://openreview.net/pdf?id=HJGsj13qTE">[Paper]</a></li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="citation">
+            <div class="description">
+                <h4>The Case for GPU Multitenancy</h4>
+                <h5>Paras Jain, Xiangxi Mo, <b>Ajay Jain</b>, Alexey Tumanov, Joseph E. Gonzalez, Ion Stoica</h5>
+                <h6><span class="conference arxiv">arXiv 2019</span> arXiv:1910.02653, Jan 2019</h6>
+                <ul>
+                    <li><a href="https://arxiv.org/abs/1901.10008">[arXiv]</a></li>
+                </ul>
+            </div>
+            <img class="citation-media"
+                src="https://d33wubrfki0l68.cloudfront.net/3c8417738473f734cdd1ff8c994da4cf9fc6c9a3/a9951/images/fijit.png"
+                alt="" height="100">
+        </section>
+
+        <section class="citation">
+            <div class="description">
+                <h4>Dynamic Space-Time scheduling for GPU inference</h4>
+                <h5>Paras Jain, Xiangxi Mo, <b>Ajay Jain</b>, Harikaran Subbaraj, Rehan Sohail Durrani, Alexey Tumanov,
+                    Joseph E. Gonzalez, and Ion Stoica</h5>
+                <h6><span class="conference workshop neurips">NeurIPS 2018</span> 32nd Annual Conference on Neural
+                    Information Processing Systems</h6>
+                <h6>Workshop on Systems for Machine Learning, Dec 2018</h6>
+                <p>Demonstrate 2.5x-4.9x speedups for deep learning inference workloads via GPU multitenancy</p>
+                <ul>
+                    <li><a href="https://arxiv.org/abs/1901.00041">[arXiv]</a></li>
+                    <li><a href="https://github.com/ucbrise/caravel/raw/master/assets/poster.pdf">[Poster]</a></li>
+                    <li><a href="https://arxiv.org/abs/1901.10008">[Follow-up paper]</a></li>
+                </ul>
+            </div>
+            <img class="citation-media"
+                src="https://d33wubrfki0l68.cloudfront.net/6e3b675ddf30988a4bbc6f3098122178b35da0e7/33b93/images/gpumulti_learningsys.jpg"
+                alt="" width="110">
+        </section>
+    </section>
+
+</body>
+
+</html>

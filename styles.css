@@ -1,0 +1,296 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Palatino, serif;
+    background-color: #f8f5d7;
+}
+
+/* Hamburger icon styling */
+.menu-icon {
+    display: none;
+    width: 30px;
+    height: 20px;
+    cursor: pointer;
+    position: relative;
+  }
+  
+  .menu-icon span {
+    display: block;
+    position: absolute;
+    height: 3px;
+    width: 100%;
+    background: #000;
+    border-radius: 2px;
+    opacity: 1;
+    left: 0;
+    transform: rotate(0deg);
+    transition: 0.25s ease-in-out;
+  }
+  
+  .menu-icon span:nth-child(1) {
+    top: 0px;
+  }
+  
+  .menu-icon span:nth-child(2), .menu-icon span:nth-child(3) {
+    top: 8px;
+  }
+  
+  .menu-icon span:nth-child(4) {
+    top: 16px;
+  }
+  
+  /* Menu items styling */
+  .menu-list-mobile {
+    display: none;
+    position: absolute;
+    top: 51px;
+    right: 5px;
+    padding: 5px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    background-color: #f8f5d7;
+  }
+  
+  .menu-list-mobile ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    margin-left: 5px;
+    padding: 5px;
+    transition: border-bottom 0.1s;
+    font-size: 18px;
+  }
+  
+  .menu-list-mobile li {
+    padding: 5px 0;
+  }
+  
+  /* Show menu items when hamburger icon is clicked */
+  .menu-icon.active span:nth-child(1) {
+    top: 8px;
+    transform: rotate(45deg);
+  }
+  
+  .menu-icon.active span:nth-child(2) {
+    opacity: 0;
+  }
+  
+  .menu-icon.active span:nth-child(3) {
+    top: 8px;
+    transform: rotate(-45deg);
+  }
+  
+  .menu-icon.active span:nth-child(4) {
+    top: 8px;
+    transform: rotate(45deg);
+  }
+  
+  .menu-icon.active ~ .menu-list-mobile {
+    display: block;
+  }
+
+  /*  end */
+
+.header {
+    padding: 10px;
+    position: sticky;
+    top: 0;
+    height: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ccc;
+}
+
+.header .logo .mobile-text {
+    font-size: 24px;
+    font-weight: bold;
+    display: none;
+}
+
+.header .logo span {
+    font-size: 24px;
+    font-weight: bold;
+    display: inline;
+    color: rgb(220, 40, 40);;
+}
+
+.header ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.header ul li {
+    display: inline;
+    padding: 5px;
+    font-size: 18px;
+}
+
+.header ul li a {
+    text-decoration: none;
+    color: rgb(220, 40, 40);
+}
+
+.header ul li:hover,
+.header .logo:hover {
+    cursor: pointer;
+    border-bottom: 1px solid #ccc
+}
+
+.container {
+    top: 50px;
+    /* height of the header */
+    bottom: 50px;
+    height: calc(100vh - 102px);
+    /* 100% viewport height minus header height */
+    display: flex;
+    flex-direction: row;
+}
+
+.sidebar-left {
+    position: relative;
+    flex: 1.1;
+    border-right: 1px solid #ccc;
+}
+
+/* .sidebar-right {
+    flex: 1;
+    display: block;
+    border-left: 1px solid #ccc;
+} */
+
+.sidebar-left .sidebar-left-header {
+    height: 5%;
+    display: flex;
+    padding: 0.5%;
+    flex-direction: column;
+    background-color: antiquewhite;
+    border-bottom: 0.1% solid #ccc;
+    text-align: center;
+}
+
+.sidebar-left .sidebar-left-content {
+    width: 100%;
+    height: 94.4%;
+    box-sizing: border-box;
+    overflow: auto;
+    padding: 5px;
+}
+
+.folder-list, .sub-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.sub-list {
+    display: block;
+    list-style: none;
+}
+
+.folder-item {
+    text-decoration: none;
+    color: rgb(220, 40, 40);
+    border: 1px solid #ccc;
+    padding: 2px;
+}
+
+.sidebar-left .sidebar-left-header h2 {
+    margin: 0;
+}
+
+.sidebar-left a {
+    color: inherit;
+}
+
+.sidebar-left  a:hover {
+    cursor: pointer;
+}
+
+.sidebar-left a {
+    text-decoration: none;
+    background: -webkit-linear-gradient(#fffff8, #fffff8), -webkit-linear-gradient(#fffff8, #fffff8), -webkit-linear-gradient(currentColor, currentColor);
+    background: linear-gradient(#fffff8, #fffff8), linear-gradient(#fffff8, #fffff8), linear-gradient(currentColor, currentColor);
+    -webkit-background-size: 0.05em 1px, 0.05em 1px, 1px 1px;
+    -moz-background-size: 0.05em 1px, 0.05em 1px, 1px 1px;
+    background-size: 0.05em 1px, 0.05em 1px, 1px 1px;
+    background-repeat: no-repeat, no-repeat, repeat-x;
+    text-shadow: 0.03em 0 #fffff8, -0.03em 0 #fffff8, 0 0.03em #fffff8, 0 -0.03em #fffff8, 0.06em 0 #fffff8, -0.06em 0 #fffff8, 0.09em 0 #fffff8, -0.09em 0 #fffff8, 0.12em 0 #fffff8, -0.12em 0 #fffff8, 0.15em 0 #fffff8, -0.15em 0 #fffff8;
+    background-position: 0% 93%, 100% 93%, 0% 93%;
+}
+
+
+.content {
+    flex: 4;
+    padding: 0px;
+    box-sizing: border-box;
+}
+
+.content .post {
+    width: 100%;
+    height: 100%;
+}
+
+
+.footer {
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    height: 30px;
+    bottom: 5px;
+    border-top: 1px solid #ccc;
+}
+
+.footer .footer-spacer-left {
+    flex: 1;
+}
+
+.footer .footer-spacer-right {
+    flex: 1;
+}
+
+.footer .search {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 3;
+}
+
+.footer .search input[type="text"] {
+    width: 100%;
+    padding: 10px;
+}
+
+@media screen and (max-width: 760px) {
+
+    /*  Items that we want visible on small screens only */
+    .sidebar-left {
+        display: none;
+    }
+
+    .sidebar-right {
+        display: none;
+    }
+
+    .header .logo .desktop-text {
+        display: none;
+    }
+
+    .header .logo .mobile-text {
+        display: inline;
+        font-size: 24px;
+        font-weight: bold;
+    }
+
+    .header .menu-icon {
+        display: block;
+    }
+
+    .header .menu .menu-list-desktop {
+        display: none;
+    }
+
+    
+
+}

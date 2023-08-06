@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>About Page</title>
+    <link rel="stylesheet" href="../napkins/tufte.css" />
+    <link rel="stylesheet" href="latex.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+    <article>
+        <!-- <h1 id="tufte-css">About</h1> -->
+
+        <section>
+            <h1 id="about-me">About the Author</h2>
+            <p>To use Tufte CSS, copy <code>tufte.css</code> and the <code>et-book</code> directory of font files to
+                your project directory, then add the following to your HTML document’s <code>head</code> block:</p>
+            <p><label for="mn-figure-1" class="margin-toggle">&#8853;</label><input type="checkbox" id="mn-figure-1"
+                    class="margin-toggle" /><span class="marginnote"><img src="../napkins/img/rhino.png"
+                        alt="Image of a Rhinoceros" /> F.J. Cole, “The History of Albrecht Dürer’s Rhinoceros in
+                    Zooological Literature,” <em>Science, Medicine, and History: Essays on the Evolution of Scientific
+                        Thought and Medical Practice</em> (London, 1953), ed. E. Ashworth Underwood, 337-356. From page
+                    71 of Edward Tufte’s <em>Visual Explanations</em>.</span> But tight integration of graphics with
+                text is central to Tufte’s work even when those graphics are ancillary to the main body of a text. In
+                many of those cases, a margin figure may be most appropriate. To place figures in the margin, just wrap
+                an image (or whatever) in a margin note inside a <code>p</code> tag, as seen to the right of this
+                paragraph.</p>
+        </section>
+
+        <section>
+            <h1 id="about-the-site"> About this Site</h2>
+            <p>Links in Tufte CSS match the body text in color and do not change on mouseover or when clicked. Here is a
+                <a href="#">dummy example</a> that goes nowhere. These links are underlined, since this is the most
+                widely recognized indicator of clickable text. 
+                
+                <label for="mn-blue-links"
+                    class="margin-toggle">&#8853;</label><input type="checkbox" id="mn-blue-links"
+                    class="margin-toggle" />
+
+                <span class="marginnote">Blue text, while also a widely recognizable
+                    clickable-text indicator, is crass and distracting. Luckily, it is also rendered unnecessary by the
+                    use of underlining.</span>
+                    
+                    However, because most browsers’ default underlining does not clear
+                descenders and is so thick and distracting, the underline effect is instead achieved using CSS trickery
+                involving background gradients instead of standard <code>text-decoration</code>. Credit goes to Adam
+                Schwartz for that technique.
+            </p>
+        </section>
+
+        <section>
+            <h1 id="about-name">About the Name</h2>
+            <p>If you’d like to introduce your page or a section of your page with some quotes, use epigraphs. Modeled
+                after chapter epigraphs in Tufte’s books (particularly <em>Beautiful Evidence</em>), these are
+                <code>blockquote</code> elements with a bit of specialized styling. Quoted text is italicized. The
+                source goes in a <code>footer</code> element inside the <code>blockquote</code>. We have provided three
+                examples in the epigraph of this section, demonstrating shorter and longer quotes, with and without a
+                paragraph tag, and showing how multiple quotes within an epigraph fit together with the use of a wrapper
+                class.
+            </p>
+        </section>
+    </article>
+</body>
+
+</html>

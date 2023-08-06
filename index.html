@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Hubris+Humility</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+
+<body>
+    <header class="header">
+        <div class="logo" onclick="navigate('./napkins/napkins.html')">
+            <span class="desktop-text">Hubris+Humility</span>
+            <span class="mobile-text">H+H</span>
+        </div>
+        <div class="menu">
+            <div class="menu-list-desktop">
+                <ul class="menu-list">
+                    <li><a onclick="navigate('./projects/projects.html')">About+Projects</a></li>
+                    <!-- <li><a onclick="navigate('./projects/projects.html')">Projects</a></li> -->
+                    <li><a onclick="navigate('./writing/writing.html')">Writing</a></li>
+                    <li><a onclick="navigate('./sketches_and_snippets/sketch.html')">Sketches+Snippets</a></li>
+                    <!-- <li><a onclick="navigate('./about/about.html')">Résumé</a></li> -->
+                </ul>
+            </div>
+
+            <div class="menu-icon">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+            <div class="menu-list-mobile">
+                <ul class="menu-list">
+                    <li><a onclick="navigate('./about/about.html')">About+Projects</a></li>
+                    <!-- <li><a onclick="navigate('./projects/projects.html')">Projects</a></li> -->
+                    <li><a onclick="navigate('./writing/writing.html')">Writing</a></li>
+                    <li><a onclick="navigate('./sketches_and_snippets/sketch.html')">Sketches+Snippets</a></li>
+                    <!-- <li><a href="#">Résumé</a></li> -->
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="sidebar-left">
+            <div class="sidebar-left-header">
+                <h2>∞ Napkins</h2>
+            </div>
+
+            <div class="sidebar-left-content">
+                <div class="napkins">
+                    <ul class="folder-list">
+                        <li>
+                            <div class="folder-item">
+                                Algebra
+                            </div>
+                            <ul class="sub-list">
+                                <li><a onclick="navigate('./sidebar/mutants/book/index.html')">Linear Algebra</a></li>
+                                <li>Abstract Algebra I</li>
+                                <li>Abstract Algebra II</li>
+                                <li>Abstract Algebra III</li>
+                                <li>Category Theory</li>
+                                <!-- Add more sub-items here -->
+                            </ul>
+                        </li>
+                        <li>
+                            <div class="folder-item">
+                                Analysis
+                            </div>
+                            <ul class="sub-list">
+                                <li>Real Analysis</li>
+                                <li>Metric Spaces</li>
+                                <li>Point-Set Topology</li>
+                                <li>Vector Calculus</li>
+                                <li>Manifolds</li>
+                                <li>Differential Forms</li>
+                                <li>Complex Analysis</li>
+                                <li>Measure & Lebesgue Theory</li>
+                                <li>Functional Analysis</li>
+                                <li>Probability Theory I</li>
+                                <li>Probability Theory II</li>
+                                <!-- Add more sub-items here -->
+                            </ul>
+                        </li>
+                
+                        <li>
+                            <div class="folder-item">
+                                Algorithms
+                            </div>
+                            <ul class="sub-list">
+                                <li>Data Structures</li>
+                                <li>Numerical Algorithms</li>
+                                <li>Optimization</li>
+                            </ul>
+                        </li>
+                
+                        <li>
+                            <div class="folder-item">
+                                Biology
+                            </div>
+                            <ul class="sub-list">
+                                <li>Cancer Biology</li>
+                                <li>Developmental Biology</li>
+                                <li>Experimental Techniques</li>
+                            </ul>
+                        </li>
+                
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="content">
+            <object data="./napkins/napkins.html" , class="post"></object>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-spacer-left"></div>
+
+        <div class="search">
+            <input type="text" placeholder="Search">
+        </div>
+
+        <div class="footer-spacer-right"></div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
