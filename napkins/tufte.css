@@ -37,7 +37,7 @@
     font-weight: normal;
     font-style: normal;
     font-display: swap;
-}
+} 
 
 /* Tufte CSS styles */
 html {
@@ -49,7 +49,7 @@ body {
     margin-left: auto;
     margin-right: auto;
     padding-left: 3%;
-    font-family: et-book, Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
+    font-family: et-bembo, Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
     color: #111;
     max-width: 1400px;
     counter-reset: sidenote-counter;

@@ -7,3 +7,6 @@ title = "The Genetics of Neural Nets"
 
 [preprocessor.katex]
 after = ["links"]
+
+[output.html]
+additional-css = ["./theme/fonts/fonts.css"]
