@@ -1,44 +1,5 @@
 @charset "UTF-8";
 
-/* Import ET Book styles
-   adapted from https://github.com/edwardtufte/et-book/blob/gh-pages/et-book.css */
-
-@font-face {
-    font-family: "et-book";
-    src: url("et-book/et-book-roman-line-figures/et-book-roman-line-figures.eot");
-    src: url("et-book/et-book-roman-line-figures/et-book-roman-line-figures.eot?#iefix") format("embedded-opentype"), url("et-book/et-book-roman-line-figures/et-book-roman-line-figures.woff") format("woff"), url("et-book/et-book-roman-line-figures/et-book-roman-line-figures.ttf") format("truetype"), url("et-book/et-book-roman-line-figures/et-book-roman-line-figures.svg#etbookromanosf") format("svg");
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: "et-book";
-    src: url("et-book/et-book-display-italic-old-style-figures/et-book-display-italic-old-style-figures.eot");
-    src: url("et-book/et-book-display-italic-old-style-figures/et-book-display-italic-old-style-figures.eot?#iefix") format("embedded-opentype"), url("et-book/et-book-display-italic-old-style-figures/et-book-display-italic-old-style-figures.woff") format("woff"), url("et-book/et-book-display-italic-old-style-figures/et-book-display-italic-old-style-figures.ttf") format("truetype"), url("et-book/et-book-display-italic-old-style-figures/et-book-display-italic-old-style-figures.svg#etbookromanosf") format("svg");
-    font-weight: normal;
-    font-style: italic;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: "et-book";
-    src: url("et-book/et-book-bold-line-figures/et-book-bold-line-figures.eot");
-    src: url("et-book/et-book-bold-line-figures/et-book-bold-line-figures.eot?#iefix") format("embedded-opentype"), url("et-book/et-book-bold-line-figures/et-book-bold-line-figures.woff") format("woff"), url("et-book/et-book-bold-line-figures/et-book-bold-line-figures.ttf") format("truetype"), url("et-book/et-book-bold-line-figures/et-book-bold-line-figures.svg#etbookromanosf") format("svg");
-    font-weight: bold;
-    font-style: normal;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: "et-book-roman-old-style";
-    src: url("et-book/et-book-roman-old-style-figures/et-book-roman-old-style-figures.eot");
-    src: url("et-book/et-book-roman-old-style-figures/et-book-roman-old-style-figures.eot?#iefix") format("embedded-opentype"), url("et-book/et-book-roman-old-style-figures/et-book-roman-old-style-figures.woff") format("woff"), url("et-book/et-book-roman-old-style-figures/et-book-roman-old-style-figures.ttf") format("truetype"), url("et-book/et-book-roman-old-style-figures/et-book-roman-old-style-figures.svg#etbookromanosf") format("svg");
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
-} 
-
 /* Tufte CSS styles */
 html {
     font-size: 15px;
@@ -108,6 +69,13 @@ hr {
     display: flex;
     flex-direction: column;
 }
+
+.theorem-box h2 {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+
 .theorem-box .theorem-box-content {
     flex: 20;
     line-height: 1.32;
@@ -116,10 +84,11 @@ hr {
 
 .theorem-box .theorem-box-title {
     flex: 1;
-    width: 100%;
-    text-align: center;
+    width: 98%;
+    text-align: left;
     border-bottom: 1px solid #111;
-    background-color: antiquewhite
+    background-color: antiquewhite;
+    -webkit-padding-start: 2%;
 }
 
 .theorem-box .theorem-title {
@@ -135,6 +104,7 @@ hr {
     list-style-type: decimal;
     font-size: 1.3rem;
 }
+
 /* Emd Copy */
 
 p.subtitle {
@@ -183,23 +153,24 @@ div.epigraph {
     margin: 5em 0;
 }
 
-div.epigraph > blockquote {
+div.epigraph>blockquote {
     margin-top: 3em;
     margin-bottom: 3em;
 }
 
-div.epigraph > blockquote,
-div.epigraph > blockquote > p {
+div.epigraph>blockquote,
+div.epigraph>blockquote>p {
     font-style: italic;
 }
 
-div.epigraph > blockquote > footer {
+div.epigraph>blockquote>footer {
     font-style: normal;
 }
 
-div.epigraph > blockquote > footer > cite {
+div.epigraph>blockquote>footer>cite {
     font-style: italic;
 }
+
 /* end chapter epigraphs styles */
 
 blockquote {
@@ -217,16 +188,16 @@ blockquote footer {
     text-align: right;
 }
 
-section > p,
-section > footer,
-section > table {
+section>p,
+section>footer,
+section>table {
     width: 60%;
 }
 
 /* 50 + 5 == 55, to be the same width as paragraph */
-section > dl,
-section > ol,
-section > ul {
+section>dl,
+section>ol,
+section>ul {
     width: 55%;
     -webkit-padding-start: 5%;
 }
@@ -275,7 +246,9 @@ a:visited {
     text-shadow: unset;
 }
 
-a:link, .tufte-underline, .hover-tufte-underline:hover {
+a:link,
+.tufte-underline,
+.hover-tufte-underline:hover {
     text-decoration: none;
     background: -webkit-linear-gradient(#fffff8, #fffff8), -webkit-linear-gradient(#fffff8, #fffff8), -webkit-linear-gradient(currentColor, currentColor);
     background: linear-gradient(#fffff8, #fffff8), linear-gradient(#fffff8, #fffff8), linear-gradient(currentColor, currentColor);
@@ -288,14 +261,20 @@ a:link, .tufte-underline, .hover-tufte-underline:hover {
 }
 
 @media screen and (-webkit-min-device-pixel-ratio: 0) {
-    a:link, .tufte-underline, .hover-tufte-underline:hover {
+
+    a:link,
+    .tufte-underline,
+    .hover-tufte-underline:hover {
         background-position-y: 87%, 87%, 87%;
     }
 }
 
 /* Adds dark mode */
 @media (prefers-color-scheme: dark) {
-    a:link, .tufte-underline, .hover-tufte-underline:hover {
+
+    a:link,
+    .tufte-underline,
+    .hover-tufte-underline:hover {
         text-shadow: 0.03em 0 #151515, -0.03em 0 #151515, 0 0.03em #151515, 0 -0.03em #151515, 0.06em 0 #151515, -0.06em 0 #151515, 0.09em 0 #151515, -0.09em 0 #151515, 0.12em 0 #151515, -0.12em 0 #151515, 0.15em 0 #151515, -0.15em 0 #151515;
     }
 }
@@ -371,29 +350,31 @@ div.table-wrapper {
     letter-spacing: .03em;
 }
 
-code, pre > code {
+code,
+pre>code {
     font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
     font-size: 1.0rem;
     line-height: 1.42;
-    -webkit-text-size-adjust: 100%; /* Prevent adjustments of font size after orientation changes in iOS. See https://github.com/edwardtufte/tufte-css/issues/81#issuecomment-261953409 */
+    -webkit-text-size-adjust: 100%;
+    /* Prevent adjustments of font size after orientation changes in iOS. See https://github.com/edwardtufte/tufte-css/issues/81#issuecomment-261953409 */
 }
 
-.sans > code {
+.sans>code {
     font-size: 1.2rem;
 }
 
-h1 > code,
-h2 > code,
-h3 > code {
+h1>code,
+h2>code,
+h3>code {
     font-size: 0.80em;
 }
 
-.marginnote > code,
-.sidenote > code {
+.marginnote>code,
+.sidenote>code {
     font-size: 1rem;
 }
 
-pre > code {
+pre>code {
     font-size: 0.9rem;
     width: 62.5%;
     margin-left: 2.5%;
@@ -401,13 +382,13 @@ pre > code {
     display: block;
 }
 
-pre.fullwidth > code {
+pre.fullwidth>code {
     width: 90%;
 }
 
 .fullwidth {
     max-width: 90%;
-    clear:both;
+    clear: both;
 }
 
 span.newthought {
@@ -421,7 +402,8 @@ input.margin-toggle {
 
 label.sidenote-number {
     display: inline-block;
-    max-height: 2rem; /* should be less than or equal to paragraph line-height */
+    max-height: 2rem;
+    /* should be less than or equal to paragraph line-height */
 }
 
 label.margin-toggle:not(.sidenote-number) {
@@ -430,7 +412,8 @@ label.margin-toggle:not(.sidenote-number) {
 
 .iframe-wrapper {
     position: relative;
-    padding-bottom: 56.25%; /* 16:9 */
+    padding-bottom: 56.25%;
+    /* 16:9 */
     padding-top: 25px;
     height: 0;
 }
@@ -451,19 +434,19 @@ label.margin-toggle:not(.sidenote-number) {
     }
 
     hr,
-    section > p,
-    section > footer,
-    section > table {
+    section>p,
+    section>footer,
+    section>table {
         width: 100%;
     }
 
-    pre > code {
+    pre>code {
         width: 97%;
     }
 
-    section > dl,
-    section > ol,
-    section > ul {
+    section>dl,
+    section>ol,
+    section>ul {
         width: 90%;
     }
 
@@ -496,8 +479,8 @@ label.margin-toggle:not(.sidenote-number) {
         display: none;
     }
 
-    .margin-toggle:checked + .sidenote,
-    .margin-toggle:checked + .marginnote {
+    .margin-toggle:checked+.sidenote,
+    .margin-toggle:checked+.marginnote {
         display: block;
         float: left;
         left: 1rem;

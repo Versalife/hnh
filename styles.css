@@ -130,10 +130,11 @@ body {
     color: rgb(220, 40, 40);
 }
 
+
 .header ul li:hover,
 .header .logo:hover {
     cursor: pointer;
-    border-bottom: 1px solid #ccc
+    background-color: rgb(255, 255, 243);
 }
 
 .container {
