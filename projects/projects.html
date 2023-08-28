@@ -25,7 +25,7 @@
         </div>
 
         <div class="bio-text" , style="padding: 2px;">
-            <h3>About the Author </h3>
+            <h3><span class="arxiv">About the Author </span></h3>
             <p class="bio">I'm a Research Engineer at <a href="https://www.broadinstitute.org/" target="_blank">
                     The Broad Institute
                 </a> , where I work on
@@ -36,9 +36,29 @@
                 from Stanford with a B.S. in Computer Science.
             </p>
 
-            <h3>About this Website </h3>
+            <h3><span class="arxiv">About the Website</span></h3>
+            <p>
+                - This website is a mix of three things:
+                - A repository of all the detailed notes I take in the course of my personal studies — these all live in
+                the ∞-napkins section
+                - A collection of some of my day to day, unrefined thoughts which (at the time of writing) seemed
+                interesting. —- these all live under the Sketches+Snippets section
+                - A collection of some of my refined thoughts or a distillation of some ideas — these all live under the
+                writing section
+                - A summary of some things that I have built, or prototyped — these all live under the Projects section
 
-            <h3>About the Name</h3>
+            </p>
+            <h3><span class="arxiv">About the Name</span></h3>
+            <p>
+                Why Hubris+Humility?
+
+                - To do any meaningful work *you have to first believe that you can* do meaningful work, work that is
+                field defining. This requires a certain degree of self confidence — a belief in one’s ability to
+                excellently do such work. This is Hubris. On its own, this belief is not enough. It is a necessary but
+                ultimately insufficient.
+                - However, when coupled with the ability to recognize one’s limitations in skill and the ability to
+                patiently, and systematically remedy those deficiencies .. this is humility.
+            </p>
         </div>
     </div>
     <p class="email">Email: jlikhuva at alumni dot stanford dot edu</p>
@@ -46,16 +66,6 @@
 
     <br>
     <hr>
-
-    <!-- <h3>News</h3>
-    <section class="news">
-        <h5><span class="new">New!</span> <b>July 2022:</b> Dream Fields wins the Best Poster award at <a
-                href="https://ai4cc.net/">AI4CC</a></h5>
-        <h5><span class="new">New!</span> <b>May 2022:</b> AdaCat accepted to UAI 2022</h5>
-        <h5><b>March 2022:</b> Dream Fields accepted to CVPR 2022</h5>
-        <h5><b>Aug 2021:</b> ContraCode accepted to EMNLP 2021</h5>
-        <h5><b>July 2021:</b> DietNeRF accepted to ICCV 2021</h5>
-    </section> -->
 
     <h3>Notable Technical Projects, and Research</h3>
     <section>
@@ -67,13 +77,13 @@
                 <p>Generate vector graphics (SVGs), pixel art and sketches from text using the pretrained Stable
                     Diffusion model.</p>
                 <ul>
-                    <li><a href="https://github.com/jlikhuva/NutritionProject/blob/master/Data/arxiv.pdf" target="_blank">[Paper]</a></li>
+                    <li><a href="https://github.com/jlikhuva/NutritionProject/blob/master/Data/arxiv.pdf"
+                            target="_blank">[Paper]</a></li>
                 </ul>
             </div>
-            <a class="citation-media" href="https://github.com/jlikhuva/NutritionProject/blob/master/Data/_poster.pdf" target="_blank">
-                <img src="./assets/231.png"
-                    alt="Poster Presentation of the Project."
-                    height="110">
+            <a class="citation-media" href="https://github.com/jlikhuva/NutritionProject/blob/master/Data/_poster.pdf"
+                target="_blank">
+                <img src="./assets/231.png" alt="Poster Presentation of the Project." height="110">
             </a>
         </section>
 
@@ -92,143 +102,54 @@
                     generative modeling.</p>
                 <ul>
                     <li><a href="https://www.gtexportal.org/home/" target="_blank">[Website]</a></li>
-                    <li><a href="https://gtexportal.org/api/v2/redoc#tag/Dynamic-Association-Endpoints" target="_blank">[API Docs]</a></li>
+                    <li><a href="https://gtexportal.org/api/v2/redoc#tag/Dynamic-Association-Endpoints"
+                            target="_blank">[API Docs]</a></li>
                 </ul>
             </div>
             <a class="citation-media" href="./assets/GTEx Poster Hi-Res.pdf" target="_blank">
-                <img src="./assets/gtex.png"
-                    alt="GTEx Project Poster."
-                    height="110">
+                <img src="./assets/gtex.png" alt="GTEx Project Poster." height="110">
             </a>
         </section>
-
-        <section class="citation featured">
-            <div class="description">
-                <h4>Zero-Shot Text-Guided Object Generation with Dream Fields</h4>
-                <h5><b>Ajay Jain</b>, Ben Mildenhall, Jon Barron, Pieter Abbeel, Ben Poole</h5>
-                <h6><span class="conference cvpr">CVPR 2022</span> Conference on Computer Vision and Pattern Recognition
-                </h6>
-                <p>We combine neural rendering with multi-modal image and text representations to synthesize diverse 3D
-                    objects solely from natural language descriptions.</p>
-                <ul>
-                    <li><a href="/dreamfields/">[Website]</a></li>
-                    <li><a href="https://arxiv.org/abs/2112.01455">[arXiv]</a></li>
-                    <li><a href="https://www.youtube.com/watch?v=1Fke6w46tv4">[Overview video]</a></li>
-                    <li><a href="https://github.com/google-research/google-research/tree/master/dreamfields">[Code]</a>
-                    </li>
-                    <li><a href="https://colab.research.google.com/drive/17GtPqdUCbG5CsmTnQFecPpoq_zpNKX7A?usp=sharing">[Colab
-                            demo]</a></li>
-                    <li><a href="/dreamfields/assets/dreamfields_cvpr_poster.pdf">[Poster]</a></li>
-                </ul>
-            </div>
-            <a href="/dreamfields/" class="citation-media">
-                <div class="vsc-controller"></div>
-                <video height="110" muted="" autoplay="" loop="" class="bordered" alt="a sculpture of a rooster"
-                    poster="https://dreamfusion-cdn.ajayj.com/dreamfield_after.jpg">
-                    <source src="https://dreamfusion-cdn.ajayj.com/dreamfield_after.mp4" type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>
-            </a>
-            <!-- <p><em>"a sculpture of a rooster"</em></p> -->
-        </section>
-
-        <section class="citation featured" id="DDPM">
-            <div class="description">
-                <h4>Denoising Diffusion Probabilistic Models</h4>
-                <h5>Jonathan Ho, <b>Ajay Jain</b>, Pieter Abbeel</h5>
-                <h6><span class="conference neurips">NeurIPS 2020</span> 34th Conference on Neural Information
-                    Processing Systems</h6>
-                <p>High-quality likelihood-based image generation; connect diffusion models to denoising score matching
-                    and Langevin dynamics; compression, reconstruction and interpolation</p>
-                <ul>
-                    <li><a href="https://hojonathanho.github.io/diffusion/">[Website]</a></li>
-                    <li><a href="https://arxiv.org/abs/2006.11239">[arXiv]</a></li>
-                    <li><a href="https://slideslive.com/38936172">[Talk]</a></li>
-                    <li><a href="images/diffusion_face_and_bedroom_video.mp4">[Sample video]</a></li>
-                    <li><a href="https://github.com/hojonathanho/diffusion">[Code]</a></li>
-                </ul>
-            </div>
-            <a class="citation-media" href="images/diffusion_face_and_bedroom_video.mp4">
-                <img src="https://d33wubrfki0l68.cloudfront.net/52717fb07257d1729a14abaeb44505067bab084a/cce70/images/diffusion_face_video_small_square.gif"
-                    alt="Sampling four 256x256 px photos of faces from a Denoising Diffusion Probabilistic Model."
-                    height="110">
-            </a>
-        </section>
-
     </section>
 
     <br>
     <hr>
 
     <h3>Additional Projects</h3>
-    <section>
-        <section class="citation" id="POCSNet">
-            <div class="description">
-                <h4>Learning Automatic Schedulers with Projective Reparameterization</h4>
-                <h5><b>Ajay Jain</b>, Saman Amarasinghe</h5>
-                <h6><span class="conference workshop isca">ISCA 2019</span> 46th International Symposium on Computer
-                    Architecture</h6>
-                <h6>Workshop on Machine Learning for Systems, Jun 2019, Talk</h6>
-                <p>Supervised learning of schedulers, with correctness constraints</p>
-                <ul>
-                    <li><a href="papers/projective_isca19.pdf">[Paper]</a></li>
-                    <li><a href="slides/pocsnet_isca19_slides.pdf">[Slides]</a></li>
-                    <li><a
-                            href="http://mlforsystems.org/assets/slides/isca2019/MLforSystems2019_Talk_Ajay_Jain.pptx">[PPTX]</a>
-                    </li>
-                </ul>
-            </div>
-            <img class="citation-media"
-                src="https://d33wubrfki0l68.cloudfront.net/5a60dc1ba36c5b616d64384c234811806ba95ceb/7e6dc/images/projection.png"
-                alt="" height="110">
-        </section>
+    <section class="citation featured">
+        <div class="description">
+            <h4>bit-parallelism</h4>
+            <h5> </h5>
+            <h6><span class="conference workshop isca">Word Level Parallelism</span> Fall 2022</h6>
+            <p>Small integer specialized, word level, parallel algorithms and data structures
+            </p>
+            <ul>
+                <li><a href="https://crates.io/crates/bit-parallelism/0.1.3" target="_blank">[crates.io]</a></li>
+                <li><a href="https://docs.rs/bit-parallelism/latest/bit_parallelism/" target="_blank">[docs.rs]</a></li>
+            </ul>
+        </div>
+        <a class="citation-media" href="https://crates.io/crates/bit-parallelism/0.1.3"
+            target="_blank">
+            <img src="./assets/bits.png" alt="A screen grab of the bit-parallelism entry in crates.io" height="110">
+        </a>
+    </section>
 
-        <section class="citation">
-            <div class="description">
-                <h4>Using effective dimension to analyze feature transformations in deep neural networks</h4>
-                <h5>Kavya Ravichandran, <b>Ajay Jain</b>, Alexander Rakhlin</h5>
-                <h6><span class="conference workshop icml">ICML 2019</span> 36th International Conference on Machine
-                    Learning</h6>
-                <h6>Workshop on Identifying and Understanding Deep Learning Phenomena, Jun 2019</h6>
-                <ul>
-                    <li><a href="https://openreview.net/pdf?id=HJGsj13qTE">[Paper]</a></li>
-                </ul>
-            </div>
-        </section>
-
-        <section class="citation">
-            <div class="description">
-                <h4>The Case for GPU Multitenancy</h4>
-                <h5>Paras Jain, Xiangxi Mo, <b>Ajay Jain</b>, Alexey Tumanov, Joseph E. Gonzalez, Ion Stoica</h5>
-                <h6><span class="conference arxiv">arXiv 2019</span> arXiv:1910.02653, Jan 2019</h6>
-                <ul>
-                    <li><a href="https://arxiv.org/abs/1901.10008">[arXiv]</a></li>
-                </ul>
-            </div>
-            <img class="citation-media"
-                src="https://d33wubrfki0l68.cloudfront.net/3c8417738473f734cdd1ff8c994da4cf9fc6c9a3/a9951/images/fijit.png"
-                alt="" height="100">
-        </section>
-
-        <section class="citation">
-            <div class="description">
-                <h4>Dynamic Space-Time scheduling for GPU inference</h4>
-                <h5>Paras Jain, Xiangxi Mo, <b>Ajay Jain</b>, Harikaran Subbaraj, Rehan Sohail Durrani, Alexey Tumanov,
-                    Joseph E. Gonzalez, and Ion Stoica</h5>
-                <h6><span class="conference workshop neurips">NeurIPS 2018</span> 32nd Annual Conference on Neural
-                    Information Processing Systems</h6>
-                <h6>Workshop on Systems for Machine Learning, Dec 2018</h6>
-                <p>Demonstrate 2.5x-4.9x speedups for deep learning inference workloads via GPU multitenancy</p>
-                <ul>
-                    <li><a href="https://arxiv.org/abs/1901.00041">[arXiv]</a></li>
-                    <li><a href="https://github.com/ucbrise/caravel/raw/master/assets/poster.pdf">[Poster]</a></li>
-                    <li><a href="https://arxiv.org/abs/1901.10008">[Follow-up paper]</a></li>
-                </ul>
-            </div>
-            <img class="citation-media"
-                src="https://d33wubrfki0l68.cloudfront.net/6e3b675ddf30988a4bbc6f3098122178b35da0e7/33b93/images/gpumulti_learningsys.jpg"
-                alt="" width="110">
-        </section>
+    <section class="citation featured">
+        <div class="description">
+            <h4>markdown2tufte</h4>
+            <h5> </h5>
+            <h6><span class="conference workshop isca">Compilers</span> Fall 2022</h6>
+            <p>Small integer specialized, word level, parallel algorithms and data structures
+            </p>
+            <ul>
+                <li><a href="https://crates.io/crates/bit-parallelism/0.1.3" target="_blank">[crates.io]</a></li>
+                <li><a href="https://docs.rs/bit-parallelism/latest/bit_parallelism/" target="_blank">[docs.rs]</a></li>
+            </ul>
+        </div>
+        <a class="citation-media" href="https://crates.io/crates/bit-parallelism/0.1.3"
+            target="_blank">
+            <img src="./assets/bits.png" alt="A screen grab of the bit-parallelism entry in crates.io" height="110">
+        </a>
     </section>
 
 </body>

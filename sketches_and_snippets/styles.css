@@ -124,8 +124,12 @@ footer p {
     padding: 0;
 }
 
-.links li {
-    display: inline;
+.links li, .inline{
+    display: flex;
+}
+
+div.inline h5 {
+    margin-left: 1em;
 }
 
 .institute {
@@ -151,7 +155,7 @@ footer p {
     align-items: center;
     background: linear-gradient(to right, white, #ffe4c5);
 }
-.citation.featured {
+.citation.sketch {
     background: white; /* fallback for old browsers */
     background: -webkit-linear-gradient(to left, white, #ffe4c5); /* Chrome 10-25, Safari 5.1-6 */
     background: linear-gradient(to left, white, #ffe4c5); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
@@ -173,9 +177,7 @@ footer p {
     padding-left: 0px;
     margin: 0;
 }
-.citation li {
-    display: inline;
-}
+
 .citation h4 {
     line-height: normal;
     font-weight: bold;
@@ -203,11 +205,11 @@ footer p {
 .bordered {
     border: 1px solid black;
 }
-.citation p {
+.citation p, .citation li {
     /* color: steelblue; */
     /* font-weight: bold; */
     font-size: 12px;
-    margin-left: 0;
+    margin-left: 10px;
     margin-right: 0;
     margin-bottom: 0;
     margin-top: 0;

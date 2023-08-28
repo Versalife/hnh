@@ -70,15 +70,17 @@ hr {
     flex-direction: column;
 }
 
-.theorem-box h2 {
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
+.theorem-box h1, .theorem-box h2 {
+    margin-top: 0;
+    margin-bottom: 0;
+    padding: 2px;
 }
 
 
 .theorem-box .theorem-box-content {
     flex: 20;
     line-height: 1.32;
+    padding-top: 5px;
     -webkit-padding-start: 2%;
 }
 

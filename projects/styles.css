@@ -223,7 +223,7 @@ footer p {
 .citation .conference.workshop {
     background-color: LightSkyBlue;
 }
-.citation .conference.arxiv {
+.bio-text h3 .arxiv {
     background-color: Gainsboro;
 }
 
