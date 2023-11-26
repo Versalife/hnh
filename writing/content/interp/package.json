@@ -1,7 +1,0 @@
-{
-  "dependencies": {
-    "@codemirror/lang-cpp": "^6.0.2",
-    "@codemirror/lang-rust": "^6.0.1",
-    "@nota-lang/nota-theme-acm": "^0.4.12"
-  }
-}

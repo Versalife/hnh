@@ -1,7 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
 <html>
 
 <head>
     <link rel="stylesheet" href="./styles.css" type="text/css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css"
+    integrity="sha384-GvrOXuhMATgEsSwCs4smul74iXGOixntILdUW9XmUC6+HX0sLNAK3q71HotJqlAn" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"
+    integrity="sha384-cpW21h6RZv/phavutF+AuVYrr+dA8xD9zs6FwLpaCct6O9ctzYFfFr4dgmgccOTx"
+    crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"
+    integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+    onload="renderMathInElement(document.body);"></script>
 </head>
 
 <body class="vsc-initialized">
@@ -18,7 +28,7 @@
                         target="_blank">equivalent to a weighted bipartite graph</a>.
                     Therefore, a neural network can be viewed as an ordered list of weighted bipartite graphs.
                     Can we use this correspondence to translate the tools developed in Graph Theory to aid our
-                    understanding of Neural Networks? What does Ford-Fulkerson have to say about how information flows
+                    understanding of Neural Networks? What does Ford-Fulkerson have to say, if anything, about how information flows
                     through a neural network?</p>
             </div>
         </section>
@@ -74,8 +84,7 @@
                 <h4>de Tocqueville's Astute Observation </h4>
                 <h6><span class="conference workshop">SNIPPET</span> August13, 2023 </h6>
                 <p>
-                    Read the language. Write the language. Speak the language.Understand the Language.
-                    Why learn a language? Read literature written in that language. Interact with others who can
+                    TODO
                 </p>
                 <h5><a href="https://en.wikipedia.org/wiki/Maryam_Mirzakhani" target="_blank">Maryam Mirzakhani</a></h5>
             </div>
@@ -126,16 +135,55 @@
             </div>
         </section>
 
+        <section class="citation">
+            <div class="description">
+                <h4>Rosen: Taylor's Theorem, Recursion, and Time Travel</h4>
+                <h6><span class="conference workshop">SNIPPET</span> Fall 2023</h6>
+                <p>
+                    "I FEEL IT necessary to apologize in advance
+                        for what I'm now going to discuss. No one likes to come down from the top of a tall building,
+                        from where vistas and panoramas are visible, and inspect a windowless basement. We know, intellectually,
+                        that there could be no panoramas without the basement, but emotionally, we feel no desire to look at it directly;
+                        indeed, we feel an eversion. Above all, there's no beauty; there are only dark corners and dampness and airlessness. 
+                        It is sufficient to know that the building stand on it [the basement], that its supports, its pipes, and plumning are in place and
+                        functioning.
+                    "
+                </p>
+
+                <h5><a href="https://amzn.to/3ETMcRC"
+                    target="_blank">Robert Rosen</a></h5>
+            </div>
+        </section>
+
         <section class="citation sketch">
             <div class="description">
                 <h4>Find it; Lose it; Move it </h4>
                 <h6><span class="conference cvpr">SKETCH</span> Summer 2022</h6>
                 <p>
-                    Read the language. Write the language. Speak the language.Understand the Language.
-                    Why learn a language? Read literature written in that language. Interact with others who can
+                    TODO
                 </p>
                 <h5><a href="https://vimeo.com/136532431"
                         target="_blank">Scott Gilbert</a></h5>
+            </div>
+        </section>
+
+        <section class="citation">
+            <div class="description">
+                <h4>Polya: On Plausible Reasoning in Mathematics</h4>
+                <h6><span class="conference workshop">SNIPPET</span> Summer 2020</h6>
+                <p>
+                    "Mathematics is regarded as a demonstrative science.  Yet, this is only one of its aspects. 
+                    Finished mathematics presented in a finished form appears as purely demonstrative, 
+                    consisting of proofs only. Yet, mathematics in the making resembles any other human knowledge in teh making.
+                    You have to guess a mathematical theorem before you can prove it [that is, you have to come up with
+                    a conjecture]. You have guess the idea of the proof before you carry through the details; You have to combine
+                    observations and follow analogies; ... the result of the mathematician's creative work is demonstrative reasoning; 
+                    but, the proof is discoverd by plausible reasoning, by guessing.
+                    "
+                </p>
+
+                <h5><a href="https://press.princeton.edu/books/paperback/9780691025094/mathematics-and-plausible-reasoning-volume-1"
+                    target="_blank">George Polya</a></h5>
             </div>
         </section>
 
@@ -146,19 +194,13 @@
                 <!-- <h6><span class="conference cvpr">SKETCH</span></h6>
                 <h5 datetime="2023-08-09">August 9, 2023</h5> -->
                 <p>
-                    ... we row reduce the matrices of a neural network after training? Intuitively, row reduction
-                    is an iterative change of basis procedure. Therefore, the resultant matrices should be similar
-                    to the original learned matrices. That is, they should represent the same underlying linear map,
-                    just in a different basis. If we replace the matrices of the network with their
-                    their row reduced counterparts, does the network retain its performance?
-                    
-                    Do we need to change the basis of the inputs to each layer in any fashion?
+                    ... we row reduce the matrices of a neural network after training?  If we replace the matrices of the network with their
+                    their row reduced counterparts, does the network retain its performance? Do we need to change the basis of the inputs to each layer in any fashion?
                 </p>
                 <br>
                 <p>
-                    In short, the question we are asking is this: "Are the traits/capabilities of a neural network
-                    invariant under a change of basis?"
-                    That is, are the traits basis free?
+                    Recall that row reduction can is an invertible operation that corresponds to left multiplying a matrix M
+                    with elementary matrices: \(\widetilde M = E_k \ldots E_1M\)
                 </p>
             </div>
         </section>
@@ -183,23 +225,19 @@
             </div>
         </section>
 
-        <section class="citation">
+        <section class="citation sketch">
             <div class="description">
-                <h4>Polya: On Plausible Reasoning in Mathematics</h4>
-                <h6><span class="conference workshop">SNIPPET</span> Summer 2020</h6>
+                <h4>Interpreting Neural Networks via Aristotelian Causal Categories</h4>
+                <h6><span class="conference cvpr">SKETCH</span> August 25, 2023 </h6>
+                <!-- <h6><span class="conference cvpr">SKETCH</span></h6>
+                <h5 datetime="2023-08-09">August 9, 2023</h5> -->
                 <p>
-                    "Mathematics is regarded as a demonstrative science.  Yet, this is onlyv one of its aspects. 
-                    Finished mathematics presented in a finished form appears as purely demonstrative, 
-                    consisting of proofs only. Yet, mathematics in the making resembles any other human knowledge in teh making.
-                    You have to guess a mathematical theorem before you can prove it [that is, you have to come up with
-                    a conjecture]. You have guess the idea of the proof before you carry through the details; You have to combine
-                    observations and follow analogies; ... the result of the mathematician's creative work is demonstrative reasoning; 
-                    but, the proof is discoverd by plausible reasoning, by guessing.
-                    "
+                    TODO
                 </p>
-
-                <h5><a href="https://press.princeton.edu/books/paperback/9780691025094/mathematics-and-plausible-reasoning-volume-1"
-                    target="_blank">George Polya</a></h5>
+                <br>
+                <p>
+                    TODO
+                </p>
             </div>
         </section>
 
