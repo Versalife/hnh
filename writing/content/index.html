@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Tufte CSS</title>
+    <link rel="stylesheet" href="../../tufte.css" />
+    <link rel="stylesheet" href="../../latex.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css"
+        integrity="sha384-GvrOXuhMATgEsSwCs4smul74iXGOixntILdUW9XmUC6+HX0sLNAK3q71HotJqlAn" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"
+        integrity="sha384-cpW21h6RZv/phavutF+AuVYrr+dA8xD9zs6FwLpaCct6O9ctzYFfFr4dgmgccOTx"
+        crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"
+        integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+</head>
+
+<body>
+    <article>
+        <h1 id="rmq">The RMQ Problem in Rust</h1>
+
+        <h2>A Naive Solution</h2>
+
+        <h2>Binary Representation and Sparse Tables</h2>
+
+        <h3>Preprocessing</h3>
+        <h3>Querying the Sparse Table</h3>
+
+        <h2>The Method of Four Russians </h2>
+        <h3>Two Level Structures</h3>
+        <h3>Hybrid Structures</h3>
+        
+
+        <h2>Cartesian Trees & The LCA-RMQ Equivalence</h2>
+        <h3>Cartesian Trees</h3>
+        <h3>Cartesian Tree Isomorphisms</h3>
+        <h3>The Fischer-Heun RMQ Structure</h3>
+
+        <table>
+            <thead>
+              <tr>
+                <th>Block Size</th>
+                <th>Macro Array Method</th>
+                <th>Micro Array Method</th>
+                <th>Runtime</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>`0.25 lg n`</td>
+                <td>Sparse Table</td>
+                <td>Sparse Table with Cartesian Tree based caching</td>
+                <td>`&lt;O(n), O(1)&gt;`</td>
+              </tr>
+            </tbody>
+          </table>
+          
+
+        <h2>References</h2>
+
+        <li>[CS 166 Lecture 1](http://web.stanford.edu/class/archive/cs/cs166/cs166.1196/lectures/00/Small00.pdf)</li>
+        <li>[CS 166 Lecture 2](http://web.stanford.edu/class/archive/cs/cs166/cs166.1196/lectures/01/Small01.pdf)</li>
+        <li>[6.851](http://courses.csail.mit.edu/6.851/fall17/lectures/L15.pdf)</li>
+
+<pre>
+<code>
+@article{jlikhuva2021rmq,
+    title   = "Rusty Solutions to the Range-Min Query Problem.",
+    author  = "Okonda, Joseph",
+    journal = "https://github.com/jlikhuva/blog",
+    year    = "2021",
+    url     = "https://github.com/jlikhuva/blog/blob/main/posts/rmq.md"
+}
+</code>
+</pre>
+</article>
+</body>
+
+</html>
