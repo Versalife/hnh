@@ -76,3 +76,69 @@ time {
     text-decoration: none;
     display: block;
 }
+
+/* Code block styling */
+pre {
+    position: relative;
+    /* Needed for absolute positioning of the button */
+    background-color: #282c34;
+    /* Match highlight.js theme background */
+    padding: 25px 15px 15px 15px;
+    /* Add top padding for button */
+    border-radius: 5px;
+    overflow-x: auto;
+    margin-bottom: 1.5em;
+    /* Add some space below code blocks */
+}
+
+/* Ensure code inside pre maintains the background */
+pre code.hljs {
+    background-color: transparent;
+    /* Use pre's background */
+    padding: 0;
+    /* Remove default padding if any */
+}
+
+code:not(.hljs) {
+    /* Style for inline code, not highlighted blocks */
+    font-family: monospace;
+    background-color: #e9ecef;
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    font-size: 85%;
+}
+
+/* Ensure images used for equations display correctly */
+figure img {
+    display: block;
+    margin: 1em auto;
+    max-width: 100%;
+    background: white;
+    /* Ensure background for SVGs if needed */
+}
+
+/* Style for table from Tufte.css if not fully loaded */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1em;
+    font-size: 0.9em;
+}
+
+th,
+td {
+    border: 1px solid #dee2e6;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #e9ecef;
+}
+
+hr {
+    border: 0;
+    height: 1px;
+    background-color: #dee2e6;
+    margin: 2em 0;
+}
