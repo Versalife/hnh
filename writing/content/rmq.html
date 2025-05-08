@@ -27,8 +27,9 @@
         <section>
             <h2> The Problem</h2>
             <p>
-                Given a static array \(A\) containing comparable elements, design data structures and algorithms such that given an interval \((i, j)\),
-                we can retrieve the index of the minimum element within the subarray \(A[i..j]\). 
+                Given a static array \(A\) containing comparable elements, design data structures and algorithms such
+                that given an interval \((i, j)\),
+                we can retrieve the index of the minimum element within the subarray \(A[i..j]\).
                 We need to minimize the preprocessing time, the memory usage, and the time it takes to answer any query.
             </p>
         </section>
@@ -53,14 +54,14 @@
                 figure out the answer on a larger range \( (i, j+1) \) by comparing \(\alpha\) with \(A[j +
                 1]\). That
                 is:
-            </p>
 
-            $$
-            RMQ_A(i, j) = \begin{cases}
-            A[j], & \text{if}\ i = j \\
-            \min\left(A[j], RMQ_A(i, j - 1)\right), & \text{otherwise}
-            \end{cases}
-            $$
+                $$
+                RMQ_A(i, j) = \begin{cases}
+                A[j], & \text{if}\ i = j \\
+                \min\left(A[j], RMQ_A(i, j - 1)\right), & \text{otherwise}
+                \end{cases}
+                $$
+            </p>
 
             <p>We can do this for all possible values of \(i\) and \(j\) to fill up our lookup table. This takes
                 quadratic time. Thus, with this
