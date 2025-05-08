@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>Tufte CSS</title>
+    <title>Sketch</title>
     <link rel="stylesheet" href="../../tufte.css" />
     <link rel="stylesheet" href="../../latex.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,67 +16,796 @@
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"
         integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
         onload="renderMathInElement(document.body);"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 </head>
 
 <body>
     <article>
-        <h1 id="rmq">The RMQ Problem in Rust</h1>
+        <h1 id="rmq">Sketching Algorithms</h1>
+        <section>
+            <p>All algorithms operate on some data. Traditional algorithms assume that they have full access to the data
+                they need in order to solve the problem at hand. For instance, algorithms for sorting a collection of
+                items
+                naturally assume that they have access to a buffer holding all the items. Similarly, procedures for
+                computing the convex hull of a set of points assume that they have all the points. In some applications,
+                however, the full set of data is not known a priori. In this <em>online setting</em>, algorithms have to
+                provide useful answers to queries before having the chance to see all the data.</p>
 
-        <h2>A Naive Solution</h2>
+            <p>The way such algorithms provide their answers depends on the kind of query being asked. Queries can be
+                <code>ad hoc</code> meaning that we do not know the exact query we'd like to run a priori. In this case,
+                the
+                most common technique used is <code>random sampling</code>. We can also have
+                <code>standing queries</code>.
+                In this case, we know exactly the queries that we'd like to answer. Because we know the queries
+                beforehand,
+                we can design specialized data structures capable of providing useful answers to our queries.
+            </p>
 
-        <h2>Binary Representation and Sparse Tables</h2>
+            <p>These two cases share two key characteristics:</p>
 
-        <h3>Preprocessing</h3>
-        <h3>Querying the Sparse Table</h3>
+            <ol>
+                <li>The answers that they produce will be approximate — not exact.</li>
+                <li>They do not seek to store and process all the incoming data. Instead, their goal is to quickly
+                    process
+                    each observation to create a summary that they can use to answer either standing or ad hoc queries.
+                    This
+                    summary is often referred to as a Sketch of the data.</li>
+            </ol>
 
-        <h2>The Method of Four Russians </h2>
-        <h3>Two Level Structures</h3>
-        <h3>Hybrid Structures</h3>
+            <p>In this note, we discuss and implement several ideas that are useful when designing online algorithms. We
+                begin by discussing a classic method for selecting a representative sample from a stream of data. We
+                then
+                discuss the idea that is foundational to most sketching algorithms and show how it's employed to improve
+                the
+                accuracy of approximate online methods. Finally, we discuss a few key algorithms for answering some
+                standing
+                queries.</p>
+        </section>
+
+        <section>
+            <h2>Reservoir Sampling</h2>
+
+            <p>Reservoir Sampling is a simple procedure for picking a random uniform sample of size <code>k</code> from
+                a
+                datastream whose size is unknown (it could be infinite). This scheme works as follows: We store the
+                first
+                <code>k</code> items into a buffer of size k. Then for each element that arrives afterwards, with
+                probability <span class="katex-inline">$\dfrac{k}{i}$</span> we decide to keep the <span
+                    class="katex-inline">$i_{th}$</span> sample. If we keep it, we pick an element, uniformly at random,
+                i.e
+                with probability <span class="katex-inline">$\dfrac{1}{k}$</span> to evict from the buffer and replace
+                it
+                with the new sample. We implement this scheme below.
+            </p>
+
+            <p>First, since we may be implementing other samplers later on, we introduce a trait that encapsulates the
+                behavior that we expect from any sampler. Put simply, a sampler is anything that can observe a stream of
+                events and produce a sample from that stream at any time</p>
+
+            <pre><code class="language-rust">
+use rand::{thread_rng, Rng};
+
+/// A sampler will be anything that can observe a possibly infinite
+/// number of items and produce a finite random sample from that
+/// stream
+pub trait Sampler&lt;T&gt; {
+    /// We observe each item as it comes in
+    fn observe(&amp;mut self, item: T);
+
+    /// Produce a random uniform sample of the all the items that
+    /// have been observed so far.
+    fn sample(&amp;self) -> &amp;[T];
+}
+</code></pre>
+
+            <p>With that out of the way, we can now introduce the reservoir sampling data structures and procedures. The
+                reservoir sampler only needs to keep track of two values: the number of events that have been observed
+                so
+                far and the requested sample size.</p>
+
+            <pre><code class="language-rust">
+#[derive(Debug)]
+pub struct ReservoirSampler&lt;T&gt; {
+    /// This is what we produce whenever someone calls sample. It
+    /// maintains this invariant: at any time-step `t`, reservoir
+    /// contains a uniform random sample of the elements seen thus far
+    reservoir: Vec&lt;T&gt;,
+
+    /// This determines the size of the reservoir. The
+    /// client sets this value
+    sample_size: usize,
+
+    /// The number of items we have seen so far. We use this
+    /// to efficiently update the reservoir in constant time
+    /// while maintaining its invariant.
+    count: usize,
+}
+impl&lt;T&gt; ReservoirSampler&lt;T&gt; {
+    /// Create a new reservoir sampler that will produce a random sample
+    /// of the given size.
+    pub fn new(sample_size: usize) -> Self {
+        ReservoirSampler {
+            reservoir: Vec::with_capacity(sample_size),
+            sample_size,
+            count: 0,
+        }
+    }
+}
+</code></pre>
+
+            <p>Finally, we turn our <code>ReservoirSampler</code> object into a sampler by implementing the appropriate
+                trait</p>
+
+            <pre><code class="language-rust">
+impl&lt;T&gt; Sampler&lt;T&gt; for ReservoirSampler&lt;T&gt; {
+    fn observe(&amp;mut self, item: T) {
+        // To make sure we that maintain the reservoir invariant,
+        // we have to ensure that each incoming item has an equal
+        // probability of being included in the sample. We do so by
+        // generating a random index `k`, and if `k` falls within
+        // our reservoir, we replace the item at `k` with the
+        // new item
+        if self.reservoir.len() == self.sample_size {
+            let rand_idx = thread_rng().gen_range(0..self.count);
+            if rand_idx &lt; self.sample_size { 
+                self.reservoir[rand_idx] = item;
+            }
+        } else {
+            // If the reservoir is not full, no need
+            // to evict items
+            self.reservoir.push(item)
+        }
+        self.count += 1;
+    }
+
+    fn sample(&amp;self) -> &amp;[T] {
+        // Since we always have a random sample ready to go, we
+        // simply return it
+        self.reservoir.as_ref()
+    }
+}
+</code></pre>
+
+            <p>You can find runnable code for the reservoir sampling procedure <a
+                    href="https://play.rust-lang.org/?version=stable&mode=debug&edition=2018&gist=70732619db2d901ea9bdf832793a9563">in
+                    the playground</a>. One final note: The sampling scheme we implemented, while easy to understand,
+                can be
+                a bottleneck in applications where speed is a priority. The slowdown comes from the fact that, hashing
+                is an
+                expensive operation, and our procedure hashes each item it encounters — even those that it eventually
+                discards. Take a look at <a href="https://en.wikipedia.org/wiki/Reservoir_sampling">the wikipedia
+                    page</a>
+                for sampling schemes that improve upon the procedure above.</p>
+
+        </section>
+
+
+        <section>
+            <h2>Foundational Ideas</h2>
+
+            <p>Before we begin discussing strategies for answering standing queries on streaming data, let's first lay
+                the
+                foundation by exploring two key ideas. These ideas are the major motifs that you'll encounter in almost
+                all
+                sketching algorithms.</p>
+
+            <h3>Hashing</h3>
+
+            <p>Although hashing is mostly known as the first key ingredient in the design of hash tables (<a
+                    href="https://www.notion.so/Hashing-The-Cutting-Room-Floor-0dd4f5280f3c4ac88d3823a35336f5fa">the
+                    other
+                    half being techniques for resolving collisions</a>), it is also quite useful when designing
+                probabilistic sketching algorithms. In this setting, we use hashing to introduce randomness. To see why
+                randomness is important, consider an alternate method for sampling <code>k</code> items from a possibly
+                infinite data stream. We could accomplish this by tagging each incoming item with a random number then
+                storing the items and their tags in a bounded heap. Once the heap reaches capacity, we evict the item
+                with
+                the smallest tag before adding in a new <code>&lt;item, tag&gt;</code> pair.</p>
+
+            <p>At this point, we have a vague idea of why hashing is a useful idea. But, what is hashing — really? <a
+                    href="https://gankra.github.io/blah/robinhood-part-1/#hashing">Put simply</a>, hashing takes an
+                arbitrary input (often as a collection of bytes) and transforms it, using a hash function, into a random
+                integer. How is this different from tagging each input with a random number as we did above? Well, if
+                the
+                hash function is <em>well constructed</em>, and the functions co-domain is of size <code>m</code>, then
+                the
+                probability that two distinct items receive the same tag is <span
+                    class="katex-inline">$\frac{1}{m}$</span>.
+                A hash function that provides this guarantee is called a universal hash function. In this note, we
+                assume
+                that all our hash functions are universal.</p>
+
+            <p>In addition to universality, there are other details that are cool to know about hash functions. First,
+                there
+                exists a tradeoff between the speed of a hash function and its security guarantees. Second, when hashing
+                is
+                used as a component of systems that have exposure to potential adversaries, it as an attack vector — via
+                hash-flooding attacks. This is why we almost always use a randomly initialized hash function. We won't
+                make
+                use of these last two ideas in this note, so we don't discuss them further. For a much more detailed
+                examination fee free to take a look at <a href="https://gankra.github.io/blah/robinhood-part-1/">this
+                    write-up</a> and this other <a
+                    href="https://paper.dropbox.com/doc/CS-Knowledge-Base--kehJSKrL5YSH8Ws59M1wb#:h2=Hash-Tables-+-Linear-Probing-+">rough
+                    write up</a></p>
+
+            <p>Below, we explore the hashing interface provided by the rust programming language.</p>
+
+            <pre><code class="language-rust">
+    //! Rust exposes hashing utilities via a Streaming Hasher interface. That is, you
+    //! feed arbitrary bytes into the hash function, then, when done, you ask
+    //! the hasher to produce a hash value.
+    //!
+    //! use std::hash::{Hash, Hasher};
+    
+    /// The Hasher trait from the standard library. This is implemented
+    /// by hash functions
+    pub trait Hasher {
+        /// Writes the given list of bytes into this hasher. This usually
+        /// updates some internal state. Because the hasher is stateful,
+        /// we can keep on calling `write` until we've exhausted all our
+        /// bytes
+        fn write(&amp;mut self, bytes: &amp;[u8]);
+    
+        /// Produces the hash value of the bytes fed into this hasher so far
+        /// without resetting the hasher's internal state. This means that
+        /// if we want a hash value for a different stream of bytes, we have to
+        /// create a new hasher instance.
+        fn finish(&amp;self) -> u64;
+    
+        // ... snip
+    }
+    
+    /// The Hash trait from the standard library. This is implemented by hashable
+    /// types
+    pub trait Hash {
+        /// Feed the value into a given Hasher
+        fn hash&lt;H: Hasher&gt;(&amp;self, state: &amp;mut H);
+    
+        // ... snip
+    }
+    </code></pre>
+
+            <p>The long and short of it is, we create a <code>hasher</code> from some random state —
+                <code>random_state.build_hasher()</code>. Then, given an item that implements the <code>Hash</code>
+                trait,
+                we call its <code>hash</code> function passing in the hasher — <code>item.hash(hasher)</code>. Then to
+                extract the hash value, we call the <code>finish</code> method of the hasher. The tricky bit to remember
+                is
+                that calling finish does not reset the hasher's internal state. As we'll see later on, this means that
+                we
+                have to create a new <code>hasher</code> instance to hash a fresh item.
+            </p>
+
+            <h3>Fingerprints &amp; Probability Amplification</h3>
+
+            <p>Once we apply a hash function to an item, we can use the generated hash value to <em>almost</em> uniquely
+                identify that object. The hash value can thus be thought of as a fingerprint of the initial object in
+                that
+                it is a relatively unique and lightweight identifier of the object -- just like human fingerprints.
+                Because
+                of hash collisions, however, it is not fully unique. When designing probabilistic data structures, we
+                strive
+                to reduce the likelihood of two distinct items colliding. That is where probability amplification comes
+                in.
+                Instead of simply hashing an item once, we rerun the hashing experiment <code>k</code> times,
+                <strong>each
+                    time with a different, independent, random hash function</strong>.</p>
+
+            <p>Now, the fingerprint is composed of the <code>k</code> hash values. This scheme dramatically reduces the
+                probability of fingerprint collision. In particular, the probability that two fingerprints from two
+                different objects are the same is <span class="katex-inline">$\frac{1}{m^k}$</span>. where
+                <code>m</code> is
+                the size of the co-domain of our hash functions (this is often the number of buckets we're hashing our
+                items
+                into).</p>
+
+            <p>To really appreciate how powerful these two ideas are, let's look at a quick example borrowed from <a
+                    href="https://web.stanford.edu/class/cs168/l/l4.pdf">CS 168</a>. Suppose we have <code>n</code>
+                objects
+                from a universe <code>U</code>. Each object requires <span class="katex-inline">$\lg_2 |U|$</span> bits
+                to
+                uniquely identify. For instance, if our universe is the address space on a 64 bit machine, each address
+                would require <span class="katex-inline">$\lg_ 2 2^{64} = 64$</span> bits. Now, suppose that we feel
+                that
+                <code>64</code> bits are too many, and thus want to represent each address using fewer bits. How could
+                we go
+                about this?
+            </p>
+
+
+            <p>To recapitulate, we can represent arbitrary objects using their hash values. These values are often
+                smaller
+                (e.g 8 bytes) than the underlying objects. Furthermore, instead of simply using a single hash value, we
+                can
+                use a collection of <code>k</code> hash values each produced by <code>k</code> independent hash
+                functions.
+            </p>
+        </section>
+
+        <section>
+            <h2>Bloom Filters</h2>
+
+            <p>A Bloom Filter 🥦 is a compact data structure that summarizes a set of items, allowing us to answer
+                membership questions — has a certain item been seen before? Unlike other set structures — such as hash sets
+                and search trees — a bloom-filter’s answer to a membership query is either a <code>definite NO</code> or a
+                <code>Probable Yes</code>. That is, it can have false positives — telling us that an item has been seen when
+                in fact it has never been observed. Therefore, Bloom filters are best suited for cases where false positives
+                can be tolerated and mitigated. Cases where the effect of a false positive is not a wrong program state but
+                extra work.
+            </p>
+    
+            <p>Below, we introduce the interface shared across all filters capable of answering approximate membership
+                queries.</p>
+    
+            <pre><code class="language-rust">
+    /// Indicates that the filter has probably seen a given
+    /// item before
+    pub struct ProbablyYes;
+    
+    /// Indicates that a filter hasn't seen a given item before.
+    pub struct DefinitelyNot;
+    
+    /// A filter will be any object that is able to observe a possibly
+    /// infinite stream of items and, at any point, answer if a given
+    /// item has been seen before
+    pub trait Filter&lt;T&gt; {
+        /// We observe each item as it comes in. We do not use terminology such as
+        /// `insert` because we do not store any of the items.
+        fn observe(&amp;mut self, item: T);
+    
+        /// Tells us whether we've seen the given item before. This method
+        /// can produce false positives. That is why instead of returning a
+        /// boolean, it returns `Result&lt;ProbablyYes, DefinitelyNot&gt;`
+        fn has_been_observed_before(&amp;self, item: &amp;T) -> Result&lt;ProbablyYes, DefinitelyNot&gt;;
+    }
+    </code></pre>
+    
+            <p>A Bloom Filter is parameterized by two values: a bit array <code>buckets</code> with <code>m</code> buckets
+                in it, and a set of <code>k</code> hash functions <span class="katex-inline">$\{h_1, h_2, \ldots
+                    h_k\}$</span>. Given an input <code>item</code>, we apply each of our <code>k</code> hash functions to
+                it and then set all the indexes that <code>item</code> hashed to to <code>true</code>. To check if an item
+                has already been seen, we again first apply each of our <code>k</code> hash functions and check if
+                <strong>all</strong> corresponding locations to are <code>true</code>.
+            </p>
+    
+            <p>Notice how a bloom filter is simply a direct application of object fingerprinting and probability
+                amplification. We hash each item using multiple hash functions to reduce the chances of getting a false
+                positive.</p>
+    
+            <p>Below, we provide an implementation of a bloom filter</p>
+    
+            <pre><code class="language-rust">
+    use std::hash::{Hash, Hasher};
+    use std::collections::hash_map::RandomState;
+    use std::marker::PhantomData;
+    
+    #[derive(Debug)]
+    pub struct BloomFilter&lt;T: Hash&gt; {
+        /// The bit vector. The number of buckets is determined
+        /// by the client
+        buckets: Vec&lt;bool&gt;,
+    
+        /// The list of hash functions. Again, the number of
+        /// hash functions is determined by the client
+        hash_functions: Vec&lt;RandomState&gt;,
+    
+        /// This is here to make the compiler happy. We'd
+        /// like for our filter to be parameterized by
+        /// the items it's monitoring. However, we do not
+        /// store those items in the filter.
+        _marker: PhantomData&lt;T&gt;,
+    }
+    
+    impl&lt;T: Hash&gt; BloomFilter&lt;T&gt; {
+        /// Creates a new bloom filter with `m` buckets and `k` hash functions.
+        /// Each hash function is randomly initialized and is independent
+        /// of the other hash functions
+        pub fn new(m: usize, k: usize) -> Self {
+            // initialize all the bucket locations to false
+            let mut buckets = Vec::with_capacity(m);
+            for _ in 0..m {
+                buckets.push(false);
+            }
+    
+            // initialize the hash functions randomly.
+            let mut hash_functions = Vec::with_capacity(k);
+            for _ in 0..k {
+                hash_functions.push(RandomState::new());
+            }
+    
+            BloomFilter {
+                buckets,
+                hash_functions,
+                _marker: PhantomData,
+            }
+        }
+    
+        /// This performs the actual hashing.
+        fn get_index(&amp;self, state: &amp;RandomState, item: &amp;T) -> usize {
+            let mut hasher = state.build_hasher();
+            item.hash(&amp;mut hasher);
+            let idx = hasher.finish() % self.buckets.len() as u64;
+            idx as usize
+        }
+    }
+    </code></pre>
+    
+            <p>With the above abstractions in place, we can go ahead and implement the core filter procedures.</p>
+    
+            <pre><code class="language-rust">
+    // Dummy structs for the example to compile if Filter trait is not defined elsewhere
+    // pub struct ProbablyYes;
+    // pub struct DefinitelyNot;
+    
+    // pub trait Filter&lt;T&gt; {
+    //     fn observe(&amp;mut self, item: T);
+    //     fn has_been_observed_before(&amp;self, item: &amp;T) -> Result&lt;ProbablyYes, DefinitelyNot&gt;;
+    // }
+    
+    
+    impl&lt;T: Hash&gt; Filter&lt;T&gt; for BloomFilter&lt;T&gt; {
+        /// As already explained, we apply each of our `k` hash functions to the
+        /// given item and set the locations it hashes to to true
+        fn observe(&amp;mut self, item: T) {
+            for state in &amp;self.hash_functions {
+                let index = self.get_index(state, &amp;item);
+                self.buckets[index] = true;
+            }
+        }
+    
+        /// Again, we start by applying each of our `k` hash functions 
+        /// to the given item then. If all resultant `k` locations are `true`,
+        /// we conclude that we MIGHT have observed this item. If any location
+        /// is false, we immediately conclude that we NEVER saw this item
+        fn has_been_observed_before(&amp;self, item: &amp;T) -> Result&lt;ProbablyYes, DefinitelyNot&gt; {
+            for state in &amp;self.hash_functions {
+                let index = self.get_index(state, &amp;item);
+                if !self.buckets[index] {
+                    return Err(DefinitelyNot);
+                }
+            }
+            Ok(ProbablyYes)
+        }
+    }
+    </code></pre>
+        </section>
         
+    <section>
+        <h2>The Count-Min Sketch</h2>
 
-        <h2>Cartesian Trees & The LCA-RMQ Equivalence</h2>
-        <h3>Cartesian Trees</h3>
-        <h3>Cartesian Tree Isomorphisms</h3>
-        <h3>The Fischer-Heun RMQ Structure</h3>
+        <p>Count-Min Sketch 🍅 is a compact structure for estimating the counts of each type of items in our set. A
+            naive way of solving the count each problem would be to allocate an integer counter for each class of items.
+            However, this may not be practical when the number of item types grows huge. The CMSketch provides a
+            tradeoff between count accuracy and low memory usage — it encodes a potentially massive number of item types
+            in a small array, guaranteeing that large counts will be preserved fairly accurately while small counts may
+            incur greater relative error. Count-Min sketches are thus best suited to cases where a slight inflation in
+            frequency does not lead to an illegal program state.</p>
 
-        <table>
-            <thead>
-              <tr>
-                <th>Block Size</th>
-                <th>Macro Array Method</th>
-                <th>Micro Array Method</th>
-                <th>Runtime</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>`0.25 lg n`</td>
-                <td>Sparse Table</td>
-                <td>Sparse Table with Cartesian Tree based caching</td>
-                <td>`&lt;O(n), O(1)&gt;`</td>
-              </tr>
-            </tbody>
-          </table>
-          
+        <p>As with the bloom filter, we use multiple hash functions. However, unlike with the bloom filter where all the
+            functions hashed to the same array, each function in this case has its own dedicated set of buckets. A
+            CMSketch is thus a matrix with as many rows as the number of hash functions and as many columns as the
+            number or buckets. When we see an item, we apply our <code>k</code> hash functions to it and increment the
+            slots that it maps to in each row of the sketch. To estimate the count of an item, we apply our hash
+            functions and read the values at the slots that it maps to and then select the minimum out of these. One
+            cool thing to note is that the accuracy guarantees of the CMSketch are not in any way related to the size of
+            the dataset — they depend entirely on the number of hash functions <code>k</code> and the number of buckets
+            <code>m</code>.
+        </p>
 
+        <pre><code class="language-rust">
+use std::hash::{Hash, Hasher};
+use std::collections::hash_map::RandomState;
+use std::marker::PhantomData;
+use std::mem::{self, MaybeUninit};
+
+
+#[derive(Debug)]
+pub struct CountMinSketch&lt;T: Hash, const M: usize, const N: usize&gt; {
+    /// A count sketch is defined by `N` hash functions
+    /// and `M` bucket groups. Each of the `N` hash functions 
+    /// maps an item into a single slot in a corresponding bucket group
+    sketch_matrix: [[u64; M]; N],
+
+    /// 
+    hash_functions: [RandomState; N],
+
+    /// As with the Bloom Filter, we'd like for our sketch to be
+    /// parameterized by the type of objects it is counting
+    _marker: PhantomData&lt;T&gt;
+}
+
+impl &lt;T: Hash, const M: usize, const N: usize&gt; CountMinSketch&lt;T, M, N&gt; {
+    /// Create a new instance of the CMSketch
+    pub fn new() -> Self {
+        let hash_functions = unsafe {
+            let mut hash_function_slots: [MaybeUninit&lt;RandomState&gt;; N] = MaybeUninit::uninit().assume_init();
+            for slot in &amp;mut hash_function_slots {
+                slot.write(RandomState::new());
+            }
+            mem::transmute_copy::<_, [RandomState; N]>(&hash_function_slots)
+        };
+
+        CountMinSketch {
+            sketch_matrix: [[0; M]; N],
+            hash_functions,
+            _marker: PhantomData::default(),
+        }
+    }
+
+    /// Increment the count of the given item
+    pub fn inc(&amp;mut self, item: &amp;T) {
+        for (i, state) in self.hash_functions.iter().enumerate() {
+            let idx = self.get_index(state, item);
+            self.sketch_matrix[i][idx] += 1;
+        }
+    }
+
+    /// Retrieve the approximate count of the given item
+    pub fn count(&amp;self, item: &amp;T) -> u64{
+        let mut cur_min = u64::MAX; // Corrected from u64::MIN
+        for (i, state) in self.hash_functions.iter().enumerate() {
+            let idx = self.get_index(state, item);
+            let cur_value = self.sketch_matrix[i][idx];
+            if cur_value &lt; cur_min {
+                cur_min = cur_value;
+            }
+        }
+        cur_min
+    }
+
+    /// Hashes the given item and maps it to the appropriate index location within
+    /// a single bucket
+    fn get_index(&amp;self, state: &amp;RandomState, item: &amp;T) -> usize {
+        let mut hasher = state.build_hasher();
+        item.hash(&amp;mut hasher);
+        let idx = hasher.finish() % self.sketch_matrix[0].len() as u64;
+        idx as usize
+    }
+} 
+</code></pre>
+</section>
+
+<section>
+        <h2>Approximate Counting with The Hyper-Log-Log</h2>
+
+        <blockquote>
+            <p>When in doubt, count. But, what if we do not have enough scratch paper? What should we do in that case?
+                Well, in that case, we still count, but do so while being probably approximately correct.</p>
+        </blockquote>
+
+        <p>The hyper log log (<strong>HLL</strong>) data structure is used to estimate the number of
+            <strong>distinct</strong>/<strong>unique</strong> items present in some large collection of items with
+            duplicates. That is, it is used to estimate the <strong>Cardinality of a Multiset</strong>.
+        </p>
+
+        <p>If our data is such the number of unique items can fit in memory, then this so called,
+            <code>Count Distinct</code> problem can easily be solved by maintaining a counter and a <code>HashSet</code>
+            of elements that have already been observed.
+        </p>
+
+        <p>In the streaming setting, we cannot afford to do that as the incoming data could even have infinite
+            cardinality. Consider this:</p>
+
+        <blockquote>
+            <p>You are running a popular web service and you'd like to keep track of the number of unique visitors to
+                your site. Each visitor is uniquely identified by their IP address. Suppose your service has <span
+                    class="katex-inline">$10^9$</span> unique visitors. Using the <code>HashSet</code> approach, you'd
+                need between 4GB for <code>IPV4</code> addresses and <code>16GB</code> for <code>IPV6</code> addresses.
+            </p>
+        </blockquote>
+
+        <p>the HLL is able to solve this problem in a much more space efficient manner by trading off accuracy. In the
+            following sections, we'll demonstrate how to construct the HLL structure using Rust.</p>
+
+        <p>As usual, we begin by defining our interface.</p>
+
+        <pre><code class="language-rust">
+/// A cardinality estimator will be any object that is able to observe a possibly
+/// infinite stream of items and, at any point, estimate the number of unique items
+/// seen so far.
+pub trait CardinalityEstimator&lt;T&gt; {
+    /// We observe each item as it comes in.
+    fn observe(&amp;mut self, item: &amp;T);
+
+    /// Return an estimation of the number of unique items see thus far
+    fn current_estimate(&amp;self) -> u64;
+}
+</code></pre>
+
+        <p>We are going to implement three versions of probabilistic cardinality estimators. The first one, the naïve
+            estimator, although easy to implement, will result in estimates with fairly high variance. The second one
+            will improve upon this by making the observation that "interesting" patterns in our hash values (such as a
+            trail of all zeroes) are rare enough that we can use their presence as a proxy for how many unique hash
+            values we've observed. The final estimator will be based on the second. It'll simply introduce key
+            optimization to improve teh second's efficiency.</p>
+
+
+        <h3>A Naïve Cardinality Estimator</h3>
+
+        <pre><code class="language-rust">
+use std::marker::PhantomData; // Ensure PhantomData is in scope
+
+/// A naïve estimator that estimates the cardinality
+/// to simply be 1 divided by the smallest hash value
+/// observed thus far, after mapping it to number
+/// between 0 and 1
+/// 
+pub struct NaiveEstimator&lt;T&gt; {
+    // The smallest hash value seen so far.
+    cur_hash_value_min: Option&lt;u64&gt;,
+    /// We want our estimator to be parameterized by the type
+    /// it is estimating, but we don't need to store anything
+    /// so we never use the provided type. To keep the compiler
+    /// happy, we sacrifice a single ghost as an offering
+    _marker: PhantomData&lt;T&gt;,
+}
+</code></pre>
+
+        <h3>An Improved Cardinality Estimator</h3>
+
+        <pre><code class="language-rust">
+/// Estimate the number of distinct items in the stream as
+/// `2^k` where `k` is the longest trail of leading zeroes
+/// among the hash values of all the items observed so far
+pub struct MaxTrailEstimator&lt;T&gt; {
+    // The smallest hash value seen so far.
+    cur_max_trail_length: Option&lt;u64&gt;,
+    /// We want our estimator to be parameterized by the type
+    /// it is estimating, but we don't need to store anything
+    /// so we never use the provided type. To keep the compiler
+    /// happy, we sacrifice a single ghost as an offering to the
+    /// compiler gods
+    _marker: PhantomData&lt;T&gt;,
+}
+</code></pre>
+
+        <h3>The HLL Estimator</h3>
+
+        <pre><code class="language-rust">
+/// WIP
+</code></pre>
+
+        <h3>A word on HLL+</h3>
+
+        <pre><code class="language-rust">
+/// WIP
+</code></pre>
+</section>
+
+<section>
+        <h2>The Johnson-Lindenstrauss Transform</h2>
+
+        <pre><code class="language-rust">
+/// WIP
+</code></pre>
+
+        <p>Euclidean Distance , also known as the <span class="katex-inline">$\ell_2$</span> distance, is the most
+            common distance metric. it is defined over vectors of real values. It is defined as <span
+                class="katex-inline">$D_\epsilon (x, y) = ||x - y||_2 = \left( \sum_{i = 1}^{d} [x_i - y_i]^2
+                \right)^{0.5}$</span> for points <span class="katex-inline">$x \in \mathbb{R}^d, y \in
+                \mathbb{R}^d$</span>. This can be generalized by replacing 2 with arbitrary values <span
+                class="katex-inline">$p$</span>.</p>
+
+        <p>The Curse of Dimensionality is the observation that, the number of neighbors of any point <span
+                class="katex-inline">$p$</span> is related exponentially to the number of dimensions of our space. In
+            <span class="katex-inline">$\mathbb{R}^1, \mathbb{R}^2, \mathbb{R}^3$</span> we have <span
+                class="katex-inline">$p = 2^1, 2^2, 2^3$</span> respectively. In general, <span class="katex-inline">$p
+                = 2^d, \text{ for } \mathbb{R}^d$</span>. This grows so large for moderate values of <span
+                class="katex-inline">$d$</span>. Since there is no known way to overcome this curse, we have to resort
+            to using approximate methods.
+        </p>
+
+        <p>At the heart of approximate nearest neighbor methods lies Dimensionality Reduction . The goal is to project
+            our high dimensional data into a low dimensional space while preserving inter-point distance as much as
+            possible. This would allows have our cake and it it too — we’d be able to richly represent our data in high
+            dimensions and leverage dimensionality reduction to map our data and queries down to a small number of
+            dimensions so as to overcome — approximately, the curse of dimensionality.</p>
+
+        <p>To motivate dimensionality reduction, it is instructive to look at two key foundational techniques —
+            fingerprinting and probability amplification: Suppose we have a set of <span class="katex-inline">$n$</span>
+            objects from a universe <span class="katex-inline">$\mathcal{U}$</span>. Note that we need <span
+                class="katex-inline">$\log_2|\mathcal{U}|$</span> bits to distinctly represent any object from this
+            universe. For large <span class="katex-inline">$\mathcal{U}$</span> this may be too many bits. Can we
+            distinctly represent each object with fewer bits? One simple scheme is to use a single bit using the mapping
+            <span class="katex-inline">$f(x) = h(x) \mod 2$</span>. If the hash function is good, we expect <span
+                class="katex-inline">$x = y \rightarrow f(x) = f(y)$</span>, i.e equality to be preserved and when <span
+                class="katex-inline">$\text x \neq y \text{ then }Pr[f(x) = f(y)] \leq 0.5$</span>, i.e distinctness is
+            preserved 50% of the time.
+            We can improve this last error rate by repeating the hashing experiment <span
+                class="katex-inline">$k$</span> times using <span class="katex-inline">$k$</span> independent hash
+            functions and label each object using <span class="katex-inline">$k$</span> bits — this bitstring is the
+            fingerprint of the original object. This is probability amplification. It dramatically reduces the error
+            rate. With 2 hash functions, the error rate drops down to <span class="katex-inline">$0.25$</span>. In
+            general, the error rate is <span class="katex-inline">$2^{-k}$</span>.
+        </p>
+
+        <p>Random Projections is an extension of the idea of fingerprinting to approximately preserve the <span
+                class="katex-inline">$L_2$</span> distance between object pairs. Suppose we have <span
+                class="katex-inline">$n$</span> objects of interest, <span class="katex-inline">$x_1 \ldots x_n$</span>
+            in <span class="katex-inline">$k$</span>-dimensional space. We can choose a random vector <span
+                class="katex-inline">$r = (r_1 \ldots r_k)$</span> from the same space. If we take the inner product
+            between <span class="katex-inline">$r$</span> and any of our objects, we’ll get a single number <span
+                class="katex-inline">$f_r(x_i) = \langle x_i, r\rangle = x^Tr$</span>. We have thus mapped a k-vector to
+            a single real value that is a random linear combination of the elements in the original vector. This is the
+            random projection of the vector.</p>
+
+        <p>The value in our random vector can be sampled iid from a standard gaussian. If we do that, the projections of
+            any two vectors will be an unbiased estimate of the euclidean distance between the two vectors. As usual, we
+            can use the magic of independent trials to increase the “accuracy” of our projections. To do so, instead of
+            picking a single random vector, we pick <span class="katex-inline">$d$</span> random vectors and average the
+            random projections we get from them. Averaging <span class="katex-inline">$d$</span> independent unbiased
+            estimates yields an unbiased estimate and drops the variance of our estimate by a factor of <span
+                class="katex-inline">$d$</span>.</p>
+
+        <p>The Johnson-Lindenstrauss transform (JL) generalizes this idea. It is defined by a <span
+                class="katex-inline">$d \times k$</span> matrix <span class="katex-inline">$A$</span> composed of our
+            <span class="katex-inline">$d$</span> random vectors. The matrix maps vectors in <span
+                class="katex-inline">$\mathbb{R}^k$</span> to vectors in <span
+                class="katex-inline">$\mathbb{R}^d$</span> using the mapping <span class="katex-inline">$x_d =
+                \dfrac{1}{\sqrt d}Ax$</span>. We can apply the JL-transform whenever we have high dimensional data and
+            are working an a computation that only cares about euclidean distance. in that case, there’s little loss in
+            doing the computation in <span class="katex-inline">$d$</span>-dimensional space.
+        </p>
+
+    </section>
+
+<section>
+        <h2>Analysis Tools</h2>
+
+        <p>In the preceding sections, we cursorily talked about the "guarantees" of our different methods. In order to
+            fully formalize the correctness and efficiency guarantees of probabilistic algorithms, we often turn to two
+            basic tools:</p>
+
+        <h3>Markov's Inequality</h3>
+
+        <p><code>Markov’s Inequality</code> tells us that the probability that a random variable, <span
+                class="katex-inline">$X$</span>, is <span class="katex-inline">$\lambda$</span> times the average value
+            is at most <span class="katex-inline">$\dfrac{1}{\lambda}$</span>. That is <span class="katex-display">$$P
+                \left( X \geq \lambda E[X] \right) \leq \frac{1}{\lambda}$$</span></p>
+
+        <h3>Chebyshev’s Inequality</h3>
+
+        <p><code>Chebyshev’s  Inequality</code> tells us that the probability that a random variable <span
+                class="katex-inline">$X$</span> is more than <span class="katex-inline">$\beta$</span> standard
+            deviations from its mean is at most <span class="katex-inline">$\dfrac{1}{\beta ^2}$</span>. That is <span
+                class="katex-display">$$P \left( |X - E[X]| \geq \beta \sqrt {Var(X)} \right) \leq \dfrac{1}{\beta ^
+                2}$$</span></p>
+            </section>
+
+        <section>
         <h2>References</h2>
 
-        <li>[CS 166 Lecture 1](http://web.stanford.edu/class/archive/cs/cs166/cs166.1196/lectures/00/Small00.pdf)</li>
-        <li>[CS 166 Lecture 2](http://web.stanford.edu/class/archive/cs/cs166/cs166.1196/lectures/01/Small01.pdf)</li>
-        <li>[6.851](http://courses.csail.mit.edu/6.851/fall17/lectures/L15.pdf)</li>
+        <ol>
+            <li><a href="https://web.stanford.edu/class/cs168/l/l2.pdf">CS 168 Lecture 2</a></li>
+            <li><a href="https://web.stanford.edu/class/cs168/l/l4.pdf">CS 168 Lecture 4</a></li>
+            <li><a href="http://dimacs.rutgers.edu/~graham/pubs/papers/cacm-sketch.pdf">This Survey Paper</a></li>
+            <li><a href="https://www.sketchingbigdata.org/fall20/lec/notes.pdf">This Book by Jelani Nelson</a></li>
+            <li><a href="https://www.youtube.com/watch?v=YA-nB2wjVcI&ab_channel=CppCon">This Talk by Nicholas Ormrod</a>
+            </li>
+            <li><a href="https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/40671.pdf">This
+                    Paper from Google</a></li>
+            <li><a href="http://blog.notdot.net/2012/09/Dam-Cool-Algorithms-Cardinality-Estimation">This Blog Post</a>
+                <a href="https://engineering.fb.com/2018/12/13/data-infrastructure/hyperloglog/">And this other one from
+                    Facebook</a>
+            </li>
+        </ol>
+    </section>
+        <script>
+            hljs.highlightAll();
+            document.addEventListener("DOMContentLoaded", function () {
+                renderMathInElement(document.body, {
+                    delimiters: [
+                        { left: "$$", right: "$$", display: true },
+                        { left: "$", right: "$", display: false },
+                        { left: "\\(", right: "\\)", display: false },
+                        { left: "\\[", right: "\\]", display: true }
+                    ]
+                });
+            });
+        </script>
 
-<pre>
-<code>
-@article{jlikhuva2021rmq,
-    title   = "Rusty Solutions to the Range-Min Query Problem.",
-    author  = "Okonda, Joseph",
-    journal = "https://github.com/jlikhuva/blog",
-    year    = "2021",
-    url     = "https://github.com/jlikhuva/blog/blob/main/posts/rmq.md"
-}
-</code>
-</pre>
-</article>
+    </article>
 </body>
 
 </html>

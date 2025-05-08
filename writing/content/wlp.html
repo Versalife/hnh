@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>Tufte CSS</title>
+    <title>WLP</title>
     <link rel="stylesheet" href="../../tufte.css" />
     <link rel="stylesheet" href="../../latex.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,67 +16,572 @@
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"
         integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
         onload="renderMathInElement(document.body);"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 </head>
 
 <body>
     <article>
-        <h1 id="rmq">The RMQ Problem in Rust</h1>
+        <section>
+            <h1>Word Level Parallelism</h1>
 
-        <h2>A Naive Solution</h2>
 
-        <h2>Binary Representation and Sparse Tables</h2>
+            <p class="badges">
+                <a href="https://crates.io/crates/bit-parallelism"><img
+                        src="https://img.shields.io/crates/v/bit-parallelism.svg?style=for-the-badge&logo=rust"
+                        alt="Crates.io"></a>
+                <a href="https://docs.rs/bit-parallelism"><img
+                        src="https://img.shields.io/docsrs/bit-parallelism/latest?style=for-the-badge&logo=docs.rs"
+                        alt="Documentation"></a>
+            </p>
 
-        <h3>Preprocessing</h3>
-        <h3>Querying the Sparse Table</h3>
+            <p>In this note, we shall explore a few bit level algorithms that we'll need when developing some of the
+                specialized integer data structures. We begin by discussing a procedure that allows us to extract the
+                first (the top) <code>k</code> bits of any integer in constant time. We then proceed to discuss
+                procedures that allow us, in constant time, to operate on integers in parallel.</p>
+        </section>
+        <section>
+            <h2>Finding the <code>top(k)</code> bits of an integer</h2>
+            <p>The first procedure is quite simple. The goal is, given a number <code>x</code> and a length
+                <code>k</code>, to extract the first <code>k</code> bits of <code>x</code> in $O(1)$. A procedure that
+                does this will be handy when implementing the x-fast trie.</p>
+            <pre><code class="language-rust">
+const USIZE_BITS: usize = 64;
+pub fn top_k_bits_of(x: usize, k: usize) -> usize {
+    assert!(k != 0);
+    let mut mask: usize = 1;
 
-        <h2>The Method of Four Russians </h2>
-        <h3>Two Level Structures</h3>
-        <h3>Hybrid Structures</h3>
-        
+    // Shift the 1 to the index that is `k`
+    // positions from the last index location.
+    // That is `k` away from 64
+    mask <<= USIZE_BITS - k;
 
-        <h2>Cartesian Trees & The LCA-RMQ Equivalence</h2>
-        <h3>Cartesian Trees</h3>
-        <h3>Cartesian Tree Isomorphisms</h3>
-        <h3>The Fischer-Heun RMQ Structure</h3>
+    // Turn that one into a zero. And all
+    // the other 63 zeros into ones. This
+    // basically introduces a hole. in the next
+    // step, we'll use this hole to trap a cascade
+    // of carries
+    mask = !mask;
 
-        <table>
-            <thead>
-              <tr>
-                <th>Block Size</th>
-                <th>Macro Array Method</th>
-                <th>Micro Array Method</th>
-                <th>Runtime</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>`0.25 lg n`</td>
-                <td>Sparse Table</td>
-                <td>Sparse Table with Cartesian Tree based caching</td>
-                <td>`&lt;O(n), O(1)&gt;`</td>
-              </tr>
-            </tbody>
-          </table>
-          
+    // I think this is the most interesting/entertaining part.
+    // Adding a one triggers a cascade of carries that flip all
+    // the bits (all ones) before the location of the zero from above into
+    // zeros. The cascade stops when they reach the zero from
+    // above. Since it is a zero, adding a 1 does not trigger a carry
+    //
+    // In the end, we have a mask where the top k bits are ones
+    mask += 1;
 
-        <h2>References</h2>
-
-        <li>[CS 166 Lecture 1](http://web.stanford.edu/class/archive/cs/cs166/cs166.1196/lectures/00/Small00.pdf)</li>
-        <li>[CS 166 Lecture 2](http://web.stanford.edu/class/archive/cs/cs166/cs166.1196/lectures/01/Small01.pdf)</li>
-        <li>[6.851](http://courses.csail.mit.edu/6.851/fall17/lectures/L15.pdf)</li>
-
-<pre>
-<code>
-@article{jlikhuva2021rmq,
-    title   = "Rusty Solutions to the Range-Min Query Problem.",
-    author  = "Okonda, Joseph",
-    journal = "https://github.com/jlikhuva/blog",
-    year    = "2021",
-    url     = "https://github.com/jlikhuva/blog/blob/main/posts/rmq.md"
+    // This is straightforward
+    x & mask
 }
-</code>
-</pre>
-</article>
+</code></pre>
+            <p>You can play around with the code so far <a
+                    href="https://play.rust-lang.org/?version=stable&mode=debug&edition=2018&gist=186242f8f5e9267430438fcb3119606c">in
+                    the playground</a>.</p>
+        </section>
+        <hr>
+        <section>
+            <h2>Background</h2>
+            <p>Arithmetic and logical operations take, for all intents and purposes, constant time. Such operations
+                operate on whole words. (A word is the size of a single memory segment. In this exposition, we assume a
+                word size width of <code>64</code>. For a more in-depth discussion of computer memory, refer to <a
+                    href="https://akkadia.org/drepper/cpumemory.pdf">this note</a>). For instance, it takes constant
+                time to add two <code>64</code> bit numbers. The central idea of the methods we're about to discuss is
+                this: If you have a bunch of small integers -- each smaller that sixty four bits, e.g. a bunch of bytes,
+                we can pack many of them into a single sixty four bit integer. Then, we can operate on that packed
+                integer as if it were a single number. For example, we can fit 8 byte sized numbers in a single word. By
+                operating on the packed integer, we are in effect operating on 8 different integers in parallel. This is
+                what we call <code>world level parallelism</code>. Of course there are intricate details that have been
+                elided in this broad description. In the next sections, we take a detailed look at those details as we
+                flesh out the different parallel operation.</p>
+        </section>
+        <section>
+            <h2>Motivation: B-Trees</h2>
+            <p>Suppose we wish to maintain a set of small sized integers in a B-Tree. And suppose too that we wish to
+                take advantage of the fact that we can fit many of these integers in a single, larger integer. How would
+                we go about designing such a B-Tree?</p>
+            <p>Recall that a B-Tree of order <code>b</code> is a multiway search tree in which each node is a bucket
+                that must contain between <code>b - 1</code> and <code>2b - 1</code> keys. Furthermore, each node has
+                one more child than the number of keys it contains. That is, each node must have between <code>b</code>
+                and <code>2b</code> child nodes. Operations on B-Trees rely on one key operation:
+                <code>node.rank(x)</code>. This operation searches through the keys of a single node (which are sorted)
+                and either returns the location of <code>x</code> in the bucket, or the index of the child we need to
+                descend into in order to complete the operation at hand. In run of the mill B-Trees,
+                <code>node.rank(x)</code> is implemented using binary search and thus takes $O(\lg b)$. If we know that
+                our keys are small integers, can we perform <code>node.rank(x)</code> in $O(1)$? It turns out we can. In
+                the rest of this section, we start by building up the subroutines that we'll need in order to implement
+                $O(1) \text{node.rank}(x)$. After that, we'll present the $O(1) \text{node.rank}(x)$ procedure.</p>
+        </section>
+        <section>
+            <h2>Parallel Compare</h2>
+            <p>The <code>node.rank(x)</code> operation depends on an even more basic operation:
+                <code>compare(x, y)</code>. This operation simply tells us if $x \ge y$. Suppose <code>x</code> and
+                <code>y</code> are <code>7-bits</code> wide (but stored in an 8 byte integer such that the final bit is
+                unoccupied), how could we implement <code>compare(x, y)</code>? Well, we could do it the
+                <code>C-</code>way - by subtraction. However, instead of taking the usual route where we calculate $z =
+                x - y$ and if $z$ is negative we know that $x < y$ otherwise, we conclude that $x \ge y$, we'll adopt a
+                    much cooler approach. In particular, we'll first set the 8th bit of <code>y</code>, the 7-bit number
+                    we are comparing against to <code>1</code>. We'll also set the 8th bit of <code>x</code> to 0. For
+                    example, suppose $x = 0000111 \text{ and } y = 1100001$. Below, we show the effect of setting the
+                    8th bit.</p>
+            <div align="center">
+                $$
+                \begin{aligned}
+                y = 1100001 &\rightarrow \textcolor{red}{1}1100001 \\
+                x = 0000111 &\rightarrow \textcolor{cyan}{0}0000111
+                \end{aligned}
+                $$
+            </div>
+            <p>Now, if we compute $y - x$, how will that 8th bit behave? Below, we show the result of this subtraction.
+            </p>
+            <div align="center">
+                $$
+                \begin{aligned}
+                y &= \textcolor{red}{1}1100001 \\
+                x &= \textcolor{cyan}{0}0000111 \\
+                \hline
+                y - x &= \textcolor{green}{1}1011010
+                \end{aligned}
+                $$
+            </div>
+            <p>As shown above, when $y \ge x$ the sentinel bit in the result is turned on. Had $x$ been larger than $y$,
+                that bit would have been tuned off. Why does this happen? Well, it is a direct consequence of the
+                borrowing that we have to do if the number we are subtracting from, $y$ in this case is smaller that the
+                amount we are subtracting ($x$). When we borrow, we'll eventually have to dip into the sentinel bit thus
+                turning it off. To summarize, to compare two 7-bit integers, we set the 8-th bit to <code>0</code> in
+                one of the numbers and to <code>1</code> in the other. We then subtract the resultant number and check
+                the value of the <code>8-th</code> bit.</p>
+            <p>So far, we've been talking about how to compare $x$ with a single <code>7bit</code> number. However, for
+                our procedure to be useful subroutine in computing <code>node.rank(x)</code>, we need to compare $x$
+                with $b$ 7-bit numbers. Note that we should choose $b$ such that it fits in 64 bits, so we choose $b=7$.
+                That is, a single node holds 7, 7-bit numbers, each represented using 8 bits. If those seven numbers are
+                organized such that each number has an associated sentinel bit that is set to <code>0</code>, we can
+                compare $x$ to all of them by comparing the entire word with a number formed by tiling $x$ 7 times. Here
+                is an example of seven small integers packed in a single machine word.</p>
+            <div align="center">
+                $$
+                \begin{aligned}
+                \text{\_}11101110\text{\_}10101110\text{\_}11111000\text{\_}11001101\text{\_}10101111\text{\_}10001101\text{\_}11110111\text{\_}11100001
+                \\
+                \text{\_}01010110\text{\_}00111110\text{\_}00111110\text{\_}01000011\text{\_}00011011\text{\_}00101111\text{\_}00100011\text{\_}01111010
+                \end{aligned}
+                $$
+            </div>
+            <p>To recap, here is how we'd compare two collections of small integers in parallel:</p>
+            <ul>
+                <li>First, we pack the first collection, $x_1, x_2, \ldots x_n$ into single machine word <code>X</code>,
+                    separating each integer with a sentinel bit set to <code>0</code>.</li>
+                <li>Then we also pack the second collection of small integers , $y_1, y_2, \ldots y_n$, into another
+                    machine word <code>Y</code>. However, this time, we separate each integer with a sentinel bit that
+                    is set to <code>1</code>.</li>
+                <li>Then we calculate $X - Y$. The bit preceding $x_i, y_i$ is <code>1</code> if $x_i \ge y_i$.</li>
+            </ul>
+            <p>The scheme above leave two key questions unanswered. First, how do we perform the first and second steps,
+                packing small integers into a single machine word? Can that be done in $O(1)$? Second, after we have
+                done the subtraction, how do we read off the sentinel bits in order to get the actual comparison
+                information that we need? Below, we address the first question. We shall come back to the second
+                question shortly afterwards.</p>
+        </section>
+        <section>
+            <h2>Parallel Tile</h2>
+            <p>When introducing this note, we asked how we could store a bunch of small numbers in a B-Tree, while
+                taking advantage of the fact that our integers can be packed in a machine word. . We then realized that
+                doing so would require us to find a routine that can find the rank of a number <code>x</code> in a given
+                node in constant time. Thus far, we have found a rudimentary primitive, parallel compare, that allows us
+                to compare many small integers in parallel. How would we use this primitive in our specialized B-Tree?
+            </p>
+            <p>To use our primitive, we shall represent each node as a single machine word. That is, the bucket for each
+                node will simply be a <code>64-bit</code> number. When storing a small integer into this bucket, we
+                shall also prepend it with a <code>0</code>. That is, the keys in our bucket will be separated by
+                sentinel bits set to <code>0</code>. Below, we introduce the abstraction for a single node in our B-Tree
+            </p>
+            <pre><code class="language-rust">
+/// The abstraction for a single node in our b-tree
+/// that is specialized for holding small integers
+/// that can be packed into a single machine word
+#[derive(Debug, Default)]
+pub struct SardineCan {
+    /// The actual storage container
+    buckets: u64,
+
+    /// The count of items in this node.
+    count: u8,
+}
+
+impl SardineCan {
+    /// Procedure to store a single small integer in a given node
+    /// Note that we do not handle the case where a can could be full.
+    /// We ignore that because, ideally, this data structure would be part
+    /// of a larger B-Tree implementation that would take care of such details
+    pub fn add(&mut self, mut x: u8) {
+        // Add the sentinel bit. It is set to 0
+        x &= 0b0111_1111;
+
+        // Make space in the bucket for the new item
+        self.buckets <<= 8;
+
+        // Add the new item into the bucket
+        self.buckets  |= x as u64;
+
+        // Increment the count of items
+        self.count += 1;
+    }   
+}
+</code></pre>
+            <p>We've seen how we're going to store our small integers in a single machine word. However, we've yet to
+                fully answer the question of how to pack the integers though. Note that we only know how to pack when
+                adding. How about when we have a single integer and we with to check if it's in the can? That is, How to
+                perform a lookup in a sardine can? To perform a lookup for the key <code>k</code>, we begin by
+                replicating <code>k</code> seven times to form a number that is as wide as our can. Furthermore, we
+                separate each small number in the packed integer using a sentinel bit that is set to 1. The act of
+                forming the replicated number is known as tiling. How can we tile the query <code>k</code> in $O(1)$? We
+                are going to use multiplication. The key insight comes from the observation that in base 10, multiplying
+                a number by a multiplier that contains ones at specific locations has the effect of replicating that
+                number. For instance, $8 \times 11 = 88$, $8 \times 101 = 808$, $8 \times 1001001001001 =
+                8008008008008$, $125 \times 10000010001 = 1250001250125$. We'd like to use this intuition to tile our
+                query <code>k</code>. Before we do that, let's examine the multiplications we deed a bit more. Why does
+                $8 \times 111$ produce $888$? It does so because:</p>
+            <div align="center">
+                $$
+                \begin{aligned}
+                888 &= (8 \times 10^2) + (8 \times 10^1) + (8 \times 10^0)\\
+                &= (8 \ll_{10} 2 ) + (8 \ll_{10} 1) + (8 \ll_{10} 0) \\
+                &= (800 + 080 + 008)
+                \end{aligned}
+                $$
+            </div>
+            <p>Therefore, all we need to tile <code>k</code> is to find a multiplier that will have a similar effect to
+                it. The logic below shows one such multiplier. it also includes an additional step where we set the
+                sentinel spacer bits to 1.</p>
+            <pre><code class="language-rust">
+impl SardineCan {
+    pub fn parallel_tile(x: u8) -> u64 {
+        // This carefully chosen multiplier will have the desired effect of replicating `x`
+        // seven times, interspersing each instance of `x` with a 0
+        let multiplier: u64 = 0b10000000_10000000_10000000_10000000_10000000_10000000_100000001;
+
+        // Produce the provisional tiled number. We still need to set its
+        // sentinel bits to 1
+        let tiled_x = x as u64 * multiplier;
+
+        // The bitmask to turn on  the sentinel bits
+        let sentinel_mask: u64 = 0b10000000_10000000_10000000_10000000_10000000_10000000_1000000010000000;
+
+        // Set the sentinel bits to 1 and return the tiled number
+        tiled_x | sentinel_mask
+    }
+}
+</code></pre>
+            <p>At this point, we are able to add small integers into a single node in our hypothetical B-Tree. We are
+                also able to replicate a query <code>k</code> to form a number that is as large as the word size we're
+                using. This means that we can do a parallel comparison via subtraction. After we perform the subtraction
+                — subtracting the value stored in the can from our tiled key —, we'll be left with a number whose
+                sentinel bits indicate whether the key is less than or equal to the associated small integer. To be more
+                precise, the sentinel bit for a small integer in the difference will be 1 if the associated small
+                integer is $\le$ our key. The next thing we'd like to do is count how many values are $\le$ our key.
+                This is the rank of our key. We need to come up with a procedure that does this in $O(1)$. We'll explore
+                that in the next section. Before moving on, feel free to check out the code thus far <a
+                    href="https://play.rust-lang.org/?version=stable&mode=debug&edition=2018&gist=7688364fc546c19abc25f1a6264142dc">here</a>.
+            </p>
+        </section>
+        <section>
+            <h2>Parallel Rank</h2>
+            <p>At this point, we can store tiny numbers in a given node and, when a key <code>x</code> comes in, we can
+                tile it and perform the first step of a parallel comparison operation. To finish out the
+                <code>node.rank(x)</code> operation, we need to discuss how to count up the number of items smaller than
+                or equal to our key. To find this number, we simply need to count how many of the sentinel bits in the
+                difference are set to <code>1</code>. We want to do this in $O(1)$. One option is to use a series of
+                shifts to align all the sentinel bits, the adding them up. To perform the shifting in a single
+                operation, we use the same idea we used when implementing <code>parallel_tile</code> — we multiply with
+                a carefully chosen spreader. While this approach works well, we adopt a much simpler approach. After we
+                have isolated the sentinel bits i the difference by performing a bitwise and with an appropriate mask,
+                we simply call a rust built in procedure to count the number of ones.</p>
+            <pre><code class="language-rust">
+impl SardineCan {
+    /// Calculate how many items in this can are less than or
+    /// equal to `x`
+    pub fn parallel_rank(&self, x: u8) -> u8 {
+        // Perform the parallel comparison
+        let mut difference = Self::parallel_tile(x) - self.buckets;
+
+        // Ultimately, we're only interested in whether the spacer sentinel bits
+        // are turned on or off. In particular, we just need to know how many are
+        // turned on. Here we use the mask from `parallel_tile` to isolate them
+        let sentinel_mask: u64 = 0b10000000_10000000_10000000_10000000_10000000_10000000_1000000010000000;
+        difference &= sentinel_mask;
+        
+        // There's an alternative method of counting up how many spacer bits are set to 1.
+        // That method involves using a well chosen multiplier. To check it out look in 
+        // at the `parallel_count` method below
+        difference.count_ones() as u8
+    }
+
+    /// Counts up how many of the sentinel bits of `difference` are turned on.
+    /// This could be used instead of using the builtin function `count_ones`.
+    fn parallel_count(difference: u64) -> u8 {
+        let stacker = 0b10000000_10000000_10000000_10000000_10000000_10000000_100000001u64;
+        let mut stacked = difference as u128 * stacker as u128;
+        stacked >>= 63;
+        stacked &= 0b111;
+        stacked as u8
+    }
+}
+</code></pre>
+            <p>At this point, we have implemented all the (new) routines that would be needed to implement a B-Tree that
+                uses a <code>SardineCan</code> as its node. If we were to implement such a tree, what would be the
+                runtime of each dictionary operation? In a normal B-Tree, all these operations take on the order of
+                $\mathcal{O}(\lg_b n \cdot \lg_2 b) = O(\lg_2 n)$ (Note, however, that when analyzing B-tree, we often
+                only count the number of blocks that have to be read into memory and consider the time to search within
+                a single block to be near constant). In a B-Tree that packs its keys using techniques discussed above,
+                its runtime would be $\mathcal{O}(\lg_b n \cdot 1) = O(\lg_b n)$. Even more dramatically, its space
+                usage will be $\Theta(\frac{n}{b})$. Remember, we defined <code>b</code> as the number of small integers
+                we could pack in a single machine word — <code>8</code> in our case.</p>
+            <p><a
+                    href="https://play.rust-lang.org/?version=stable&mode=debug&edition=2018&gist=9ea0b3715a46d728d9a815e6ce3d9597">Here's
+                    a link</a> to all the methods we've implemented so far.</p>
+        </section>
+        <hr>
+        <section>
+            <h2>$O(1)$ Most Significant Bit</h2>
+            <p>When we talk of the most significant bit of a number, we're often referring to the 0-indexed location of
+                the highest bit set. Note that this is a more general problem than simply finding the number that would
+                be formed if only the <code>msb</code> were set. For instance, <code>MSB(010010001)</code> is
+                <code>7</code> and not <code>128</code>.</p>
+            <p>The simplest method for finding this index in by doing a linear scan over the bits of the number in
+                question while keeping a count of the number of bits seen thus far. This scheme runs in $O(\lg n)$ where
+                $n$ is the highest number our function may operate on.</p>
+            <pre><code class="language-rust">
+/// A procedure for finding the index of the most significant
+/// bit in time linear to the number of bits used
+/// to represent the value.
+fn get_msb_idx_of(query: u64) -> u8 {
+    for i in (0..64).rev() {
+        if query & (1 << i) != 0 {
+            return i;
+        }
+    }
+    panic!("MSB(0) is undefined")
+}
+</code></pre>
+            <p>We can improve upon the linear scanning procedure using bit level binary search. This brings down the
+                running time to $O(\lg \lg n)$. Often, however, when we know that we'll be doing many <code>msb</code>
+                queries, we use a lookup table to compute this value. This is the solution we adopted when discussing
+                sparse tables in the context of <a href="./rmq.md#querying-the-sparse-table">the range min query
+                    problem</a>. Using that method, we're able to locate the index of the highest bit set in constant
+                $O(1)$ time, albeit with an added preprocessing step to build the lookup table. The question we seek to
+                answer in this section is, can we locate the index of the most significant bit in constant time without
+                using a lookup table?</p>
+            <h3>The MSB(x)-Rank(x) Equivalence</h3>
+            <p>As a reminder, <code>MSB(x)</code> is the largest value of $k$ such that $2^k \leq x$. Remember also the
+                definition of <code>Rank(x)</code>: it is the number of items, in some underlying ordered collection,
+                that are less than or equal to $x$. Immediately, we can see how eerily similar these two definitions
+                are. In fact, we can redefine <code>MSB(x)</code> in terms of <code>Rank(x)</code> by choosing an
+                appropriate underlying collection. If the underlying collection is a list of all the powers of two,
+                $\langle 2^0, 2^1, 2^2, \ldots 2^{62}, 2^{63} \rangle$, then <code>MSB(x)</code> is the same as
+                <code>Rank(x)</code> in that array.</p>
+            <h3>Parallel Pack</h3>
+            <p>At this point, we're one step closer to the solution. We've redefined <code>MSB</code> as
+                <code>Rank</code> and we have a method for solving <code>Rank</code> in constant time —
+                <code>parallel_rank</code>. That procedure, however, assumes that the underlying array can be packed in
+                a single machine word. It also assumes that our query $x$ is as wide as our packed underlying array.
+                Clearly, we cannot fit <code>64</code> numbers is a single machine word. However, if we can somehow
+                reduce the size of our query, then, maybe, we can reduce the size of the needed underlying array. To do
+                that, we'll borrow a technique that we saw extensively while discussing <a
+                    href="https://github.com/jlikhuva/blog/blob/main/posts/rmq.md#the-method-of-four-russians">the
+                    median of medians method</a>: Block Decomposition.</p>
+            <p>We'll decompose the bits of our query into blocks of <code>8</code> bits. This means that the underlying
+                array of powers of two will only have <code>8</code> elements down from <code>64</code>. This still
+                won't fit in a single machine word – remember that when discussing <code>parallel_rank</code>, we
+                assumed that our numbers had only <code>7 bits</code>. Nevertheless, we can still pack our 8-bit numbers
+                in two machine words (<code>u128</code> instead of <code>u64</code>) without affecting the runtime of
+                <code>parallel_rank</code>. One final piece of the puzzle still remains. How will we know which block to
+                focus on? We need some sort of routing information.</p>
+            <p>For routing, we'll keep a secondary 8-bit array with one entry for each block. The <code>k-th</code>
+                entry of this array contains a <code>1</code> if and only if the <code>k-th</code> block of our query
+                has a numeric value greater than zero (that is, the block contains a <code>1</code> anywhere within it).
+                Note that the size of this secondary bit array is small enough that we can pack it into a few machine
+                words. This means that we can leverage our previous methods when operating on it.</p>
+            <p>To recapitulate: To answer <code>MSB(x)</code>, we'll</p>
+            <ol>
+                <li>Decompose the bit representation of $x$ into blocks of 8 bits.</li>
+                <li>We'll also form a secondary bit array with as many bits as the number of blocks we have. In this
+                    secondary array, the <code>k-th</code> bit will be on when the <code>k-th</code> block could
+                    conceivably have a most significant bit.</li>
+                <li>Finally, to find <code>MSB(x)</code>, we'll first use <code>parallel_rank</code> to find the index
+                    of the most significant bit in the secondary routing array. This will tell us the location of the
+                    most significant block. We shall then use <code>parallel_rank</code> one more time to find the index
+                    of the most significant bit in the most significant block.</li>
+            </ol>
+            <p>We implement this three step procedure below. We begin by defining a simple abstraction.</p>
+            <pre><code class="language-rust">
+#[derive(Debug)]
+struct FourRussiansMSB {
+    /// The secondary routing bit array
+    macro_bit_array: u8,
+
+    /// This is simply the number whose `msb` we'd like to find.
+    /// It is logically split into blocks of 8 bits
+    micro_arrays: u64,
+}
+</code></pre>
+            <p>Then, we implement procedures to build the two-level structure. Most of these methods use ideas that we
+                already discussed in previous sections.</p>
+            <pre><code class="language-rust">
+ impl FourRussiansMSB {
+        pub fn build(query: u64) -> Self {
+            let macro_bit_array = Self::generate_macro_bit_array(query);
+            FourRussiansMSB {
+                macro_bit_array,
+                micro_arrays: query,
+            }
+        }
+
+        /// Generates the routing macro array. To do so, it
+        /// relies on the observation that a block contains a
+        /// 1 bit if it's highest bit is a 1 or if its
+        /// lower 7 bits' numeric value is greater than 0.
+        fn generate_macro_bit_array(query: u64) -> u8 {
+            // The first step is to extract information about the highest bit in each block.
+            let high_bit_mask = 0b10000000_10000000_10000000_10000000_10000000_10000000_10000000_10000000u64;
+            let is_high_bit_set = query & high_bit_mask;
+
+            // The second step is to extract information about the lower seven bits
+            // in each block. To do so, we use parallel_compare, which is basically
+            // subtraction.
+            let packed_ones = 0b00000001_00000001_00000001_00000001_00000001_00000001_00000001_00000001u64;
+            let mut are_lower_bits_set = query | high_bit_mask;
+            are_lower_bits_set -= packed_ones;
+            are_lower_bits_set &= high_bit_mask;
+
+            // We unify the information from the first two steps into a single value
+            // that tells us if a block could conceivably contain the MSB
+            let is_block_active = is_high_bit_set | are_lower_bits_set;
+
+            // To generate the macro array, we need to form an 8-bit number out of the
+            // per-block highest bits from the last step. To pack them together, we simply use
+            // an appropriate multiplier which does the work of a series of bitshifts
+            let packer = 0b10000001_00000010_00000100_00001000_00010000_00100000_010000001u64;
+            let mut macro_bit_array = is_block_active as u128 * packer as u128;
+            macro_bit_array >>= 49;
+            if is_block_active >> 56 == 0 {
+                macro_bit_array &= 0b0111_1111;
+            } else {
+                macro_bit_array |= 0b1000_0000;
+                macro_bit_array &= 0b1111_1111;
+            }
+            macro_bit_array as u8
+        }
+
+        pub fn get_msb(&self) -> u8 {
+            let block_id = self.msb_by_rank(self.macro_bit_array);
+            let block_start = (block_id - 1) * 8;
+            let msb_block = self.get_msb_block(block_start);
+            let msb = self.msb_by_rank(msb_block);
+            let in_block_location = msb - 1;
+            block_start + in_block_location
+        }
+
+        /// Given a block id -- which is the msb value in the macro routing array,
+        /// this method retrieves the 8 bits that represent that block
+        /// from the `micro_arrays`. `block_id 0 refers to the highest
+        fn get_msb_block(&self, block_start: u8) -> u8 {
+            let block_mask = 0b1111_1111u64;
+            let mut block = self.micro_arrays >> block_start;
+            block &= block_mask;
+            block as u8
+        }
+
+        /// Finds the index of the most significant bit in the
+        /// provided 8-bit number by finding its rank among the
+        /// 8 possible powers of 2: <1, 2, 4, 8, 16, 32, 64, 128>.
+        /// To do so in constant time, it employs techniques from
+        /// our discussion of `parallel_rank`
+        fn msb_by_rank(&self, query: u8) -> u8 {
+            // Perform the parallel comparison
+            let tiled_query = Self::parallel_tile_128(query);
+            let packed_keys = 0b000000001_000000010_000000100_000001000_000010000_000100000_001000000_010000000u128;
+            let mut difference =  tiled_query - packed_keys;
+
+            // Isolate the spacer sentinel bits
+            let sentinel_mask = 0b100000000_100000000_100000000_100000000_100000000_100000000_100000000_100000000u128;
+            difference &= sentinel_mask;
+
+            // Count the number of spacer bits that are turned on
+            difference.count_ones() as u8
+        }
+
+        /// Produces a number that is a result of replicating the query
+        /// eight times. This uses 72 bits of space.
+        pub fn parallel_tile_128(query: u8) -> u128 {
+            let multiplier = 0b100000000_100000000_100000000_100000000_100000000_100000000_100000000_1000000001u128;
+
+            // Produce the provisional tiled number. We still need to set its
+            // sentinel bits to 1
+            let tiled_query = query as u128 * multiplier;
+
+            // The bitmask to turn on  the sentinel bits
+            let sentinel_mask = 0b100000000_100000000_100000000_100000000_100000000_100000000_100000000_100000000u128;
+
+            // Set the sentinel bits to 1 and return the tiled number
+            tiled_query | sentinel_mask
+        }
+    }
+}
+</code></pre>
+            <p>With the abstractions above, implementing <code>MSB(x)</code> is as simple as:</p>
+            <pre><code class="language-rust">
+pub fn get_msb_idx_of(query: u64) -> u8 {
+    FourRussiansMSB::build(query).get_msb()
+}
+</code></pre>
+            <h3>$O(1) \text{ LCP}(x, y)$</h3>
+            <p>The bit version of the LCP asks us to find the length of the longest common prefix between the
+                bit-strings of the two numbers. This can simply be solved by leveraging our $O(1) \text{ MSB}(n)$
+                procedure from above.</p>
+            <pre><code class="language-rust">
+pub fn lcp_len_of(a: u64, b: u64) -> u64 {
+    63 - get_msb_idx_of(a ^ b) as u64
+}
+</code></pre>
+            <p><a
+                    href="https://play.rust-lang.org/?version=stable&mode=debug&edition=2018&gist=4c4975e8474c28d53c35abbe2feb1977">Here's
+                    a link to all the functions we've implemented.</a></p>
+        </section>
+        <section>
+            <h2>References</h2>
+            <ol>
+                <li><a href="http://web.stanford.edu/class/archive/cs/cs166/cs166.1196/lectures/15/Slides15.pdf">CS 166
+                        Lecture 15</a></li>
+                <li><a href="http://web.stanford.edu/class/archive/cs/cs166/cs166.1196/lectures/16/Slides16.pdf">CS 166
+                        Lecture 16</a></li>
+                <li><a href="http://web.stanford.edu/class/archive/cs/cs166/cs166.1196/lectures/17/Slides17.pdf">CS 166
+                        Lecture 17</a></li>
+                <li><a href="http://courses.csail.mit.edu/6.851/fall17/scribe/lec12.pdf">6.851</a></li>
+                <li><a
+                        href="https://reader.elsevier.com/reader/sd/pii/0022000093900404?token=1610EF62181DAC974715067B85459A4709A9BC64E39827CE0369C6C8E18540DFD1DBAD38BEE35BFF95C4C05E45A1D1D5">The
+                        Original Fusion Tree Paper</a></li>
+                <li><a href="https://stackoverflow.com/questions/3878320/understanding-fusion-trees">This StackOverflow
+                        Question. Scroll down until you find the answer by user <code>templatetypedef</code></a></li>
+            </ol>
+        </section>
+
+    </article>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    { left: "$$", right: "$$", display: true },
+                    { left: "$", right: "$", display: false },
+                    { left: "\\(", right: "\\)", display: false },
+                    { left: "\\[", right: "\\]", display: true }
+                ],
+                throwOnError: false
+            });
+            hljs.highlightAll();
+        });
+    </script>
 </body>
 
 </html>
