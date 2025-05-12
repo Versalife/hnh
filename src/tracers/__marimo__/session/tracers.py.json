@@ -1,0 +1,242 @@
+{
+  "version": "1",
+  "metadata": {
+    "marimo_version": "0.13.6"
+  },
+  "cells": [
+    {
+      "id": "Hbol",
+      "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "EzfA",
+      "code_hash": "44b30f1a9d9daf5034fa2d609be7558a",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": [
+        {
+          "type": "stream",
+          "name": "stdout",
+          "text": "True Trace: -4.2529\narray([[1, -1, -1, ..., -1, -1, 1],\n       [-1, 1, -1, ..., -1, 1, 1],\n       [-1, -1, -1, ..., -1, 1, -1],\n       ...,\n       [1, 1, -1, ..., -1, -1, 1],\n       [-1, 1, 1, ..., 1, 1, -1],\n       [1, -1, 1, ..., -1, 1, -1]], dtype=float32)\nEstimated Trace with k=50: -5.0352\narray([[-1, 1, -1, ..., 1, -1, 1],\n       [1, 1, 1, ..., -1, 1, -1],\n       [1, -1, 1, ..., -1, -1, 1],\n       ...,\n       [-1, -1, 1, ..., 1, -1, 1],\n       [-1, -1, 1, ..., 1, 1, 1],\n       [1, 1, -1, ..., -1, -1, -1]], dtype=float32)\nEstimated Trace with k=500: 1.9445\n\nMatrix B:\narray([[1, 2, 3],\n       [4, 5, 6],\n       [7, 8, 9]], dtype=float32)\nTrue Trace of B: 15.0000\narray([[-1, 1, -1, ..., -1, -1, -1],\n       [-1, -1, -1, ..., 1, 1, -1],\n       [-1, 1, -1, ..., -1, -1, 1]], dtype=float32)\nEstimated Trace of B with k=100: 15.2400\narray([[-1, 1, 1, ..., -1, -1, 1],\n       [-1, 1, -1, ..., 1, -1, -1],\n       [-1, -1, -1, ..., 1, 1, -1]], dtype=float32)\nEstimated Trace of B with k=1000: 15.1280\n"
+        }
+      ]
+    },
+    {
+      "id": "KDUS",
+      "code_hash": "23f9231215ea4fff56c9b1c8999773fb",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<span class=\"markdown prose dark:prose-invert\"><h1 id=\"trace-estimation\">Trace Estimation</h1></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "PlIc",
+      "code_hash": "c2c65f523c338fc190023654526b7b7b",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<span class=\"markdown prose dark:prose-invert\"><h2 id=\"the-hutchison-trace-estimator\">The Hutchison Trace Estimator</h2></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "yxmr",
+      "code_hash": "6abccf52143c17291fad9af1d1509d78",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<span class=\"markdown prose dark:prose-invert\"><h2 id=\"a-variance-reduced-trace-estimator\">A Variance Reduced Trace Estimator</h2></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Lnvp",
+      "code_hash": "389d7c0e9f4d61d28b0c77d1ff4d97c8",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<span class=\"markdown prose dark:prose-invert\"><h2 id=\"shared-functions\">Shared Functions</h2></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "KTDa",
+      "code_hash": "f843794ef6457ef281915016ddfb235d",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "oKoV",
+      "code_hash": "d81017cfd9d196051a7ddccf500a95c6",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": [
+        {
+          "type": "stream",
+          "name": "stdout",
+          "text": "True trace of 100x100 identity matrix: 100.0\narray([[1, -1, -1, ..., -1, 1, -1],\n       [1, -1, 1, ..., 1, 1, -1],\n       [1, 1, -1, ..., -1, 1, -1],\n       ...,\n       [1, -1, -1, ..., -1, 1, 1],\n       [-1, -1, -1, ..., -1, -1, 1],\n       [1, -1, -1, ..., -1, 1, -1]], dtype=float32)\nStandard Hutch estimate (k=300): 100.0000, Error: 0.0000\nVariance-Reduced Hutch estimate (k=300): 100.0000, Error: 0.0000\n\nTrue trace of 100x100 random symmetric matrix: -4.4330\narray([[1, 1, 1, ..., -1, 1, -1],\n       [1, 1, -1, ..., -1, 1, -1],\n       [-1, 1, -1, ..., -1, 1, -1],\n       ...,\n       [-1, -1, -1, ..., 1, -1, -1],\n       [-1, 1, -1, ..., -1, 1, 1],\n       [1, 1, 1, ..., -1, -1, -1]], dtype=float32)\nStandard Hutch estimate (k=300): -8.0426, Error: 3.6096\nVariance-Reduced Hutch estimate (k=300): -4.6727, Error: 0.2397\n\nTrue trace of 100x100 zero matrix: 0.0000\narray([[-1, 1, 1, ..., 1, -1, -1],\n       [-1, 1, 1, ..., -1, 1, -1],\n       [-1, 1, 1, ..., -1, -1, -1],\n       ...,\n       [1, 1, 1, ..., -1, -1, 1],\n       [-1, 1, 1, ..., -1, -1, 1],\n       [1, -1, -1, ..., 1, -1, -1]], dtype=float32)\nStandard Hutch estimate (k=300): 0.0000, Error: 0.0000\nVariance-Reduced Hutch estimate (k=300): 0.0000, Error: 0.0000\n\nTesting with small k values for variance-reduced estimator on identity matrix:\n  k=1: Estimate = 100.0000, Error = 0.0000\n     k_sketch=0, k_residual=1\n  k=2: Estimate = 100.0000, Error = 0.0000\n     k_sketch=1, k_residual=1\n  k=3: Estimate = 100.0000, Error = 0.0000\n     k_sketch=2, k_residual=1\n  k=5: Estimate = 100.0000, Error = 0.0000\n     k_sketch=3, k_residual=2\n"
+        }
+      ]
+    },
+    {
+      "id": "BiVE",
+      "code_hash": "f6b73ed5531ab31a5b41419752a7778d",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<span class=\"markdown prose dark:prose-invert\"><h2 id=\"exchangeable-trace-estimators\">Exchangeable Trace Estimators</h2></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "uxZn",
+      "code_hash": "a0e8c853b82be0c4fd4350953f4ecf1b",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<span class=\"markdown prose dark:prose-invert\"><h2 id=\"comparisons\">Comparisons</h2></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "yOkv",
+      "code_hash": null,
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Hnyd",
+      "code_hash": "c2ad3ef8652eba0fbe42358b64036b12",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<marimo-plotly data-figure='{&quot;data&quot;: [{&quot;legendgroup&quot;: &quot;Exponential Decay&quot;, &quot;mode&quot;: &quot;lines+markers&quot;, &quot;name&quot;: &quot;Standard Hutch&quot;, &quot;showlegend&quot;: true, &quot;x&quot;: [10, 20, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000], &quot;y&quot;: [7.62939453125e-06, 7.62939453125e-06, 1.52587890625e-05, 1.52587890625e-05, 1.52587890625e-05, 7.62939453125e-06, 1.52587890625e-05, 7.62939453125e-06, 7.62939453125e-06, 1.52587890625e-05, 1.52587890625e-05, 7.62939453125e-06, 7.62939453125e-06], &quot;type&quot;: &quot;scatter&quot;, &quot;xaxis&quot;: &quot;x&quot;, &quot;yaxis&quot;: &quot;y&quot;}, {&quot;legendgroup&quot;: &quot;Exponential Decay&quot;, &quot;mode&quot;: &quot;lines+markers&quot;, &quot;name&quot;: &quot;Variance-Reduced Hutch&quot;, &quot;showlegend&quot;: true, &quot;x&quot;: [10, 20, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000], &quot;y&quot;: [7.62939453125e-06, 0.0, 7.62939453125e-06, 7.62939453125e-06, 1.52587890625e-05, 1.52587890625e-05, 1.52587890625e-05, 0.0, 1.52587890625e-05, 0.0, 7.62939453125e-06, 7.62939453125e-06, 0.0], &quot;type&quot;: &quot;scatter&quot;, &quot;xaxis&quot;: &quot;x&quot;, &quot;yaxis&quot;: &quot;y&quot;}, {&quot;legendgroup&quot;: &quot;Exponential Decay&quot;, &quot;mode&quot;: &quot;lines+markers&quot;, &quot;name&quot;: &quot;Standard Hutch&quot;, &quot;showlegend&quot;: false, &quot;x&quot;: [10, 20, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000], &quot;y&quot;: [0.041927792015485466, 0.0007105000549927354, 0.0010031670099124312, 0.0011221669847145677, 0.0012304160045459867, 0.001133957994170487, 0.0016844170168042183, 0.003263958031311631, 0.0017226249910891056, 0.0017372919246554375, 0.0018418750260025263, 0.0024112920509651303, 0.002615500008687377], &quot;type&quot;: &quot;scatter&quot;, &quot;xaxis&quot;: &quot;x2&quot;, &quot;yaxis&quot;: &quot;y2&quot;}, {&quot;legendgroup&quot;: &quot;Exponential Decay&quot;, &quot;mode&quot;: &quot;lines+markers&quot;, &quot;name&quot;: &quot;Variance-Reduced Hutch&quot;, &quot;showlegend&quot;: false, &quot;x&quot;: [10, 20, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000], &quot;y&quot;: [0.0008793750312179327, 0.002215250045992434, 0.0012606671079993248, 0.0013594579650089145, 0.0020467500435188413, 0.0016189590096473694, 0.001977834035642445, 0.002120999968610704, 0.0019214580534026027, 0.0033102920278906822, 0.004454375011846423, 0.0022254999494180083, 0.002453792025335133], &quot;type&quot;: &quot;scatter&quot;, &quot;xaxis&quot;: &quot;x2&quot;, &quot;yaxis&quot;: &quot;y2&quot;}, {&quot;legendgroup&quot;: &quot;Uniform Spectrum&quot;, &quot;mode&quot;: &quot;lines+markers&quot;, &quot;name&quot;: &quot;Standard Hutch&quot;, &quot;showlegend&quot;: false, &quot;x&quot;: [10, 20, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000], &quot;y&quot;: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 3.0517578125e-05, 0.0, 0.0, 0.0, 0.0, 3.0517578125e-05], &quot;type&quot;: &quot;scatter&quot;, &quot;xaxis&quot;: &quot;x3&quot;, &quot;yaxis&quot;: &quot;y3&quot;}, {&quot;legendgroup&quot;: &quot;Uniform Spectrum&quot;, &quot;mode&quot;: &quot;lines+markers&quot;, &quot;name&quot;: &quot;Variance-Reduced Hutch&quot;, &quot;showlegend&quot;: false, &quot;x&quot;: [10, 20, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000], &quot;y&quot;: [0.0, 3.0517578125e-05, 0.0, 0.0, 0.0, 0.0, 0.0, 3.0517578125e-05, 0.0, 3.0517578125e-05, 0.0, 0.0, 3.0517578125e-05], &quot;type&quot;: &quot;scatter&quot;, &quot;xaxis&quot;: &quot;x3&quot;, &quot;yaxis&quot;: &quot;y3&quot;}, {&quot;legendgroup&quot;: &quot;Uniform Spectrum&quot;, &quot;mode&quot;: &quot;lines+markers&quot;, &quot;name&quot;: &quot;Standard Hutch&quot;, &quot;showlegend&quot;: false, &quot;x&quot;: [10, 20, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000], &quot;y&quot;: [0.0007126668933779001, 0.000580916996113956, 0.0008523330325260758, 0.0009274579351767898, 0.0011120419949293137, 0.0010092910379171371, 0.0012550409883260727, 0.001445583999156952, 0.0030687920516356826, 0.0015403750585392118, 0.0017477080691605806, 0.0022242499981075525, 0.003218917059712112], &quot;type&quot;: &quot;scatter&quot;, &quot;xaxis&quot;: &quot;x4&quot;, &quot;yaxis&quot;: &quot;y4&quot;}, {&quot;legendgroup&quot;: &quot;Uniform Spectrum&quot;, &quot;mode&quot;: &quot;lines+markers&quot;, &quot;name&quot;: &quot;Variance-Reduced Hutch&quot;, &quot;showlegend&quot;: false, &quot;x&quot;: [10, 20, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000], &quot;y&quot;: [0.0006989160319790244, 0.002364042098633945, 0.0010191249893978238, 0.001441375003196299, 0.0012059579603374004, 0.0020942080300301313, 0.001412083045579493, 0.0018035420216619968, 0.001908582984469831, 0.0019305000314489007, 0.0022042500786483288, 0.00200674997176975, 0.002345625078305602], &quot;type&quot;: &quot;scatter&quot;, &quot;xaxis&quot;: &quot;x4&quot;, &quot;yaxis&quot;: &quot;y4&quot;}, {&quot;legendgroup&quot;: &quot;Intermediate Decay&quot;, &quot;mode&quot;: &quot;lines+markers&quot;, &quot;name&quot;: &quot;Standard Hutch&quot;, &quot;showlegend&quot;: false, &quot;x&quot;: [10, 20, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000], &quot;y&quot;: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], &quot;type&quot;: &quot;scatter&quot;, &quot;xaxis&quot;: &quot;x5&quot;, &quot;yaxis&quot;: &quot;y5&quot;}, {&quot;legendgroup&quot;: &quot;Intermediate Decay&quot;, &quot;mode&quot;: &quot;lines+markers&quot;, &quot;name&quot;: &quot;Variance-Reduced Hutch&quot;, &quot;showlegend&quot;: false, &quot;x&quot;: [10, 20, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000], &quot;y&quot;: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], &quot;type&quot;: &quot;scatter&quot;, &quot;xaxis&quot;: &quot;x5&quot;, &quot;yaxis&quot;: &quot;y5&quot;}, {&quot;legendgroup&quot;: &quot;Intermediate Decay&quot;, &quot;mode&quot;: &quot;lines+markers&quot;, &quot;name&quot;: &quot;Standard Hutch&quot;, &quot;showlegend&quot;: false, &quot;x&quot;: [10, 20, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000], &quot;y&quot;: [0.0005865410203114152, 0.0008251250255852938, 0.0009324999991804361, 0.000938165932893753, 0.000917250057682395, 0.0027220420306548476, 0.001164457993581891, 0.0013025000225752592, 0.0013784170150756836, 0.0015222500078380108, 0.0020640830043703318, 0.0017867910210043192, 0.0019004170317202806], &quot;type&quot;: &quot;scatter&quot;, &quot;xaxis&quot;: &quot;x6&quot;, &quot;yaxis&quot;: &quot;y6&quot;}, {&quot;legendgroup&quot;: &quot;Intermediate Decay&quot;, &quot;mode&quot;: &quot;lines+markers&quot;, &quot;name&quot;: &quot;Variance-Reduced Hutch&quot;, &quot;showlegend&quot;: false, &quot;x&quot;: [10, 20, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000], &quot;y&quot;: [0.0007324159378185868, 0.001044624950736761, 0.0010945000685751438, 0.0010464999359101057, 0.0011509590549394488, 0.001336083048954606, 0.0015523330075666308, 0.0015148750972002745, 0.0016095000319182873, 0.0018718750216066837, 0.003164457972161472, 0.0019044579239562154, 0.0021683339728042483], &quot;type&quot;: &quot;scatter&quot;, &quot;xaxis&quot;: &quot;x6&quot;, &quot;yaxis&quot;: &quot;y6&quot;}], &quot;layout&quot;: {&quot;template&quot;: {&quot;data&quot;: {&quot;histogram2dcontour&quot;: [{&quot;type&quot;: &quot;histogram2dcontour&quot;, &quot;colorbar&quot;: {&quot;outlinewidth&quot;: 0, &quot;ticks&quot;: &quot;&quot;}, &quot;colorscale&quot;: [[0.0, &quot;#0d0887&quot;], [0.1111111111111111, &quot;#46039f&quot;], [0.2222222222222222, &quot;#7201a8&quot;], [0.3333333333333333, &quot;#9c179e&quot;], [0.4444444444444444, &quot;#bd3786&quot;], [0.5555555555555556, &quot;#d8576b&quot;], [0.6666666666666666, &quot;#ed7953&quot;], [0.7777777777777778, &quot;#fb9f3a&quot;], [0.8888888888888888, &quot;#fdca26&quot;], [1.0, &quot;#f0f921&quot;]]}], &quot;choropleth&quot;: [{&quot;type&quot;: &quot;choropleth&quot;, &quot;colorbar&quot;: {&quot;outlinewidth&quot;: 0, &quot;ticks&quot;: &quot;&quot;}}], &quot;histogram2d&quot;: [{&quot;type&quot;: &quot;histogram2d&quot;, &quot;colorbar&quot;: {&quot;outlinewidth&quot;: 0, &quot;ticks&quot;: &quot;&quot;}, &quot;colorscale&quot;: [[0.0, &quot;#0d0887&quot;], [0.1111111111111111, &quot;#46039f&quot;], [0.2222222222222222, &quot;#7201a8&quot;], [0.3333333333333333, &quot;#9c179e&quot;], [0.4444444444444444, &quot;#bd3786&quot;], [0.5555555555555556, &quot;#d8576b&quot;], [0.6666666666666666, &quot;#ed7953&quot;], [0.7777777777777778, &quot;#fb9f3a&quot;], [0.8888888888888888, &quot;#fdca26&quot;], [1.0, &quot;#f0f921&quot;]]}], &quot;heatmap&quot;: [{&quot;type&quot;: &quot;heatmap&quot;, &quot;colorbar&quot;: {&quot;outlinewidth&quot;: 0, &quot;ticks&quot;: &quot;&quot;}, &quot;colorscale&quot;: [[0.0, &quot;#0d0887&quot;], [0.1111111111111111, &quot;#46039f&quot;], [0.2222222222222222, &quot;#7201a8&quot;], [0.3333333333333333, &quot;#9c179e&quot;], [0.4444444444444444, &quot;#bd3786&quot;], [0.5555555555555556, &quot;#d8576b&quot;], [0.6666666666666666, &quot;#ed7953&quot;], [0.7777777777777778, &quot;#fb9f3a&quot;], [0.8888888888888888, &quot;#fdca26&quot;], [1.0, &quot;#f0f921&quot;]]}], &quot;contourcarpet&quot;: [{&quot;type&quot;: &quot;contourcarpet&quot;, &quot;colorbar&quot;: {&quot;outlinewidth&quot;: 0, &quot;ticks&quot;: &quot;&quot;}}], &quot;contour&quot;: [{&quot;type&quot;: &quot;contour&quot;, &quot;colorbar&quot;: {&quot;outlinewidth&quot;: 0, &quot;ticks&quot;: &quot;&quot;}, &quot;colorscale&quot;: [[0.0, &quot;#0d0887&quot;], [0.1111111111111111, &quot;#46039f&quot;], [0.2222222222222222, &quot;#7201a8&quot;], [0.3333333333333333, &quot;#9c179e&quot;], [0.4444444444444444, &quot;#bd3786&quot;], [0.5555555555555556, &quot;#d8576b&quot;], [0.6666666666666666, &quot;#ed7953&quot;], [0.7777777777777778, &quot;#fb9f3a&quot;], [0.8888888888888888, &quot;#fdca26&quot;], [1.0, &quot;#f0f921&quot;]]}], &quot;surface&quot;: [{&quot;type&quot;: &quot;surface&quot;, &quot;colorbar&quot;: {&quot;outlinewidth&quot;: 0, &quot;ticks&quot;: &quot;&quot;}, &quot;colorscale&quot;: [[0.0, &quot;#0d0887&quot;], [0.1111111111111111, &quot;#46039f&quot;], [0.2222222222222222, &quot;#7201a8&quot;], [0.3333333333333333, &quot;#9c179e&quot;], [0.4444444444444444, &quot;#bd3786&quot;], [0.5555555555555556, &quot;#d8576b&quot;], [0.6666666666666666, &quot;#ed7953&quot;], [0.7777777777777778, &quot;#fb9f3a&quot;], [0.8888888888888888, &quot;#fdca26&quot;], [1.0, &quot;#f0f921&quot;]]}], &quot;mesh3d&quot;: [{&quot;type&quot;: &quot;mesh3d&quot;, &quot;colorbar&quot;: {&quot;outlinewidth&quot;: 0, &quot;ticks&quot;: &quot;&quot;}}], &quot;scatter&quot;: [{&quot;fillpattern&quot;: {&quot;fillmode&quot;: &quot;overlay&quot;, &quot;size&quot;: 10, &quot;solidity&quot;: 0.2}, &quot;type&quot;: &quot;scatter&quot;}], &quot;parcoords&quot;: [{&quot;type&quot;: &quot;parcoords&quot;, &quot;line&quot;: {&quot;colorbar&quot;: {&quot;outlinewidth&quot;: 0, &quot;ticks&quot;: &quot;&quot;}}}], &quot;scatterpolargl&quot;: [{&quot;type&quot;: &quot;scatterpolargl&quot;, &quot;marker&quot;: {&quot;colorbar&quot;: {&quot;outlinewidth&quot;: 0, &quot;ticks&quot;: &quot;&quot;}}}], &quot;bar&quot;: [{&quot;error_x&quot;: {&quot;color&quot;: &quot;#2a3f5f&quot;}, &quot;error_y&quot;: {&quot;color&quot;: &quot;#2a3f5f&quot;}, &quot;marker&quot;: {&quot;line&quot;: {&quot;color&quot;: &quot;#E5ECF6&quot;, &quot;width&quot;: 0.5}, &quot;pattern&quot;: {&quot;fillmode&quot;: &quot;overlay&quot;, &quot;size&quot;: 10, &quot;solidity&quot;: 0.2}}, &quot;type&quot;: &quot;bar&quot;}], &quot;scattergeo&quot;: [{&quot;type&quot;: &quot;scattergeo&quot;, &quot;marker&quot;: {&quot;colorbar&quot;: {&quot;outlinewidth&quot;: 0, &quot;ticks&quot;: &quot;&quot;}}}], &quot;scatterpolar&quot;: [{&quot;type&quot;: &quot;scatterpolar&quot;, &quot;marker&quot;: {&quot;colorbar&quot;: {&quot;outlinewidth&quot;: 0, &quot;ticks&quot;: &quot;&quot;}}}], &quot;histogram&quot;: [{&quot;marker&quot;: {&quot;pattern&quot;: {&quot;fillmode&quot;: &quot;overlay&quot;, &quot;size&quot;: 10, &quot;solidity&quot;: 0.2}}, &quot;type&quot;: &quot;histogram&quot;}], &quot;scattergl&quot;: [{&quot;type&quot;: &quot;scattergl&quot;, &quot;marker&quot;: {&quot;colorbar&quot;: {&quot;outlinewidth&quot;: 0, &quot;ticks&quot;: &quot;&quot;}}}], &quot;scatter3d&quot;: [{&quot;type&quot;: &quot;scatter3d&quot;, &quot;line&quot;: {&quot;colorbar&quot;: {&quot;outlinewidth&quot;: 0, &quot;ticks&quot;: &quot;&quot;}}, &quot;marker&quot;: {&quot;colorbar&quot;: {&quot;outlinewidth&quot;: 0, &quot;ticks&quot;: &quot;&quot;}}}], &quot;scattermap&quot;: [{&quot;type&quot;: &quot;scattermap&quot;, &quot;marker&quot;: {&quot;colorbar&quot;: {&quot;outlinewidth&quot;: 0, &quot;ticks&quot;: &quot;&quot;}}}], &quot;scattermapbox&quot;: [{&quot;type&quot;: &quot;scattermapbox&quot;, &quot;marker&quot;: {&quot;colorbar&quot;: {&quot;outlinewidth&quot;: 0, &quot;ticks&quot;: &quot;&quot;}}}], &quot;scatterternary&quot;: [{&quot;type&quot;: &quot;scatterternary&quot;, &quot;marker&quot;: {&quot;colorbar&quot;: {&quot;outlinewidth&quot;: 0, &quot;ticks&quot;: &quot;&quot;}}}], &quot;scattercarpet&quot;: [{&quot;type&quot;: &quot;scattercarpet&quot;, &quot;marker&quot;: {&quot;colorbar&quot;: {&quot;outlinewidth&quot;: 0, &quot;ticks&quot;: &quot;&quot;}}}], &quot;carpet&quot;: [{&quot;aaxis&quot;: {&quot;endlinecolor&quot;: &quot;#2a3f5f&quot;, &quot;gridcolor&quot;: &quot;white&quot;, &quot;linecolor&quot;: &quot;white&quot;, &quot;minorgridcolor&quot;: &quot;white&quot;, &quot;startlinecolor&quot;: &quot;#2a3f5f&quot;}, &quot;baxis&quot;: {&quot;endlinecolor&quot;: &quot;#2a3f5f&quot;, &quot;gridcolor&quot;: &quot;white&quot;, &quot;linecolor&quot;: &quot;white&quot;, &quot;minorgridcolor&quot;: &quot;white&quot;, &quot;startlinecolor&quot;: &quot;#2a3f5f&quot;}, &quot;type&quot;: &quot;carpet&quot;}], &quot;table&quot;: [{&quot;cells&quot;: {&quot;fill&quot;: {&quot;color&quot;: &quot;#EBF0F8&quot;}, &quot;line&quot;: {&quot;color&quot;: &quot;white&quot;}}, &quot;header&quot;: {&quot;fill&quot;: {&quot;color&quot;: &quot;#C8D4E3&quot;}, &quot;line&quot;: {&quot;color&quot;: &quot;white&quot;}}, &quot;type&quot;: &quot;table&quot;}], &quot;barpolar&quot;: [{&quot;marker&quot;: {&quot;line&quot;: {&quot;color&quot;: &quot;#E5ECF6&quot;, &quot;width&quot;: 0.5}, &quot;pattern&quot;: {&quot;fillmode&quot;: &quot;overlay&quot;, &quot;size&quot;: 10, &quot;solidity&quot;: 0.2}}, &quot;type&quot;: &quot;barpolar&quot;}], &quot;pie&quot;: [{&quot;automargin&quot;: true, &quot;type&quot;: &quot;pie&quot;}]}, &quot;layout&quot;: {&quot;autotypenumbers&quot;: &quot;strict&quot;, &quot;colorway&quot;: [&quot;#636efa&quot;, &quot;#EF553B&quot;, &quot;#00cc96&quot;, &quot;#ab63fa&quot;, &quot;#FFA15A&quot;, &quot;#19d3f3&quot;, &quot;#FF6692&quot;, &quot;#B6E880&quot;, &quot;#FF97FF&quot;, &quot;#FECB52&quot;], &quot;font&quot;: {&quot;color&quot;: &quot;#2a3f5f&quot;}, &quot;hovermode&quot;: &quot;closest&quot;, &quot;hoverlabel&quot;: {&quot;align&quot;: &quot;left&quot;}, &quot;paper_bgcolor&quot;: &quot;white&quot;, &quot;plot_bgcolor&quot;: &quot;#E5ECF6&quot;, &quot;polar&quot;: {&quot;bgcolor&quot;: &quot;#E5ECF6&quot;, &quot;angularaxis&quot;: {&quot;gridcolor&quot;: &quot;white&quot;, &quot;linecolor&quot;: &quot;white&quot;, &quot;ticks&quot;: &quot;&quot;}, &quot;radialaxis&quot;: {&quot;gridcolor&quot;: &quot;white&quot;, &quot;linecolor&quot;: &quot;white&quot;, &quot;ticks&quot;: &quot;&quot;}}, &quot;ternary&quot;: {&quot;bgcolor&quot;: &quot;#E5ECF6&quot;, &quot;aaxis&quot;: {&quot;gridcolor&quot;: &quot;white&quot;, &quot;linecolor&quot;: &quot;white&quot;, &quot;ticks&quot;: &quot;&quot;}, &quot;baxis&quot;: {&quot;gridcolor&quot;: &quot;white&quot;, &quot;linecolor&quot;: &quot;white&quot;, &quot;ticks&quot;: &quot;&quot;}, &quot;caxis&quot;: {&quot;gridcolor&quot;: &quot;white&quot;, &quot;linecolor&quot;: &quot;white&quot;, &quot;ticks&quot;: &quot;&quot;}}, &quot;coloraxis&quot;: {&quot;colorbar&quot;: {&quot;outlinewidth&quot;: 0, &quot;ticks&quot;: &quot;&quot;}}, &quot;colorscale&quot;: {&quot;sequential&quot;: [[0.0, &quot;#0d0887&quot;], [0.1111111111111111, &quot;#46039f&quot;], [0.2222222222222222, &quot;#7201a8&quot;], [0.3333333333333333, &quot;#9c179e&quot;], [0.4444444444444444, &quot;#bd3786&quot;], [0.5555555555555556, &quot;#d8576b&quot;], [0.6666666666666666, &quot;#ed7953&quot;], [0.7777777777777778, &quot;#fb9f3a&quot;], [0.8888888888888888, &quot;#fdca26&quot;], [1.0, &quot;#f0f921&quot;]], &quot;sequentialminus&quot;: [[0.0, &quot;#0d0887&quot;], [0.1111111111111111, &quot;#46039f&quot;], [0.2222222222222222, &quot;#7201a8&quot;], [0.3333333333333333, &quot;#9c179e&quot;], [0.4444444444444444, &quot;#bd3786&quot;], [0.5555555555555556, &quot;#d8576b&quot;], [0.6666666666666666, &quot;#ed7953&quot;], [0.7777777777777778, &quot;#fb9f3a&quot;], [0.8888888888888888, &quot;#fdca26&quot;], [1.0, &quot;#f0f921&quot;]], &quot;diverging&quot;: [[0, &quot;#8e0152&quot;], [0.1, &quot;#c51b7d&quot;], [0.2, &quot;#de77ae&quot;], [0.3, &quot;#f1b6da&quot;], [0.4, &quot;#fde0ef&quot;], [0.5, &quot;#f7f7f7&quot;], [0.6, &quot;#e6f5d0&quot;], [0.7, &quot;#b8e186&quot;], [0.8, &quot;#7fbc41&quot;], [0.9, &quot;#4d9221&quot;], [1, &quot;#276419&quot;]]}, &quot;xaxis&quot;: {&quot;gridcolor&quot;: &quot;white&quot;, &quot;linecolor&quot;: &quot;white&quot;, &quot;ticks&quot;: &quot;&quot;, &quot;title&quot;: {&quot;standoff&quot;: 15}, &quot;zerolinecolor&quot;: &quot;white&quot;, &quot;automargin&quot;: true, &quot;zerolinewidth&quot;: 2}, &quot;yaxis&quot;: {&quot;gridcolor&quot;: &quot;white&quot;, &quot;linecolor&quot;: &quot;white&quot;, &quot;ticks&quot;: &quot;&quot;, &quot;title&quot;: {&quot;standoff&quot;: 15}, &quot;zerolinecolor&quot;: &quot;white&quot;, &quot;automargin&quot;: true, &quot;zerolinewidth&quot;: 2}, &quot;scene&quot;: {&quot;xaxis&quot;: {&quot;backgroundcolor&quot;: &quot;#E5ECF6&quot;, &quot;gridcolor&quot;: &quot;white&quot;, &quot;linecolor&quot;: &quot;white&quot;, &quot;showbackground&quot;: true, &quot;ticks&quot;: &quot;&quot;, &quot;zerolinecolor&quot;: &quot;white&quot;, &quot;gridwidth&quot;: 2}, &quot;yaxis&quot;: {&quot;backgroundcolor&quot;: &quot;#E5ECF6&quot;, &quot;gridcolor&quot;: &quot;white&quot;, &quot;linecolor&quot;: &quot;white&quot;, &quot;showbackground&quot;: true, &quot;ticks&quot;: &quot;&quot;, &quot;zerolinecolor&quot;: &quot;white&quot;, &quot;gridwidth&quot;: 2}, &quot;zaxis&quot;: {&quot;backgroundcolor&quot;: &quot;#E5ECF6&quot;, &quot;gridcolor&quot;: &quot;white&quot;, &quot;linecolor&quot;: &quot;white&quot;, &quot;showbackground&quot;: true, &quot;ticks&quot;: &quot;&quot;, &quot;zerolinecolor&quot;: &quot;white&quot;, &quot;gridwidth&quot;: 2}}, &quot;shapedefaults&quot;: {&quot;line&quot;: {&quot;color&quot;: &quot;#2a3f5f&quot;}}, &quot;annotationdefaults&quot;: {&quot;arrowcolor&quot;: &quot;#2a3f5f&quot;, &quot;arrowhead&quot;: 0, &quot;arrowwidth&quot;: 1}, &quot;geo&quot;: {&quot;bgcolor&quot;: &quot;white&quot;, &quot;landcolor&quot;: &quot;#E5ECF6&quot;, &quot;subunitcolor&quot;: &quot;white&quot;, &quot;showland&quot;: true, &quot;showlakes&quot;: true, &quot;lakecolor&quot;: &quot;white&quot;}, &quot;title&quot;: {&quot;x&quot;: 0.05}, &quot;mapbox&quot;: {&quot;style&quot;: &quot;light&quot;}}}, &quot;xaxis&quot;: {&quot;anchor&quot;: &quot;y&quot;, &quot;domain&quot;: [0.0, 0.45], &quot;title&quot;: {&quot;text&quot;: &quot;Number of Test Vectors (k)&quot;}}, &quot;yaxis&quot;: {&quot;anchor&quot;: &quot;x&quot;, &quot;domain&quot;: [0.7666666666666666, 0.9999999999999999], &quot;title&quot;: {&quot;text&quot;: &quot;Absolute Error&quot;}}, &quot;xaxis2&quot;: {&quot;anchor&quot;: &quot;y2&quot;, &quot;domain&quot;: [0.55, 1.0], &quot;title&quot;: {&quot;text&quot;: &quot;Number of Test Vectors (k)&quot;}}, &quot;yaxis2&quot;: {&quot;anchor&quot;: &quot;x2&quot;, &quot;domain&quot;: [0.7666666666666666, 0.9999999999999999], &quot;title&quot;: {&quot;text&quot;: &quot;Runtime (s)&quot;}}, &quot;xaxis3&quot;: {&quot;anchor&quot;: &quot;y3&quot;, &quot;domain&quot;: [0.0, 0.45], &quot;title&quot;: {&quot;text&quot;: &quot;Number of Test Vectors (k)&quot;}}, &quot;yaxis3&quot;: {&quot;anchor&quot;: &quot;x3&quot;, &quot;domain&quot;: [0.3833333333333333, 0.6166666666666666], &quot;title&quot;: {&quot;text&quot;: &quot;Absolute Error&quot;}}, &quot;xaxis4&quot;: {&quot;anchor&quot;: &quot;y4&quot;, &quot;domain&quot;: [0.55, 1.0], &quot;title&quot;: {&quot;text&quot;: &quot;Number of Test Vectors (k)&quot;}}, &quot;yaxis4&quot;: {&quot;anchor&quot;: &quot;x4&quot;, &quot;domain&quot;: [0.3833333333333333, 0.6166666666666666], &quot;title&quot;: {&quot;text&quot;: &quot;Runtime (s)&quot;}}, &quot;xaxis5&quot;: {&quot;anchor&quot;: &quot;y5&quot;, &quot;domain&quot;: [0.0, 0.45], &quot;title&quot;: {&quot;text&quot;: &quot;Number of Test Vectors (k)&quot;}}, &quot;yaxis5&quot;: {&quot;anchor&quot;: &quot;x5&quot;, &quot;domain&quot;: [0.0, 0.2333333333333333], &quot;title&quot;: {&quot;text&quot;: &quot;Absolute Error&quot;}}, &quot;xaxis6&quot;: {&quot;anchor&quot;: &quot;y6&quot;, &quot;domain&quot;: [0.55, 1.0], &quot;title&quot;: {&quot;text&quot;: &quot;Number of Test Vectors (k)&quot;}}, &quot;yaxis6&quot;: {&quot;anchor&quot;: &quot;x6&quot;, &quot;domain&quot;: [0.0, 0.2333333333333333], &quot;title&quot;: {&quot;text&quot;: &quot;Runtime (s)&quot;}}, &quot;annotations&quot;: [{&quot;font&quot;: {&quot;size&quot;: 16}, &quot;showarrow&quot;: false, &quot;text&quot;: &quot;Exponential Decay - Error vs k&quot;, &quot;x&quot;: 0.225, &quot;xanchor&quot;: &quot;center&quot;, &quot;xref&quot;: &quot;paper&quot;, &quot;y&quot;: 0.9999999999999999, &quot;yanchor&quot;: &quot;bottom&quot;, &quot;yref&quot;: &quot;paper&quot;}, {&quot;font&quot;: {&quot;size&quot;: 16}, &quot;showarrow&quot;: false, &quot;text&quot;: &quot;Uniform Spectrum - Error vs k&quot;, &quot;x&quot;: 0.775, &quot;xanchor&quot;: &quot;center&quot;, &quot;xref&quot;: &quot;paper&quot;, &quot;y&quot;: 0.9999999999999999, &quot;yanchor&quot;: &quot;bottom&quot;, &quot;yref&quot;: &quot;paper&quot;}, {&quot;font&quot;: {&quot;size&quot;: 16}, &quot;showarrow&quot;: false, &quot;text&quot;: &quot;Intermediate Decay - Error vs k&quot;, &quot;x&quot;: 0.225, &quot;xanchor&quot;: &quot;center&quot;, &quot;xref&quot;: &quot;paper&quot;, &quot;y&quot;: 0.6166666666666666, &quot;yanchor&quot;: &quot;bottom&quot;, &quot;yref&quot;: &quot;paper&quot;}, {&quot;font&quot;: {&quot;size&quot;: 16}, &quot;showarrow&quot;: false, &quot;text&quot;: &quot;Exponential Decay - Runtime vs k&quot;, &quot;x&quot;: 0.775, &quot;xanchor&quot;: &quot;center&quot;, &quot;xref&quot;: &quot;paper&quot;, &quot;y&quot;: 0.6166666666666666, &quot;yanchor&quot;: &quot;bottom&quot;, &quot;yref&quot;: &quot;paper&quot;}, {&quot;font&quot;: {&quot;size&quot;: 16}, &quot;showarrow&quot;: false, &quot;text&quot;: &quot;Uniform Spectrum - Runtime vs k&quot;, &quot;x&quot;: 0.225, &quot;xanchor&quot;: &quot;center&quot;, &quot;xref&quot;: &quot;paper&quot;, &quot;y&quot;: 0.2333333333333333, &quot;yanchor&quot;: &quot;bottom&quot;, &quot;yref&quot;: &quot;paper&quot;}, {&quot;font&quot;: {&quot;size&quot;: 16}, &quot;showarrow&quot;: false, &quot;text&quot;: &quot;Intermediate Decay - Runtime vs k&quot;, &quot;x&quot;: 0.775, &quot;xanchor&quot;: &quot;center&quot;, &quot;xref&quot;: &quot;paper&quot;, &quot;y&quot;: 0.2333333333333333, &quot;yanchor&quot;: &quot;bottom&quot;, &quot;yref&quot;: &quot;paper&quot;}], &quot;title&quot;: {&quot;text&quot;: &quot;Trace Estimation Comparison (Matrix Size = 500)&quot;}, &quot;height&quot;: 1200, &quot;width&quot;: 1000, &quot;hovermode&quot;: &quot;closest&quot;, &quot;dragmode&quot;: &quot;zoom&quot;}}' data-config='{}'></marimo-plotly>"
+          }
+        }
+      ],
+      "console": [
+        {
+          "type": "stream",
+          "name": "stdout",
+          "text": "Testing matrix type: Exponential Decay\n"
+        },
+        {
+          "type": "stream",
+          "name": "stdout",
+          "text": "  True Trace: 99.6318\narray([[1, 1, 1, ..., -1, -1, 1],\n       [1, -1, 1, ..., 1, -1, -1],\n       [1, 1, 1, ..., -1, 1, -1],\n       ...,\n       [-1, -1, 1, ..., -1, -1, 1],\n       [-1, -1, 1, ..., 1, 1, 1],\n       [-1, -1, 1, ..., 1, 1, 1]], dtype=float32)\n"
+        },
+        {
+          "type": "stream",
+          "name": "stdout",
+          "text": "array([[1, 1, 1, ..., -1, -1, 1],\n       [1, -1, 1, ..., 1, 1, -1],\n       [1, -1, -1, ..., 1, 1, 1],\n       ...,\n       [-1, 1, 1, ..., 1, -1, 1],\n       [1, 1, 1, ..., 1, -1, 1],\n       [1, 1, -1, ..., -1, 1, -1]], dtype=float32)\narray([[1, 1, 1, ..., 1, 1, -1],\n       [1, -1, 1, ..., -1, 1, 1],\n       [1, 1, 1, ..., 1, -1, -1],\n       ...,\n       [-1, 1, 1, ..., -1, -1, 1],\n       [-1, -1, 1, ..., 1, 1, -1],\n       [1, -1, -1, ..., -1, 1, -1]], dtype=float32)\narray([[-1, 1, 1, ..., -1, -1, -1],\n       [1, 1, 1, ..., -1, -1, -1],\n       [1, -1, -1, ..., -1, -1, -1],\n       ...,\n       [1, 1, 1, ..., -1, 1, 1],\n       [1, 1, 1, ..., -1, -1, -1],\n       [1, 1, -1, ..., -1, 1, 1]], dtype=float32)\narray([[1, -1, 1, ..., 1, -1, 1],\n       [-1, 1, -1, ..., -1, -1, -1],\n       [-1, -1, -1, ..., 1, -1, 1],\n       ...,\n       [1, 1, -1, ..., -1, 1, -1],\n       [1, -1, 1, ..., -1, -1, -1],\n       [1, -1, 1, ..., -1, -1, -1]], dtype=float32)\n"
+        },
+        {
+          "type": "stream",
+          "name": "stdout",
+          "text": "array([[1, -1, -1, ..., -1, 1, 1],\n       [1, -1, 1, ..., 1, -1, -1],\n       [-1, -1, -1, ..., 1, -1, -1],\n       ...,\n       [1, -1, -1, ..., -1, 1, -1],\n       [-1, -1, -1, ..., -1, -1, 1],\n       [1, -1, 1, ..., 1, 1, 1]], dtype=float32)\narray([[-1, 1, -1, ..., 1, 1, -1],\n       [-1, -1, -1, ..., -1, -1, 1],\n       [-1, 1, 1, ..., -1, 1, 1],\n       ...,\n       [-1, -1, 1, ..., 1, -1, 1],\n       [-1, 1, 1, ..., -1, 1, -1],\n       [-1, 1, -1, ..., -1, -1, 1]], dtype=float32)\narray([[-1, 1, -1, ..., -1, -1, -1],\n       [1, -1, -1, ..., -1, -1, -1],\n       [1, -1, -1, ..., -1, -1, -1],\n       ...,\n       [1, 1, 1, ..., 1, 1, 1],\n       [1, 1, 1, ..., 1, 1, 1],\n       [1, -1, 1, ..., 1, 1, 1]], dtype=float32)\n"
+        },
+        {
+          "type": "stream",
+          "name": "stdout",
+          "text": "array([[-1, -1, 1, ..., 1, -1, 1],\n       [1, -1, 1, ..., 1, -1, 1],\n       [-1, -1, 1, ..., -1, -1, 1],\n       ...,\n       [-1, -1, -1, ..., -1, 1, -1],\n       [-1, 1, -1, ..., 1, 1, 1],\n       [-1, -1, -1, ..., -1, -1, -1]], dtype=float32)\narray([[-1, -1, -1, ..., -1, -1, 1],\n       [-1, 1, 1, ..., 1, 1, -1],\n       [-1, 1, 1, ..., -1, -1, -1],\n       ...,\n       [1, -1, 1, ..., -1, 1, 1],\n       [1, -1, -1, ..., -1, -1, -1],\n       [-1, 1, 1, ..., 1, -1, 1]], dtype=float32)\narray([[1, -1, 1, ..., -1, -1, 1],\n       [-1, -1, -1, ..., -1, -1, -1],\n       [-1, -1, -1, ..., 1, -1, 1],\n       ...,\n       [-1, -1, -1, ..., -1, -1, -1],\n       [-1, 1, 1, ..., -1, 1, -1],\n       [1, 1, 1, ..., -1, -1, 1]], dtype=float32)\n"
+        },
+        {
+          "type": "stream",
+          "name": "stdout",
+          "text": "array([[1, 1, 1, ..., 1, 1, 1],\n       [-1, -1, -1, ..., 1, -1, 1],\n       [1, 1, -1, ..., 1, -1, -1],\n       ...,\n       [-1, -1, -1, ..., -1, -1, 1],\n       [1, 1, -1, ..., -1, -1, -1],\n       [-1, 1, -1, ..., -1, 1, 1]], dtype=float32)\narray([[1, -1, -1, ..., -1, 1, 1],\n       [-1, 1, -1, ..., -1, -1, -1],\n       [1, 1, -1, ..., 1, 1, 1],\n       ...,\n       [-1, -1, -1, ..., 1, 1, -1],\n       [-1, 1, 1, ..., -1, -1, 1],\n       [1, 1, -1, ..., 1, -1, 1]], dtype=float32)\nTesting matrix type: Uniform Spectrum\n  True Trace: 500.0000\narray([[1, -1, -1, ..., -1, 1, -1],\n       [1, -1, -1, ..., -1, -1, 1],\n       [1, 1, -1, ..., 1, 1, 1],\n       ...,\n       [-1, 1, 1, ..., -1, -1, -1],\n       [-1, -1, -1, ..., -1, -1, -1],\n       [1, 1, 1, ..., -1, -1, 1]], dtype=float32)\n"
+        },
+        {
+          "type": "stream",
+          "name": "stdout",
+          "text": "array([[-1, 1, -1, ..., -1, -1, -1],\n       [-1, 1, 1, ..., -1, 1, 1],\n       [1, -1, 1, ..., -1, 1, 1],\n       ...,\n       [1, -1, 1, ..., -1, -1, 1],\n       [1, 1, 1, ..., 1, 1, -1],\n       [-1, 1, 1, ..., -1, 1, 1]], dtype=float32)\narray([[-1, 1, -1, ..., -1, -1, -1],\n       [-1, -1, 1, ..., -1, 1, -1],\n       [-1, 1, -1, ..., 1, -1, 1],\n       ...,\n       [1, -1, -1, ..., -1, 1, -1],\n       [1, 1, -1, ..., -1, -1, 1],\n       [1, 1, -1, ..., -1, 1, -1]], dtype=float32)\narray([[1, -1, -1, ..., 1, -1, 1],\n       [-1, 1, 1, ..., 1, -1, 1],\n       [1, 1, -1, ..., 1, -1, -1],\n       ...,\n       [-1, 1, -1, ..., -1, 1, 1],\n       [1, -1, 1, ..., 1, -1, 1],\n       [1, 1, 1, ..., 1, -1, -1]], dtype=float32)\narray([[-1, 1, -1, ..., 1, -1, -1],\n       [-1, 1, 1, ..., 1, -1, -1],\n       [-1, 1, 1, ..., 1, 1, 1],\n       ...,\n       [1, -1, -1, ..., -1, 1, 1],\n       [1, 1, -1, ..., -1, -1, 1],\n       [-1, -1, 1, ..., -1, -1, -1]], dtype=float32)\narray([[1, -1, -1, ..., 1, -1, 1],\n       [1, 1, 1, ..., -1, -1, 1],\n       [1, -1, 1, ..., 1, -1, 1],\n       ...,\n       [-1, 1, 1, ..., 1, 1, 1],\n       [-1, -1, 1, ..., 1, 1, -1],\n       [-1, -1, 1, ..., -1, -1, 1]], dtype=float32)\n"
+        },
+        {
+          "type": "stream",
+          "name": "stdout",
+          "text": "array([[1, 1, 1, ..., -1, -1, -1],\n       [-1, -1, -1, ..., 1, -1, 1],\n       [-1, 1, 1, ..., -1, -1, -1],\n       ...,\n       [-1, 1, -1, ..., 1, 1, 1],\n       [1, -1, -1, ..., 1, -1, 1],\n       [1, 1, 1, ..., 1, -1, 1]], dtype=float32)\narray([[1, -1, 1, ..., 1, 1, 1],\n       [1, 1, 1, ..., -1, -1, 1],\n       [1, 1, 1, ..., -1, 1, 1],\n       ...,\n       [-1, -1, -1, ..., -1, 1, 1],\n       [1, 1, 1, ..., 1, 1, -1],\n       [-1, 1, 1, ..., 1, -1, -1]], dtype=float32)\narray([[-1, -1, 1, ..., 1, 1, -1],\n       [-1, 1, -1, ..., -1, 1, 1],\n       [-1, 1, -1, ..., -1, -1, 1],\n       ...,\n       [-1, -1, 1, ..., -1, 1, -1],\n       [1, -1, 1, ..., -1, 1, -1],\n       [-1, -1, 1, ..., 1, -1, 1]], dtype=float32)\n"
+        },
+        {
+          "type": "stream",
+          "name": "stdout",
+          "text": "array([[1, 1, -1, ..., -1, -1, -1],\n       [-1, -1, -1, ..., -1, 1, -1],\n       [1, 1, -1, ..., 1, -1, 1],\n       ...,\n       [-1, -1, -1, ..., -1, -1, -1],\n       [-1, 1, -1, ..., -1, -1, 1],\n       [1, -1, 1, ..., -1, 1, 1]], dtype=float32)\narray([[-1, -1, -1, ..., 1, -1, 1],\n       [-1, 1, -1, ..., 1, -1, -1],\n       [-1, -1, 1, ..., -1, -1, 1],\n       ...,\n       [-1, 1, 1, ..., 1, 1, 1],\n       [1, -1, -1, ..., 1, 1, 1],\n       [-1, -1, 1, ..., 1, -1, 1]], dtype=float32)\narray([[1, -1, -1, ..., -1, 1, -1],\n       [1, -1, -1, ..., -1, 1, -1],\n       [-1, 1, 1, ..., 1, 1, -1],\n       ...,\n       [1, 1, -1, ..., -1, -1, 1],\n       [1, -1, 1, ..., -1, 1, -1],\n       [-1, -1, -1, ..., -1, -1, 1]], dtype=float32)\n"
+        },
+        {
+          "type": "stream",
+          "name": "stdout",
+          "text": "array([[-1, 1, -1, ..., 1, 1, 1],\n       [-1, -1, 1, ..., 1, -1, -1],\n       [-1, -1, 1, ..., -1, -1, 1],\n       ...,\n       [-1, -1, 1, ..., -1, -1, -1],\n       [-1, 1, 1, ..., -1, -1, 1],\n       [1, 1, 1, ..., -1, 1, -1]], dtype=float32)\nTesting matrix type: Intermediate Decay\n  True Trace: 139.6992\narray([[1, -1, -1, ..., -1, -1, 1],\n       [-1, 1, -1, ..., -1, -1, -1],\n       [-1, 1, -1, ..., 1, -1, 1],\n       ...,\n       [-1, -1, -1, ..., -1, -1, 1],\n       [1, 1, 1, ..., -1, -1, -1],\n       [-1, -1, -1, ..., -1, 1, 1]], dtype=float32)\narray([[1, -1, -1, ..., -1, 1, -1],\n       [-1, 1, -1, ..., 1, 1, 1],\n       [-1, 1, 1, ..., 1, 1, 1],\n       ...,\n       [-1, -1, 1, ..., 1, -1, -1],\n       [1, 1, -1, ..., 1, 1, -1],\n       [1, 1, 1, ..., -1, 1, 1]], dtype=float32)\narray([[-1, 1, -1, ..., 1, 1, -1],\n       [-1, -1, -1, ..., 1, 1, 1],\n       [1, -1, 1, ..., 1, -1, -1],\n       ...,\n       [-1, -1, -1, ..., 1, 1, 1],\n       [1, 1, -1, ..., 1, -1, 1],\n       [1, -1, 1, ..., 1, -1, -1]], dtype=float32)\narray([[-1, 1, -1, ..., 1, -1, 1],\n       [1, -1, 1, ..., -1, -1, -1],\n       [1, -1, 1, ..., 1, -1, 1],\n       ...,\n       [1, 1, -1, ..., -1, -1, -1],\n       [1, -1, 1, ..., -1, -1, -1],\n       [1, -1, -1, ..., -1, -1, 1]], dtype=float32)\n"
+        },
+        {
+          "type": "stream",
+          "name": "stdout",
+          "text": "array([[-1, -1, -1, ..., -1, 1, -1],\n       [-1, 1, 1, ..., -1, 1, -1],\n       [1, 1, -1, ..., -1, 1, 1],\n       ...,\n       [1, 1, -1, ..., 1, 1, 1],\n       [-1, 1, 1, ..., -1, -1, 1],\n       [-1, 1, -1, ..., -1, -1, 1]], dtype=float32)\narray([[1, -1, -1, ..., -1, -1, 1],\n       [-1, -1, -1, ..., 1, 1, 1],\n       [1, -1, -1, ..., -1, -1, 1],\n       ...,\n       [-1, 1, -1, ..., -1, 1, -1],\n       [1, 1, -1, ..., 1, 1, -1],\n       [-1, 1, -1, ..., -1, -1, 1]], dtype=float32)\narray([[-1, -1, 1, ..., -1, 1, -1],\n       [1, 1, -1, ..., 1, 1, 1],\n       [-1, 1, -1, ..., 1, -1, -1],\n       ...,\n       [-1, 1, -1, ..., -1, 1, 1],\n       [1, 1, -1, ..., -1, -1, 1],\n       [1, -1, 1, ..., 1, 1, -1]], dtype=float32)\narray([[1, -1, 1, ..., -1, 1, 1],\n       [-1, 1, -1, ..., -1, -1, 1],\n       [1, 1, -1, ..., 1, 1, -1],\n       ...,\n       [-1, 1, 1, ..., 1, 1, -1],\n       [-1, 1, -1, ..., -1, 1, -1],\n       [-1, -1, 1, ..., -1, -1, 1]], dtype=float32)\n"
+        },
+        {
+          "type": "stream",
+          "name": "stdout",
+          "text": "array([[-1, -1, 1, ..., 1, 1, -1],\n       [-1, -1, -1, ..., -1, 1, 1],\n       [-1, -1, -1, ..., -1, -1, 1],\n       ...,\n       [-1, -1, 1, ..., -1, -1, 1],\n       [-1, 1, 1, ..., -1, -1, 1],\n       [-1, 1, 1, ..., -1, 1, -1]], dtype=float32)\narray([[1, -1, -1, ..., -1, -1, 1],\n       [1, -1, 1, ..., 1, 1, -1],\n       [1, 1, -1, ..., -1, 1, -1],\n       ...,\n       [1, -1, -1, ..., -1, -1, 1],\n       [-1, 1, -1, ..., -1, -1, -1],\n       [-1, 1, 1, ..., -1, 1, -1]], dtype=float32)\narray([[-1, -1, 1, ..., 1, -1, -1],\n       [-1, 1, -1, ..., 1, 1, 1],\n       [-1, 1, -1, ..., 1, 1, -1],\n       ...,\n       [1, 1, -1, ..., -1, -1, -1],\n       [1, -1, -1, ..., -1, 1, -1],\n       [-1, -1, 1, ..., 1, 1, 1]], dtype=float32)\n"
+        },
+        {
+          "type": "stream",
+          "name": "stdout",
+          "text": "array([[1, 1, -1, ..., 1, -1, 1],\n       [-1, -1, -1, ..., -1, -1, -1],\n       [-1, -1, -1, ..., 1, -1, -1],\n       ...,\n       [1, -1, -1, ..., -1, 1, 1],\n       [-1, 1, 1, ..., 1, 1, 1],\n       [1, -1, 1, ..., -1, 1, 1]], dtype=float32)\narray([[-1, 1, 1, ..., 1, -1, 1],\n       [1, 1, -1, ..., 1, -1, 1],\n       [-1, 1, 1, ..., 1, -1, 1],\n       ...,\n       [-1, 1, 1, ..., 1, 1, -1],\n       [1, 1, 1, ..., 1, -1, 1],\n       [-1, 1, 1, ..., -1, -1, -1]], dtype=float32)\n"
+        }
+      ]
+    }
+  ]
+}
