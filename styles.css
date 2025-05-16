@@ -12,9 +12,9 @@ body {
     height: 20px;
     cursor: pointer;
     position: relative;
-  }
-  
-  .menu-icon span {
+}
+
+.menu-icon span {
     display: block;
     position: absolute;
     height: 3px;
@@ -25,22 +25,23 @@ body {
     left: 0;
     transform: rotate(0deg);
     transition: 0.25s ease-in-out;
-  }
-  
-  .menu-icon span:nth-child(1) {
+}
+
+.menu-icon span:nth-child(1) {
     top: 0px;
-  }
-  
-  .menu-icon span:nth-child(2), .menu-icon span:nth-child(3) {
+}
+
+.menu-icon span:nth-child(2),
+.menu-icon span:nth-child(3) {
     top: 8px;
-  }
-  
-  .menu-icon span:nth-child(4) {
+}
+
+.menu-icon span:nth-child(4) {
     top: 16px;
-  }
-  
-  /* Menu items styling */
-  .menu-list-mobile {
+}
+
+/* Menu items styling */
+.menu-list-mobile {
     display: none;
     position: absolute;
     top: 51px;
@@ -49,9 +50,9 @@ body {
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     background-color: #f8f5d7;
-  }
-  
-  .menu-list-mobile ul {
+}
+
+.menu-list-mobile ul {
     list-style: none;
     display: flex;
     flex-direction: column;
@@ -59,35 +60,35 @@ body {
     padding: 5px;
     transition: border-bottom 0.1s;
     font-size: 18px;
-  }
-  
-  .menu-list-mobile li {
+}
+
+.menu-list-mobile li {
     padding: 5px 0;
-  }
-  
-  /* Show menu items when hamburger icon is clicked */
-  .menu-icon.active span:nth-child(1) {
+}
+
+/* Show menu items when hamburger icon is clicked */
+.menu-icon.active span:nth-child(1) {
     top: 8px;
     transform: rotate(45deg);
-  }
-  
-  .menu-icon.active span:nth-child(2) {
+}
+
+.menu-icon.active span:nth-child(2) {
     opacity: 0;
-  }
-  
-  .menu-icon.active span:nth-child(3) {
+}
+
+.menu-icon.active span:nth-child(3) {
     top: 8px;
     transform: rotate(-45deg);
-  }
-  
-  .menu-icon.active span:nth-child(4) {
+}
+
+.menu-icon.active span:nth-child(4) {
     top: 8px;
     transform: rotate(45deg);
-  }
-  
-  
+}
 
-  /*  end */
+
+
+/*  end */
 
 .header {
     padding: 10px;
@@ -151,6 +152,8 @@ body {
     position: relative;
     flex: 1.1;
     border-right: 1px solid #ccc;
+    transition: transform 0.3s ease-in-out;
+    background-color: #f8f5d7;
 }
 
 /* .sidebar-right {
@@ -177,7 +180,8 @@ body {
     padding: 5px;
 }
 
-.folder-list, .sub-list {
+.folder-list,
+.sub-list {
     list-style: none;
     margin: 0;
     padding: 0;
@@ -205,7 +209,7 @@ body {
     color: inherit;
 }
 
-.sidebar-left  a:hover {
+.sidebar-left a:hover {
     cursor: pointer;
 }
 
@@ -265,10 +269,10 @@ body {
 
 @media screen and (max-width: 760px) {
 
-    /*  Items that we want visible on small screens only */
+     /* Items that we want visible on small screens only
     .sidebar-left {
         display: none;
-    }
+    } */
 
     .sidebar-right {
         display: none;
@@ -288,14 +292,73 @@ body {
         display: block;
     }
 
-    .menu-icon.active ~ .menu-list-mobile {
-    display: block;
-  }
+    .menu-icon.active~.menu-list-mobile {
+        display: block;
+    }
 
     .header .menu .menu-list-desktop {
         display: none;
     }
 
-    
+}
 
+
+
+@media (max-width: 760px) {
+
+    /* Adjust this breakpoint to match your mobile styles */
+    .sidebar-left {
+        position: fixed;
+        /* Fixed position to overlay content */
+        /* top: 0; */
+        /* left: 0; */
+        width: 80%;
+        /* Takes up 80% of the screen width */
+        max-width: 300px;
+        /* But not more than 300px */
+        height: 100vh;
+        /* Full viewport height */
+        z-index: 1010;
+        /* High z-index to be on top. Adjust if needed relative to header. */
+        transform: translateX(-100%);
+        /* Initially hidden off-screen to the left */
+        overflow-y: auto;
+        /* Allow scrolling within the sidebar if content is long */
+        padding: 20px;
+        box-sizing: border-box;
+        /* Include padding in width/height */
+        border-right: 1px solid #ddd;
+        /* Optional border */
+        box-shadow: 3px 0px 10px rgba(0, 0, 0, 0.1);
+        /* Optional subtle shadow */
+    }
+
+    .sidebar-left.active {
+        /* This class will be toggled by JavaScript */
+        transform: translateX(0);
+        /* Slides the sidebar into view */
+    }
+
+    /* Optional: Style to dim the main content when sidebar is open */
+    /* You would toggle a class like 'napkins-overlay-active' on the body or container */
+    /*
+    .napkins-overlay-active::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1005; // Lower than sidebar, higher than content
+    }
+    */
+
+    /* Ensure header is above the sidebar or handle interactions */
+    .header {
+        position: relative;
+        /* Or ensure it has a z-index if needed */
+        z-index: 1020;
+        /* Make sure header (especially mobile menu icon) is accessible */
+    }
 }

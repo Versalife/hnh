@@ -1,79 +1,125 @@
-// script.js
+// script.js - FULL UPDATED VERSION
 
 document.addEventListener('DOMContentLoaded', function () {
-    // Handles mobile menu toggle
-    var menuIcon = document.querySelector('.menu .menu-icon');
-    var menuItems = document.querySelector('.menu .menu-list-mobile');
+    // --- Mobile Menu (Hamburger) Functionality ---
+    const menuIcon = document.querySelector('.menu .menu-icon');
+    const menuItemsContainer = document.querySelector('.menu .menu-list-mobile');
 
-    if (menuIcon && menuItems) { // Ensure elements exist
+    if (menuIcon && menuItemsContainer) {
         menuIcon.addEventListener('click', function () {
             menuIcon.classList.toggle('active');
-            menuItems.classList.toggle('active');
+            menuItemsContainer.classList.toggle('active');
         });
     }
 
-    // Load initial content based on hash, or set hash based on default content
-    loadContentFromHash();
+    // --- Napkins Sidebar Toggle Functionality (for Mobile) ---
+    const toggleNapkinsLinkMobile = document.getElementById('toggle-napkins-sidebar-mobile');
+    const napkinsSidebar = document.querySelector('.sidebar-left');
 
-    // Listen for hash changes (e.g., back/forward buttons, programmatic navigation)
-    window.addEventListener('hashchange', loadContentFromHash);
+    if (toggleNapkinsLinkMobile && napkinsSidebar) {
+        toggleNapkinsLinkMobile.addEventListener('click', function(event) {
+            event.preventDefault(); // Important: prevent default link behavior
 
-    // Initialize the more efficient includeHTML functionality
+            napkinsSidebar.classList.toggle('active'); // This toggles the sidebar's visibility
+
+            // If the main mobile menu is also open, close it for better UX
+            if (menuIcon && menuItemsContainer && menuItemsContainer.classList.contains('active')) {
+                menuIcon.classList.remove('active');
+                menuItemsContainer.classList.remove('active');
+            }
+            // Optional: if you add an overlay class to the body when sidebar is open
+            // document.body.classList.toggle('napkins-sidebar-is-active');
+        });
+    } else {
+        // Debugging messages if elements aren't found
+        if (!toggleNapkinsLinkMobile) {
+            console.warn("Mobile 'Napkins' toggle link with ID 'toggle-napkins-sidebar-mobile' was not found in the HTML. Ensure the ID is correct.");
+        }
+        if (!napkinsSidebar) {
+            console.warn("Napkins sidebar with class '.sidebar-left' was not found in the HTML.");
+        }
+    }
+
+    // --- Hash-based Navigation Setup ---
+    loadContentFromHash(); // Load content based on initial hash (or default)
+    window.addEventListener('hashchange', loadContentFromHash); // Listen for back/forward/navigate
+
+    // --- Initialize includeHTML functionality ---
     mainIncludeHTML().catch((error) => console.error("Error in main function for includeHTML:", error));
 });
 
+function navigate(dest_html) {
+    // 1. Close main mobile menu if it's open
+    const menuIcon = document.querySelector('.menu .menu-icon');
+    const menuItemsContainer = document.querySelector('.menu .menu-list-mobile');
+    if (menuIcon && menuItemsContainer && menuItemsContainer.classList.contains('active')) {
+        menuIcon.classList.remove('active');
+        menuItemsContainer.classList.remove('active');
+    }
+
+    // 2. Close Napkins sidebar if it's open
+    const napkinsSidebar = document.querySelector('.sidebar-left');
+    if (napkinsSidebar && napkinsSidebar.classList.contains('active')) {
+        napkinsSidebar.classList.remove('active');
+        // Optional: document.body.classList.remove('napkins-sidebar-is-active');
+    }
+
+    // 3. Perform navigation (update hash)
+    if (dest_html.startsWith('#')) {
+        dest_html = dest_html.substring(1);
+    }
+    window.location.hash = dest_html;
+}
+
 function loadContentFromHash() {
-    var contentArea = document.querySelector(".content .post");
+    const contentArea = document.querySelector(".content .post"); // This is your <object> or <iframe>
     if (!contentArea) {
         console.error("Content area '.content .post' not found.");
         return;
     }
 
     let currentUrlHash = window.location.hash.substring(1); // Get path from URL hash, removing '#'
-    let targetPath = currentUrlHash; // This is the path we intend to load
+    let targetPath = currentUrlHash;
 
-    if (!targetPath) {
-        // No hash in the URL (e.g., initial load of domain.com/)
-        // Use the default path specified in the <object>'s data attribute in index.html
-        const defaultPathFromHtml = contentArea.getAttribute('data');
+    if (!targetPath) { // No hash in the URL (e.g., initial load)
+        let defaultPathFromHtml = '';
+        // Check for src (iframe) or data (object). Your index.html uses <object>
+        if (contentArea.hasAttribute('data')) { // Prioritize 'data' as per your index.html
+            defaultPathFromHtml = contentArea.getAttribute('data');
+        } else if (contentArea.hasAttribute('src')) {
+            defaultPathFromHtml = contentArea.getAttribute('src');
+        }
+
         if (defaultPathFromHtml) {
             targetPath = defaultPathFromHtml;
-            // Update the URL hash to reflect the default content being shown.
-            // history.replaceState ensures this doesn't add a new entry to the browser history.
+            // Update the URL hash to reflect the default content, without adding to history.
             history.replaceState(null, null, '#' + targetPath);
         } else {
-            console.warn("No hash in URL and no default 'data' attribute found on '.content .post'. Cannot determine content to load.");
-            return;
+            console.warn("No hash in URL and no default 'data' or 'src' attribute found on '.content .post'. Cannot determine content to load.");
+            return; // Can't proceed if no target determined
         }
     }
 
-    // Only update the <object>'s data attribute if the targetPath is different
-    // from what it's currently displaying. This prevents unnecessary reloads/flickering.
-    if (contentArea.getAttribute('data') !== targetPath) {
-        contentArea.setAttribute("data", targetPath);
+    // Update the <object data> or <iframe src> attribute if it's different
+    let currentContentPath = '';
+    if (contentArea.hasAttribute('data')) { // As per your index.html
+        currentContentPath = contentArea.getAttribute('data');
+    } else if (contentArea.hasAttribute('src')) {
+        currentContentPath = contentArea.getAttribute('src');
+    }
+
+    if (targetPath && currentContentPath !== targetPath) {
+        if (contentArea.hasAttribute('data')) { // As per your index.html
+            contentArea.setAttribute("data", targetPath);
+        } else if (contentArea.hasAttribute('src')) { // If you ever switch to iframe
+            contentArea.setAttribute("src", targetPath);
+        }
     }
 }
 
-function navigate(dest_html) {
-    // Clean potential leading '#' from dest_html, as we add it consistently.
-    if (dest_html.startsWith('#')) {
-        dest_html = dest_html.substring(1);
-    }
-    // Setting the hash will trigger the 'hashchange' event,
-    // which in turn calls loadContentFromHash to update the content.
-    window.location.hash = dest_html;
-}
-
-/**
- * More efficient and robust includeHTML function.
- * Iteratively finds elements with the 'w3-include-html' attribute,
- * fetches the specified HTML file, and injects its content.
- * Handles nested includes by re-scanning after each pass.
- * Fetches are done in parallel per pass for improved performance.
- */
+// Efficient includeHTML function
 async function includeHTML() {
     let stillIncluding = true;
-    // Safeguard against potential infinite loops or excessively deep nesting.
     const maxIterations = 100;
     let currentIteration = 0;
 
@@ -82,11 +128,10 @@ async function includeHTML() {
         const elementsToInclude = Array.from(document.querySelectorAll("[w3-include-html]"));
 
         if (elementsToInclude.length === 0) {
-            stillIncluding = false; // No more elements with the attribute, so we're done.
+            stillIncluding = false;
             continue;
         }
 
-        // Process all currently found elements in parallel for this pass.
         await Promise.all(elementsToInclude.map(async (elmnt) => {
             const file = elmnt.getAttribute("w3-include-html");
             if (file) {
@@ -94,9 +139,8 @@ async function includeHTML() {
                     const response = await fetch(file);
                     if (response.ok) {
                         const html = await response.text();
-                        elmnt.innerHTML = html; // Injects the fetched HTML content.
+                        elmnt.innerHTML = html;
                     } else {
-                        // Display error message within the element.
                         elmnt.textContent = `Page not found: ${file}`;
                         console.error(`Failed to fetch ${file}: ${response.status} ${response.statusText}`);
                     }
@@ -104,24 +148,16 @@ async function includeHTML() {
                     elmnt.textContent = `Error loading file: ${file}`;
                     console.error(`Error fetching the file ${file}:`, error);
                 }
-                // Remove the attribute after processing to prevent reprocessing this specific instance
-                // and to ensure the loop terminates correctly when no new includes are found.
                 elmnt.removeAttribute("w3-include-html");
             }
         }));
-        // After this pass, the loop will re-query `document.querySelectorAll`
-        // to find any new `w3-include-html` attributes that might have been
-        // introduced by the content loaded in this pass (handling nested includes).
     }
 
     if (currentIteration >= maxIterations) {
-        console.warn("includeHTML: Reached maximum iterations. This could indicate an infinite loop (e.g., files including each other) or very deep nesting of includes.");
+        console.warn("includeHTML: Reached maximum iterations.");
     }
 }
 
-// Async wrapper function to call includeHTML.
 async function mainIncludeHTML() {
     await includeHTML();
 }
-
-// The call to mainIncludeHTML() is made within the DOMContentLoaded listener.
