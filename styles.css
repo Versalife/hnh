@@ -142,7 +142,7 @@ body {
     /* Effective header height: 30px + 10px*2 padding + 1px border = 51px */
     /* Effective footer height: 30px + 10px*2 padding + 1px border = 51px */
     /* Total for header + footer = 102px */
-    height: calc(100vh - 102px);
+    height: calc(100vh - 51px);
     display: flex;
     flex-direction: row;
 }
