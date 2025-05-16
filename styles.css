@@ -45,11 +45,14 @@ body {
     display: none;
     position: absolute;
     top: 51px;
+    /* Adjusted if menu needs to be aware of header height */
     right: 5px;
     padding: 5px;
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     background-color: #f8f5d7;
+    z-index: 1025;
+    /* Ensure mobile menu is above header content and sidebar */
 }
 
 .menu-list-mobile ul {
@@ -84,21 +87,26 @@ body {
 .menu-icon.active span:nth-child(4) {
     top: 8px;
     transform: rotate(45deg);
+    /* This was likely intended to be hidden or part of X */
 }
 
-
-
-/*  end */
-
+/* Header Styling */
 .header {
     padding: 10px;
-    position: sticky;
-    top: 0;
     height: 30px;
+    /* Content height */
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid #ccc;
+    /* --- Sticky Header Fixes START --- */
+    position: sticky;
+    top: 0;
+    background-color: #f8f5d7;
+    /* Ensure background for sticky element */
+    z-index: 1020;
+    /* Ensure header is above other content */
+    /* --- Sticky Header Fixes END --- */
 }
 
 .header .logo .mobile-text {
@@ -131,36 +139,35 @@ body {
     color: rgb(220, 40, 40);
 }
 
-
 .header ul li:hover,
 .header .logo:hover {
     cursor: pointer;
     background-color: rgb(255, 255, 243);
 }
 
+/* Container Styling */
 .container {
-    top: 50px;
-    /* height of the header */
-    bottom: 50px;
+    /* top: 50px; */
+    /* No longer needed with sticky header taking space */
+    /* bottom: 50px; */
+    /* No longer needed with sticky footer taking space */
+    /* Effective header height: 30px + 10px*2 padding + 1px border = 51px */
+    /* Effective footer height: 30px + 10px*2 padding + 1px border = 51px */
+    /* Total for header + footer = 102px */
     height: calc(100vh - 102px);
-    /* 100% viewport height minus header height */
     display: flex;
     flex-direction: row;
 }
 
+/* Sidebar Styling */
 .sidebar-left {
     position: relative;
+    /* For desktop, normal flow */
     flex: 1.1;
     border-right: 1px solid #ccc;
     transition: transform 0.3s ease-in-out;
     background-color: #f8f5d7;
 }
-
-/* .sidebar-right {
-    flex: 1;
-    display: block;
-    border-left: 1px solid #ccc;
-} */
 
 .sidebar-left .sidebar-left-header {
     height: 5%;
@@ -206,7 +213,9 @@ body {
 }
 
 body.sidebar-is-open {
+    /* This class is toggled by script.js */
     overflow: hidden;
+    /* Prevents page scroll when mobile sidebar is open */
 }
 
 .sidebar-left a {
@@ -229,26 +238,37 @@ body.sidebar-is-open {
     background-position: 0% 93%, 100% 93%, 0% 93%;
 }
 
-
+/* Content Area Styling */
 .content {
     flex: 4;
     padding: 0px;
     box-sizing: border-box;
+    overflow-y: auto;
+    /* Allow content itself to scroll if it overflows container height */
 }
 
 .content .post {
     width: 100%;
     height: 100%;
+    /* Consider min-height: 100% if content can be shorter */
 }
 
-
+/* Footer Styling */
 .footer {
     display: flex;
     flex-direction: row;
     padding: 10px;
     height: 30px;
-    bottom: 5px;
+    /* Content height */
     border-top: 1px solid #ccc;
+    /* --- Sticky Footer Fixes START --- */
+    position: sticky;
+    bottom: 0;
+    background-color: #f8f5d7;
+    /* Ensure background for sticky element */
+    z-index: 1010;
+    /* Ensure footer is above content, but can be below header/sidebar */
+    /* --- Sticky Footer Fixes END --- */
 }
 
 .footer .footer-spacer-left {
@@ -271,14 +291,12 @@ body.sidebar-is-open {
     padding: 10px;
 }
 
+/* Media Queries for Responsiveness */
 @media screen and (max-width: 760px) {
 
-     /* Items that we want visible on small screens only
-    .sidebar-left {
-        display: none;
-    } */
-
+    /* .sidebar-left is handled in the second media query block */
     .sidebar-right {
+        /* This was likely for a two-sidebar layout, not currently used */
         display: none;
     }
 
@@ -297,92 +315,64 @@ body.sidebar-is-open {
     }
 
     .menu-icon.active~.menu-list-mobile {
+        /* Selector to show mobile menu */
         display: block;
     }
 
     .header .menu .menu-list-desktop {
         display: none;
     }
-
 }
 
-
-
+/* Second media query block from original CSS */
 @media (max-width: 760px) {
-
-    /* Adjust this breakpoint to match your mobile styles */
     .sidebar-left {
         position: fixed;
-        /* Fixed position to overlay content */
-        /* top: 0; */
-        /* left: 0; */
         width: 80%;
-        /* Takes up 80% of the screen width */
         max-width: 300px;
-        /* But not more than 300px */
-        height: 100vh;
-        /* Full viewport height */
-        z-index: 1010;
-        /* High z-index to be on top. Adjust if needed relative to header. */
+        /* --- Mobile Sidebar Position Fixes START --- */
+        top: 51px;
+        /* Position below sticky header (header height 30px + 2*10px padding + 1px border) */
+        height: calc(100vh - 51px);
+        /* Full height minus header */
+        z-index: 1015;
+        /* Above content/footer, below header */
+        /* --- Mobile Sidebar Position Fixes END --- */
         transform: translateX(-100%);
-        /* Initially hidden off-screen to the left */
+        /* Initially hidden */
         overflow-y: auto;
-        /* Allow scrolling within the sidebar if content is long */
         padding: 20px;
+        /* This padding is inside the sidebar */
         box-sizing: border-box;
-        /* Include padding in width/height */
         border-right: 1px solid #ddd;
-        /* Optional border */
         box-shadow: 3px 0px 10px rgba(0, 0, 0, 0.1);
-        /* Optional subtle shadow */
+        background-color: #f8f5d7;
+        /* Ensure background */
     }
 
     .sidebar-left .sidebar-left-header {
-        /* height: 5%; Remove or change this */
-        height: auto; /* Let content determine height */
-        display: flex;
-        padding: 10px; /* Adjusted from 0.5% for consistency */
+        height: auto;
+        padding: 10px;
         flex-direction: column;
         background-color: antiquewhite;
-        border-bottom: 1px solid #ccc; /* Adjusted from 0.1% */
+        border-bottom: 1px solid #ccc;
         text-align: center;
     }
-    
+
     .sidebar-left .sidebar-left-content {
-        /* width: 100%; Ensure this is not causing issues, usually not needed for block element */
-        /* height: 94.4%; Remove or change this */
-        height: auto; /* Let content determine height */
+        height: auto;
         box-sizing: border-box;
-        /* overflow: auto; Remove this, as parent .sidebar-left handles scrolling */
-        padding: 10px; /* Adjusted from 5px */
+        padding: 10px;
     }
 
     .sidebar-left.active {
-        /* This class will be toggled by JavaScript */
+        /* This class is toggled by JavaScript */
         transform: translateX(0);
         /* Slides the sidebar into view */
     }
 
-    /* Optional: Style to dim the main content when sidebar is open */
-    /* You would toggle a class like 'napkins-overlay-active' on the body or container */
-    /*
-    .napkins-overlay-active::before {
-        content: "";
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: 1005; // Lower than sidebar, higher than content
-    }
+    /* REMOVED: .header rule that set position: relative;
+       The global .header style (position: sticky) will now correctly apply on mobile.
+       The z-index for .header is now handled globally.
     */
-
-    /* Ensure header is above the sidebar or handle interactions */
-    .header {
-        position: relative;
-        /* Or ensure it has a z-index if needed */
-        z-index: 1020;
-        /* Make sure header (especially mobile menu icon) is accessible */
-    }
 }
