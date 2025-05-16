@@ -432,7 +432,30 @@ label.margin-toggle:not(.sidenote-number) {
     }
 
     pre > code {
-        width: 97%;
+        width: 100%;
+    }
+
+    pre {
+        overflow-x: auto;  /* Make the <pre> container scrollable */
+        word-wrap: normal; /* Default, good for code */
+        white-space: pre;  /* Preserve whitespace but allow horizontal scroll */
+        -webkit-overflow-scrolling: touch; /* Optional: for smoother scrolling on iOS */
+    }
+
+    pre > code {
+        width: auto;        /* Allow code to be its natural width */
+        display: block;
+        padding: 0;         /* Padding is now on the <pre> element */
+        /* overflow-x: visible; /* Let the parent <pre> handle scrolling */
+        /* The existing font-size: 0.9rem from tufte.css is fine */
+    }
+
+    .katex-display { /* For display-mode KaTeX equations */
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding: 5px 0; /* Add some padding for better scroll interaction */
+        display: block;
+        -webkit-overflow-scrolling: touch; /* Optional: for smoother scrolling on iOS */
     }
 
     section > dl,

@@ -205,6 +205,10 @@ body {
     margin: 0;
 }
 
+body.sidebar-is-open {
+    overflow: hidden;
+}
+
 .sidebar-left a {
     color: inherit;
 }
@@ -331,6 +335,26 @@ body {
         /* Optional border */
         box-shadow: 3px 0px 10px rgba(0, 0, 0, 0.1);
         /* Optional subtle shadow */
+    }
+
+    .sidebar-left .sidebar-left-header {
+        /* height: 5%; Remove or change this */
+        height: auto; /* Let content determine height */
+        display: flex;
+        padding: 10px; /* Adjusted from 0.5% for consistency */
+        flex-direction: column;
+        background-color: antiquewhite;
+        border-bottom: 1px solid #ccc; /* Adjusted from 0.1% */
+        text-align: center;
+    }
+    
+    .sidebar-left .sidebar-left-content {
+        /* width: 100%; Ensure this is not causing issues, usually not needed for block element */
+        /* height: 94.4%; Remove or change this */
+        height: auto; /* Let content determine height */
+        box-sizing: border-box;
+        /* overflow: auto; Remove this, as parent .sidebar-left handles scrolling */
+        padding: 10px; /* Adjusted from 5px */
     }
 
     .sidebar-left.active {
