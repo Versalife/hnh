@@ -1,10 +1,13 @@
-// script.js - FULL VERSION with latest fixes
+// script.js - FULL VERSION with latest fixes & swipe-to-close sidebar
 
 document.addEventListener('DOMContentLoaded', function () {
-    // --- Mobile Menu (Hamburger) Functionality ---
+    // --- Element Selections ---
     const menuIcon = document.querySelector('.menu .menu-icon');
     const menuItemsContainer = document.querySelector('.menu .menu-list-mobile');
+    const toggleNapkinsLinkMobile = document.getElementById('toggle-napkins-sidebar-mobile');
+    const napkinsSidebar = document.querySelector('.sidebar-left');
 
+    // --- Mobile Menu (Hamburger) Functionality ---
     if (menuIcon && menuItemsContainer) {
         menuIcon.addEventListener('click', function () {
             menuIcon.classList.toggle('active');
@@ -12,34 +15,73 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // --- Napkins Sidebar Toggle Functionality (for Mobile) ---
-    const toggleNapkinsLinkMobile = document.getElementById('toggle-napkins-sidebar-mobile');
-    const napkinsSidebar = document.querySelector('.sidebar-left');
+    // --- Helper function to CLOSE the Napkins sidebar ---
+    function closeNapkinsSidebar() {
+        if (napkinsSidebar && napkinsSidebar.classList.contains('active')) {
+            napkinsSidebar.classList.remove('active');
+            document.body.classList.remove('sidebar-is-open');
+        }
+    }
 
+    // --- Napkins Sidebar Toggle Functionality (for Mobile click) ---
     if (toggleNapkinsLinkMobile && napkinsSidebar) {
-        toggleNapkinsLinkMobile.addEventListener('click', function(event) {
+        toggleNapkinsLinkMobile.addEventListener('click', function (event) {
             event.preventDefault(); // Important: prevent anchor default action
 
-            // Toggle the sidebar's active state and get its new state (true if open, false if closed)
-            const isSidebarOpen = napkinsSidebar.classList.toggle('active');
+            // Toggle the sidebar's active state
+            const isSidebarNowOpening = !napkinsSidebar.classList.contains('active');
+            napkinsSidebar.classList.toggle('active');
+            document.body.classList.toggle('sidebar-is-open', isSidebarNowOpening);
 
-            // Toggle a class on the body to prevent/allow page scrolling
-            document.body.classList.toggle('sidebar-is-open', isSidebarOpen);
-
-            // If the main mobile menu is also open, close it for better UX
-            if (menuIcon && menuItemsContainer && menuItemsContainer.classList.contains('active')) {
+            // If the sidebar is opening AND the main mobile menu is also open, close the main menu for better UX
+            if (isSidebarNowOpening && menuIcon && menuItemsContainer && menuItemsContainer.classList.contains('active')) {
                 menuIcon.classList.remove('active');
                 menuItemsContainer.classList.remove('active');
             }
         });
-    } else {
-        // Debugging messages if elements aren't found:
-        if (!toggleNapkinsLinkMobile) {
-            console.warn("Mobile 'Napkins' toggle link with ID 'toggle-napkins-sidebar-mobile' not found in the HTML. Ensure the ID is correct.");
-        }
-        if (!napkinsSidebar) {
-            console.warn("Napkins sidebar with class '.sidebar-left' not found in the HTML.");
-        }
+    }
+
+    // --- Swipe Left to Close Napkins Sidebar Functionality ---
+    if (napkinsSidebar) {
+        let touchStartX = 0;
+        let touchStartY = 0;
+        const swipeThreshold = 50;         // Minimum horizontal distance (pixels) to be considered a swipe
+        const swipeMaxVerticalRatio = 0.75; // Allow vertical movement up to 75% of horizontal (e.g. for slightly diagonal swipes)
+
+        napkinsSidebar.addEventListener('touchstart', function (event) {
+            // Only start tracking if the sidebar is currently active (visible)
+            if (napkinsSidebar.classList.contains('active')) {
+                touchStartX = event.changedTouches[0].clientX;
+                touchStartY = event.changedTouches[0].clientY;
+            }
+        }, { passive: true }); // Use passive for better scroll performance if not preventing default
+
+        napkinsSidebar.addEventListener('touchend', function (event) {
+            // Ensure a touchstart occurred on an active sidebar
+            if (!napkinsSidebar.classList.contains('active') || touchStartX === 0) {
+                touchStartX = 0; // Reset
+                touchStartY = 0; // Reset
+                return;
+            }
+
+            let touchEndX = event.changedTouches[0].clientX;
+            let touchEndY = event.changedTouches[0].clientY;
+
+            let deltaX = touchEndX - touchStartX;
+            let deltaY = touchEndY - touchStartY;
+
+            // Check for a swipe left:
+            // 1. Horizontal movement (deltaX) is negative (left) and exceeds threshold.
+            // 2. Vertical movement (abs(deltaY)) is less than horizontal movement (abs(deltaX)) multiplied by the ratio.
+            //    This helps differentiate a horizontal swipe from a vertical scroll inside the sidebar.
+            if (deltaX < -swipeThreshold && (Math.abs(deltaY) < Math.abs(deltaX) * swipeMaxVerticalRatio)) {
+                closeNapkinsSidebar(); // Use the helper function
+            }
+
+            // Reset start coordinates for the next touch operation
+            touchStartX = 0;
+            touchStartY = 0;
+        });
     }
 
     // --- Hash-based Navigation Setup ---
@@ -48,22 +90,26 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- Initialize includeHTML functionality ---
     mainIncludeHTML().catch((error) => console.error("Error in main function for includeHTML:", error));
-});
+}); // End of DOMContentLoaded
 
+// --- navigate function ---
+// This function already handles closing the sidebar when a navigation link is clicked.
+// The new closeNapkinsSidebar() function is consistent with this logic.
 function navigate(dest_html) {
     // 1. Close main mobile menu if it's open
-    const menuIcon = document.querySelector('.menu .menu-icon'); // Re-query in function scope
-    const menuItemsContainer = document.querySelector('.menu .menu-list-mobile'); // Re-query
+    const menuIcon = document.querySelector('.menu .menu-icon');
+    const menuItemsContainer = document.querySelector('.menu .menu-list-mobile');
     if (menuIcon && menuItemsContainer && menuItemsContainer.classList.contains('active')) {
         menuIcon.classList.remove('active');
         menuItemsContainer.classList.remove('active');
     }
 
     // 2. Close Napkins sidebar if it's open and remove body scroll lock
-    const napkinsSidebar = document.querySelector('.sidebar-left'); // Re-query
+    // This uses the same logic as the new closeNapkinsSidebar helper.
+    const napkinsSidebar = document.querySelector('.sidebar-left');
     if (napkinsSidebar && napkinsSidebar.classList.contains('active')) {
         napkinsSidebar.classList.remove('active');
-        document.body.classList.remove('sidebar-is-open'); // Remove class from body
+        document.body.classList.remove('sidebar-is-open');
     }
 
     // 3. Perform navigation (update hash)
@@ -73,58 +119,54 @@ function navigate(dest_html) {
     window.location.hash = dest_html;
 }
 
+// --- loadContentFromHash function ---
 function loadContentFromHash() {
-    // Ensure you are targeting your content loading area, whether <object> or <iframe>
     const contentArea = document.querySelector(".content .post");
     if (!contentArea) {
         console.error("Content area '.content .post' not found.");
         return;
     }
 
-    let currentUrlHash = window.location.hash.substring(1); // Get path from URL hash, removing '#'
+    let currentUrlHash = window.location.hash.substring(1);
     let targetPath = currentUrlHash;
 
-    if (!targetPath) { // No hash in the URL (e.g., initial load)
+    if (!targetPath) {
         let defaultPathFromHtml = '';
-        // Check for data (object - as in your original index.html) or src (iframe)
         if (contentArea.hasAttribute('data')) {
             defaultPathFromHtml = contentArea.getAttribute('data');
-        } else if (contentArea.hasAttribute('src')) { // In case you switched to iframe
+        } else if (contentArea.hasAttribute('src')) {
             defaultPathFromHtml = contentArea.getAttribute('src');
         }
 
         if (defaultPathFromHtml) {
             targetPath = defaultPathFromHtml;
-            // Update the URL hash to reflect the default content, without adding to history.
             history.replaceState(null, null, '#' + targetPath);
         } else {
             console.warn("No hash in URL and no default 'data' or 'src' attribute found on '.content .post'. Cannot determine content to load.");
-            return; // Can't proceed if no target determined
+            return;
         }
     }
 
-    // Update the <object data> or <iframe src> attribute if it's different
     let currentContentPath = '';
-    if (contentArea.hasAttribute('data')) { // As per your original index.html
+    if (contentArea.hasAttribute('data')) {
         currentContentPath = contentArea.getAttribute('data');
-    } else if (contentArea.hasAttribute('src')) { // In case you switched to iframe
+    } else if (contentArea.hasAttribute('src')) {
         currentContentPath = contentArea.getAttribute('src');
     }
 
-
     if (targetPath && currentContentPath !== targetPath) {
-        if (contentArea.hasAttribute('data')) { // As per your original index.html
+        if (contentArea.hasAttribute('data')) {
             contentArea.setAttribute("data", targetPath);
-        } else if (contentArea.hasAttribute('src')) { // If you ever switch to iframe
+        } else if (contentArea.hasAttribute('src')) {
             contentArea.setAttribute("src", targetPath);
         }
     }
 }
 
-// Efficient includeHTML function
+// --- includeHTML function ---
 async function includeHTML() {
     let stillIncluding = true;
-    const maxIterations = 100; // Safeguard against infinite loops
+    const maxIterations = 100;
     let currentIteration = 0;
 
     while (stillIncluding && currentIteration < maxIterations) {
@@ -132,11 +174,10 @@ async function includeHTML() {
         const elementsToInclude = Array.from(document.querySelectorAll("[w3-include-html]"));
 
         if (elementsToInclude.length === 0) {
-            stillIncluding = false; // No more elements with the attribute, so we're done.
+            stillIncluding = false;
             continue;
         }
 
-        // Process all currently found elements in parallel for this pass.
         await Promise.all(elementsToInclude.map(async (elmnt) => {
             const file = elmnt.getAttribute("w3-include-html");
             if (file) {
@@ -144,9 +185,8 @@ async function includeHTML() {
                     const response = await fetch(file);
                     if (response.ok) {
                         const html = await response.text();
-                        elmnt.innerHTML = html; // Injects the fetched HTML content.
+                        elmnt.innerHTML = html;
                     } else {
-                        // Display error message within the element.
                         elmnt.textContent = `Page not found: ${file}`;
                         console.error(`Failed to fetch ${file}: ${response.status} ${response.statusText}`);
                     }
@@ -154,7 +194,6 @@ async function includeHTML() {
                     elmnt.textContent = `Error loading file: ${file}`;
                     console.error(`Error fetching the file ${file}:`, error);
                 }
-                // Remove the attribute after processing
                 elmnt.removeAttribute("w3-include-html");
             }
         }));

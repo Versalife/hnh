@@ -45,14 +45,12 @@ body {
     display: none;
     position: absolute;
     top: 51px;
-    /* Adjusted if menu needs to be aware of header height */
     right: 5px;
     padding: 5px;
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     background-color: #f8f5d7;
     z-index: 1025;
-    /* Ensure mobile menu is above header content and sidebar */
 }
 
 .menu-list-mobile ul {
@@ -87,26 +85,20 @@ body {
 .menu-icon.active span:nth-child(4) {
     top: 8px;
     transform: rotate(45deg);
-    /* This was likely intended to be hidden or part of X */
 }
 
 /* Header Styling */
 .header {
     padding: 10px;
     height: 30px;
-    /* Content height */
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid #ccc;
-    /* --- Sticky Header Fixes START --- */
     position: sticky;
     top: 0;
     background-color: #f8f5d7;
-    /* Ensure background for sticky element */
     z-index: 1020;
-    /* Ensure header is above other content */
-    /* --- Sticky Header Fixes END --- */
 }
 
 .header .logo .mobile-text {
@@ -147,10 +139,6 @@ body {
 
 /* Container Styling */
 .container {
-    /* top: 50px; */
-    /* No longer needed with sticky header taking space */
-    /* bottom: 50px; */
-    /* No longer needed with sticky footer taking space */
     /* Effective header height: 30px + 10px*2 padding + 1px border = 51px */
     /* Effective footer height: 30px + 10px*2 padding + 1px border = 51px */
     /* Total for header + footer = 102px */
@@ -162,7 +150,6 @@ body {
 /* Sidebar Styling */
 .sidebar-left {
     position: relative;
-    /* For desktop, normal flow */
     flex: 1.1;
     border-right: 1px solid #ccc;
     transition: transform 0.3s ease-in-out;
@@ -213,9 +200,7 @@ body {
 }
 
 body.sidebar-is-open {
-    /* This class is toggled by script.js */
     overflow: hidden;
-    /* Prevents page scroll when mobile sidebar is open */
 }
 
 .sidebar-left a {
@@ -244,13 +229,11 @@ body.sidebar-is-open {
     padding: 0px;
     box-sizing: border-box;
     overflow-y: auto;
-    /* Allow content itself to scroll if it overflows container height */
 }
 
 .content .post {
     width: 100%;
     height: 100%;
-    /* Consider min-height: 100% if content can be shorter */
 }
 
 /* Footer Styling */
@@ -259,16 +242,14 @@ body.sidebar-is-open {
     flex-direction: row;
     padding: 10px;
     height: 30px;
-    /* Content height */
     border-top: 1px solid #ccc;
-    /* --- Sticky Footer Fixes START --- */
     position: sticky;
     bottom: 0;
     background-color: #f8f5d7;
-    /* Ensure background for sticky element */
-    z-index: 1010;
-    /* Ensure footer is above content, but can be below header/sidebar */
-    /* --- Sticky Footer Fixes END --- */
+    /* --- Z-index Change for Footer START --- */
+    z-index: 1015;
+    /* Raised to be above mobile sidebar */
+    /* --- Z-index Change for Footer END --- */
 }
 
 .footer .footer-spacer-left {
@@ -293,10 +274,7 @@ body.sidebar-is-open {
 
 /* Media Queries for Responsiveness */
 @media screen and (max-width: 760px) {
-
-    /* .sidebar-left is handled in the second media query block */
     .sidebar-right {
-        /* This was likely for a two-sidebar layout, not currently used */
         display: none;
     }
 
@@ -315,7 +293,6 @@ body.sidebar-is-open {
     }
 
     .menu-icon.active~.menu-list-mobile {
-        /* Selector to show mobile menu */
         display: block;
     }
 
@@ -330,24 +307,29 @@ body.sidebar-is-open {
         position: fixed;
         width: 80%;
         max-width: 300px;
-        /* --- Mobile Sidebar Position Fixes START --- */
+        /* --- Mobile Sidebar Position & Z-index Changes START --- */
         top: 51px;
-        /* Position below sticky header (header height 30px + 2*10px padding + 1px border) */
-        height: calc(100vh - 51px);
-        /* Full height minus header */
-        z-index: 1015;
-        /* Above content/footer, below header */
-        /* --- Mobile Sidebar Position Fixes END --- */
+        /* Position below sticky header (header total height 51px) */
+        bottom: 0;
+        /* Extend to viewport bottom, allowing it to go under footer */
+        /* height: calc(100vh - 51px); REMOVED - height is now defined by top/bottom */
+        z-index: 1010;
+        /* Lowered to be below footer */
+        /* --- Mobile Sidebar Position & Z-index Changes END --- */
         transform: translateX(-100%);
-        /* Initially hidden */
         overflow-y: auto;
-        padding: 20px;
-        /* This padding is inside the sidebar */
+        /* --- Padding adjustment for sidebar content START --- */
+        /* Original padding was 20px. Footer total height is 51px (30px H + 2*10px P + 1px B). */
+        padding-top: 20px;
+        padding-right: 20px;
+        padding-bottom: calc(20px + 51px);
+        /* Ensures content scrolls clear of the footer */
+        padding-left: 20px;
+        /* --- Padding adjustment for sidebar content END --- */
         box-sizing: border-box;
         border-right: 1px solid #ddd;
         box-shadow: 3px 0px 10px rgba(0, 0, 0, 0.1);
         background-color: #f8f5d7;
-        /* Ensure background */
     }
 
     .sidebar-left .sidebar-left-header {
@@ -363,16 +345,10 @@ body.sidebar-is-open {
         height: auto;
         box-sizing: border-box;
         padding: 10px;
+        /* This is inner content padding, distinct from sidebar's main padding */
     }
 
     .sidebar-left.active {
-        /* This class is toggled by JavaScript */
         transform: translateX(0);
-        /* Slides the sidebar into view */
     }
-
-    /* REMOVED: .header rule that set position: relative;
-       The global .header style (position: sticky) will now correctly apply on mobile.
-       The z-index for .header is now handled globally.
-    */
 }
