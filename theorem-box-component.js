@@ -79,6 +79,7 @@ h3 {
             .theorem-box .theorem-box-content {
                 flex-grow: 1;
                 line-height: 1.32;
+                -webkit-padding-start: 2%;
                 // padding: 10px 2% 5px 2%;
             }
 
@@ -98,7 +99,7 @@ h3 {
                 list-style-type: decimal;
                 font-size: 1.3rem;
                 margin-top: 0;
-                padding-left: 25px;
+                // padding-left: 25px;
             }
             .theorem-box .numbered-list > li {
                 margin-bottom: 0.2em;
