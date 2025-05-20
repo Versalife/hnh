@@ -161,7 +161,7 @@ body {
     display: flex;
     padding: 0.5%;
     flex-direction: column;
-    background-color: antiquewhite;
+    background-color: rgb(254, 240, 205);
     border-bottom: 0.1% solid #ccc;
     text-align: center;
 }
@@ -336,7 +336,7 @@ body.sidebar-is-open {
         height: auto;
         padding: 10px;
         flex-direction: column;
-        background-color: antiquewhite;
+        background-color: rgb(254, 240, 205);
         border-bottom: 1px solid #ccc;
         text-align: center;
     }

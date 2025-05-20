@@ -8,14 +8,21 @@
     <link rel="stylesheet" href="../../latex.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css"
-        integrity="sha384-GvrOXuhMATgEsSwCs4smul74iXGOixntILdUW9XmUC6+HX0sLNAK3q71HotJqlAn" crossorigin="anonymous">
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"
-        integrity="sha384-cpW21h6RZv/phavutF+AuVYrr+dA8xD9zs6FwLpaCct6O9ctzYFfFr4dgmgccOTx"
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css"
+        integrity="sha384-5TcZemv2l/9On385z///+d7MSYlvIEw9FuZTIdZ14vJLqWphw7e7ZPuOiCHJcFCP" crossorigin="anonymous">
+
+    <!-- The loading of KaTeX is deferred to speed up page rendering -->
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"
+        integrity="sha384-cMkvdD8LoxVzGF/RPUKAcvmm49FQ0oxwDF3BGKtDXcEc+T1b2N+teh/OJfpU0jr6"
         crossorigin="anonymous"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"
-        integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+
+    <!-- To automatically render math in text elements, include the auto-render extension: -->
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"
+        integrity="sha384-hCXGrW6PitJEwbkoStFjeJxv+fSOOQKOPbJxSfM6G5sWZjAyWhXiTIIAmQqnlLlh" crossorigin="anonymous"
         onload="renderMathInElement(document.body);"></script>
+
+    <script defer src="../../theorem-box-component.js"></script>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 </head>
@@ -35,10 +42,23 @@
         <section>
             <h2>Substring Search</h2>
 
-            <p>A string $\alpha$ with length $n$ is said to be a substring of another string $\Omega$ with length $m
-                \text{ and } n \leq m$ if, an only if $\alpha$ is a prefix of some suffix of $\Omega$. This is the basic
-                insight that explains why we would want to construct a suffix array. Before we proceed any further, we
-                need to explain what a suffix array is.</p>
+            <p>We begin by pinning down what it means for a string to be a substring of another. </p>
+            <theorem-box type="definition" title="Substring" given="
+                    <li> A string $\alpha$ </li>
+                    <li> Another string $\beta$ </li>
+                " where="
+                <li> Both strings belong to the same alphabet $\Sigma$ </li>
+                    <li> $|\alpha| = m \leq |\beta| = n $ </li>
+                    <li> There exists some suffix of $\beta$, call it $\beta_{[k:]}$, such that $\alpha$ is a prefix of $\beta_{[k:]}$ </li>
+                " then="
+                We say that  $\alpha$ is a substring of $\beta$
+                " notes=""></theorem-box>
+            <p>
+                That the notion of a substring relies, in its definition, on the notion of a suffix explains why we
+                would want to construct a suffix array if our goal is to do substring matching.
+                But, Before we proceed any further, we need to start from the beginning by explaining what a suffix
+                array is.
+            </p>
 
             <p>A suffix array for some string $\Omega$ is an array of all the suffixes of that string. Note that, since
                 a suffix is fully defined by its starting index in the string, there are $m + 1$ possible suffixes
@@ -66,31 +86,31 @@
                 the string in linear time by doing a single scan over the string. This would give us the table on the
                 left below:
 
-            $$
-            \begin{array}{lr}
-            \hline \text{start index} & \text{suffix} \\ \hline
-            0 & \text{banana}\$ \\
-            1 & \text{anana}\$ \\
-            2 & \text{nana}\$ \\
-            3 & \text{ana}\$ \\
-            4 & \text{na}\$ \\
-            5 & \text{a}\$ \\
-            6 & \$ \\
-            \hline
-            \end{array}
-            \quad\quad % Adds some space between the tables
-            \begin{array}{lr}
-            \hline \text{start index} & \text{suffix} \\ \hline
-            6 & \$ \\
-            5 & \text{a}\$ \\
-            3 & \text{ana}\$ \\
-            1 & \text{anana}\$ \\
-            0 & \text{banana}\$ \\
-            4 & \text{na}\$ \\
-            2 & \text{nana}\$ \\
-            \hline
-            \end{array}
-            $$
+                $$
+                \begin{array}{lr}
+                \hline \text{start index} & \text{suffix} \\ \hline
+                0 & \text{banana}\$ \\
+                1 & \text{anana}\$ \\
+                2 & \text{nana}\$ \\
+                3 & \text{ana}\$ \\
+                4 & \text{na}\$ \\
+                5 & \text{a}\$ \\
+                6 & \$ \\
+                \hline
+                \end{array}
+                \quad\quad % Adds some space between the tables
+                \begin{array}{lr}
+                \hline \text{start index} & \text{suffix} \\ \hline
+                6 & \$ \\
+                5 & \text{a}\$ \\
+                3 & \text{ana}\$ \\
+                1 & \text{anana}\$ \\
+                0 & \text{banana}\$ \\
+                4 & \text{na}\$ \\
+                2 & \text{nana}\$ \\
+                \hline
+                \end{array}
+                $$
             </p>
 
             <p>We would then sort these suffixes to get the table on the right. The start index column of that table is
