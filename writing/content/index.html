@@ -21,7 +21,8 @@
         integrity="sha384-hCXGrW6PitJEwbkoStFjeJxv+fSOOQKOPbJxSfM6G5sWZjAyWhXiTIIAmQqnlLlh" crossorigin="anonymous"
         onload="renderMathInElement(document.body);"></script>
 
-    <script defer src="../../theorem-box-component.js"></script>
+    <script defer src="../../components/theorem-box-component.js"></script>
+    <script defer src="../../components/algorithm-box-component.js"></script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
@@ -29,14 +30,21 @@
 
 <body>
     <article>
-        <h1>String Indexing: A Rust Implementation</h1>
+        <h1>String Indexing</h1>
 
         <section>
             <p>In this article, we discuss two structures that are foundational to tasks
                 that need to do substring matching: The Suffix Array and The Longest Common Prefix Array. We'll explore
                 two
                 linear time procedures (SA-IS & Kasai's Algorithm) for constructing these data structures given some
-                underlying, fairly static string from some alphabet $\Sigma$.</p>
+                underlying, fairly static string from some alphabet $\Sigma$ 
+                <label for="mn-sigma" class="margin-toggle">&#8853;</label>
+                <input type="checkbox" id="mn-sigma" class="margin-toggle" />
+                <span class="marginnote">
+                    Another name for an alphabet is a Vocabulary.
+                </span>
+            
+            </p>
         </section>
 
         <section>
@@ -66,6 +74,14 @@
                 save space, suffix arrays do not store the full suffixes, instead, they only store the starting index of
                 each suffix. To sum up, a suffix array for some string is a lexicographically sorted array of all the
                 indexes of all suffixes in the underlying string.</p>
+
+<algorithm-box
+    title="Example Algorithm: Enhanced Binary Search"
+    inputs="<li>A sorted array $A$ of $n$ elements.</li><li>A target value $T$. <span class='algo-note-tag'>[target-def]</span><span class='algo-note-content'>The target value $T$ is the element being searched for.</span></li>"
+    outputs="<li>Index $i$ if $A[i] = T$, else -1. <span class='algo-note-tag'>[output-spec]</span><span class='algo-note-content'>Returning -1 is a common convention for 'not found'.</span></li>"
+    procedure="<li>Set $L=0, R=n-1$.</li><li>While $L \leq R$: <span class='algo-note-tag'>[loop-inv]</span><span class='algo-note-content'>Loop invariant: if $T$ is in $A$, then $T$ is in $A[L \dots R]$.</span><ol type='a'><li>$m = \lfloor(L+R)/2\rfloor$.</li><li>If $A[m] < T$, $L=m+1$.</li><li>Else if $A[m] > T$, $R=m-1$.</li><li>Else return $m$.</li></ol></li><li>Return -1.</li>"
+    notes="<li>Complexity: $O(\log n)$. <span class='algo-note-tag'>[complexity-note]</span><span class='algo-note-content'>This logarithmic complexity makes binary search highly efficient for large datasets.</span></li><li>Array must be sorted. <span class='algo-note-tag'>[precondition]</span><span class='algo-note-content'>Binary search relies on the sorted property to correctly narrow down the search space.</span></li>"
+></algorithm-box>
 
             <p>Finally, most algorithms that operate on strings assume that each string has a sentinel character
                 appended at the end. This sentinel character should not appear anywhere else in the string and should be
