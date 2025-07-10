@@ -44,11 +44,13 @@
                 can we
                 build such a table? The first thing to notice is that this is a discrete optimization problem -
                 we are
-                interested in the minimal (aka the optimal) value in a given range. A quick reference to <a
-                    href="https://www.notion.so/A-note-on-algorithmic-design-patterns-20e50d39c99945e3ad8dfb804177ab3f">common
-                    algorithmic patterns</a> should tell us that we may be able to use dynamic programming to
+                interested in the minimal (aka the optimal) value in a given range. This means that we
+                 may be able to use dynamic programming to
                 solve the
-                problem. All we need to do is come up with an update rule. In particular, suppose our array is
+                problem. All we need to do is come up with an update rule.
+                </p>
+                <p>
+                Suppose our array is
                 \(A\), if
                 we know the smallest value in some range \((i, j)\) to be \(\alpha\), we can easily
                 figure out the answer on a larger range \( (i, j+1) \) by comparing \(\alpha\) with \(A[j +
@@ -56,9 +58,9 @@
                 is:
 
                 $$
-                RMQ_A(i, j) = \begin{cases}
+                \text{rmq}_A(i, j) = \begin{cases}
                 A[j], & \text{if}\ i = j \\
-                \min\left(A[j], RMQ_A(i, j - 1)\right), & \text{otherwise}
+                \min\left(A[j], \text{rmq}_A(i, j - 1)\right), & \text{otherwise}
                 \end{cases}
                 $$
             </p>
@@ -162,7 +164,7 @@ fn compute_rmq_all_ranges&lt;T: Hash + Eq + Ord&gt;(array: &amp;[T]) -&gt; Looku
             </code></pre>
 
             <p>You can play around with the code so far <a
-                    href="https://play.rust-lang.org/?version=stable&mode=debug&edition=2018&gist=ccb49819827b6e1834765389f7ecf12b">in
+                    href="https://play.rust-lang.org/?version=stable&mode=debug&edition=2018&gist=ccb49819827b6e1834765389f7ecf12b", target="_blank">in
                     the playground</a>.</p>
 
             <p>Can we do better than \(\left<\Theta(n^2), \Theta(1)\right>\)? The

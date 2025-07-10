@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.13.6"
+__generated_with = "0.13.7"
 app = marimo.App(width="medium")
 
 
@@ -18,12 +18,7 @@ def _(mo):
 
 @app.cell
 def _(mo):
-    mo.md(
-        r"""
-    ## Shared Functions
-
-    """
-    )
+    mo.md(r"""## Shared Functions""")
     return
 
 
@@ -165,7 +160,7 @@ def _(PositiveInt, generate_rademacher_vectors, hutch, mx, validate_call):
         # 2. Generate Rademacher Vectors
         # S for sketching, T for residual trace estimation
         S_vectors = generate_rademacher_vectors(n_rows, k_sketch)  # (n_rows, k_sketch), float32
-    
+
         # Initialize trace_sketched and Q. Q_is_valid indicates if Q can be used for projection.
         trace_sketched = mx.array(0.0, dtype=mx.float32)
         Q_is_valid = False
@@ -174,7 +169,7 @@ def _(PositiveInt, generate_rademacher_vectors, hutch, mx, validate_call):
         # 3. Sketching Phase
         if k_sketch > 0:
             Y = m @ S_vectors  # (n_rows, k_sketch), float32
-        
+
             # Check if Y is effectively zero to avoid issues with QR decomposition (e.g., NaNs from mx.linalg.qr(zeros))
             # A very small Frobenius norm for Y could also lead to unstable QR.
             # Using sum of absolute values as a proxy for norm.
@@ -204,7 +199,7 @@ def _(PositiveInt, generate_rademacher_vectors, hutch, mx, validate_call):
         trace_residual_estimate = mx.array(0.0, dtype=mx.float32)
         if k_residual > 0:
             T_vectors = generate_rademacher_vectors(n_rows, k_residual) # (n_rows, k_residual), float32
-        
+
             # Calculate t_i.T @ m @ t_i terms
             m_dot_T = m @ T_vectors  # (n_rows, k_residual)
             term1_all_t = mx.sum(T_vectors * m_dot_T, axis=0)  # (k_residual,)
@@ -215,19 +210,19 @@ def _(PositiveInt, generate_rademacher_vectors, hutch, mx, validate_call):
                 Q_T_T = Q.T @ T_vectors     # (rank(Y) or k_sketch, k_residual)
                 Q_T_m_T = Q.T @ m @ T_vectors # (rank(Y) or k_sketch, k_residual)
                 term2_all_t = mx.sum(Q_T_T * Q_T_m_T, axis=0)  # (k_residual,)
-            
+
                 hutch_terms_for_residual = term1_all_t - term2_all_t
             else:
                 # If Q is not valid (e.g., Y was zero, QR failed, or k_sketch was 0),
                 # the residual is effectively m itself.
                 hutch_terms_for_residual = term1_all_t
-            
+
             trace_residual_estimate = mx.mean(hutch_terms_for_residual) # scalar, float32
         # If k_residual is 0, trace_residual_estimate remains 0.0.
 
         # 5. Total Trace Estimate
         total_trace_estimate = trace_sketched + trace_residual_estimate
-    
+
         return total_trace_estimate.astype(mx.float32)
 
 
@@ -334,13 +329,13 @@ def _(PositiveInt, hutch, hutch_variance_reduced, mx):
         """Generates a diagonal matrix with eigenvalues decaying slowly then sharply."""
         num_slow = int(n * slow_decay_fraction)
         num_sharp = n - num_slow
-    
+
         # Slow decay (e.g., constant or very slow linear)
         slow_eigenvalues = np.ones(num_slow) # Constant for simplicity
-    
+
         # Sharp decay (exponential)
         sharp_eigenvalues = np.exp(-np.linspace(0, 5, num_sharp))
-    
+
         eigenvalues = np.concatenate([slow_eigenvalues, sharp_eigenvalues])
         return mx.diag(mx.array(eigenvalues, dtype=mx.float32))
 
@@ -356,7 +351,7 @@ def _(PositiveInt, hutch, hutch_variance_reduced, mx):
 
     for matrix_name, matrix_generator in matrix_types.items():
         print(f"Testing matrix type: {matrix_name}")
-    
+
         # Generate matrix and calculate true trace
         M = matrix_generator(n_comparison)
         true_trace_M = mx.trace(M).item()
@@ -364,7 +359,7 @@ def _(PositiveInt, hutch, hutch_variance_reduced, mx):
 
         for k in k_values_comparison:
             k_pos = PositiveInt(k) # Ensure k is PositiveInt for function calls
-        
+
             # Test Standard Hutchinson
             start_time_hutch = time.perf_counter()
             estimated_trace_hutch = hutch(M, k_pos).item()
@@ -378,7 +373,7 @@ def _(PositiveInt, hutch, hutch_variance_reduced, mx):
             end_time_vr_hutch = time.perf_counter()
             runtime_vr_hutch = end_time_vr_hutch - start_time_vr_hutch
             error_vr_hutch = abs(estimated_trace_vr_hutch - true_trace_M)
-        
+
             results.append({
                 "matrix_type": matrix_name,
                 "k": k,
@@ -407,7 +402,7 @@ def _(PositiveInt, hutch, hutch_variance_reduced, mx):
     for matrix_name in matrix_types:
         # Filter results for the current matrix type
         matrix_results = [r for r in results if r["matrix_type"] == matrix_name]
-    
+
         # Separate results by method
         hutch_results = [r for r in matrix_results if r["method"] == "Standard Hutch"]
         vr_hutch_results = [r for r in matrix_results if r["method"] == "Variance-Reduced Hutch"]
@@ -446,6 +441,28 @@ def _(PositiveInt, hutch, hutch_variance_reduced, mx):
                       hovermode='closest')
 
     fig
+    return
+
+
+@app.cell
+def _():
+    import matplotlib.pyplot as plt
+    import torch
+    from pathlib import Path
+
+    sample_dir = Path("/Users/jlikhuva/Desktop/dcgan/samples")
+    sample_name = f"dcgan-sample-{99}.pt"
+    module = torch.jit.load(sample_dir / sample_name)
+    images = list(module.parameters())[0]
+
+    for index in range(3 * 3):
+      image = images[index].detach().cpu().reshape(28, 28).mul(255).to(torch.uint8)
+      array = image.numpy()
+      axis = plt.subplot(3, 3, 1 + index)
+      plt.imshow(array, cmap="gray")
+      axis.get_xaxis().set_visible(False)
+      axis.get_yaxis().set_visible(False)
+    plt.show()
     return
 
 
