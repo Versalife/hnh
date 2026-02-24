@@ -22,6 +22,7 @@ const sketchesCollection = defineCollection({
     attribution: z.string().optional(),
     attributionUrl: z.string().url().optional(),
     draft: z.boolean().optional().default(false),
+    refs: z.array(z.string()).optional().default([]), // slugs of related entries, renders as "cf."
   }),
 });
 

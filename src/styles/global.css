@@ -438,73 +438,25 @@ article h3[id] {
   opacity: 0.7;
 }
 
-/* ===== Sketch Cards ===== */
-.sketch-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.25rem;
-  margin-top: 1rem;
-}
-
-.sketch-card {
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
-  padding: 1.25rem;
-  background: var(--color-surface);
-}
-
-.sketch-card .card-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.5rem;
-}
-
-.sketch-card .card-date {
-  font-size: 0.78rem;
-  color: var(--color-text-muted);
-}
-
-.sketch-card .card-tag {
-  font-size: 0.68rem;
+/* Sketch/Snippet type badges — shared between listing and modal meta */
+.sketch-type-badge {
+  font-size: 0.65rem;
   font-weight: bold;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
+  padding: 0.1em 0.45em;
+  border-radius: 3px;
+  vertical-align: middle;
+}
+
+.sketch-type-sketch {
   color: var(--color-accent);
   border: 1px solid var(--color-accent);
-  padding: 0.1rem 0.4rem;
-  border-radius: 3px;
 }
 
-.sketch-card h3 {
-  font-size: 1rem;
-  margin: 0 0 0.5rem;
-}
-
-.sketch-card p {
-  font-size: 0.88rem;
+.sketch-type-snippet {
   color: var(--color-text-muted);
-  margin: 0;
-}
-
-.snippet-card {
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
-  padding: 1.25rem;
-  background: var(--color-surface);
-}
-
-.snippet-card blockquote {
-  border: none;
-  margin: 0 0 0.75rem;
-  padding: 0;
-  font-style: italic;
-  color: var(--color-text);
-}
-
-.snippet-card .attribution {
-  font-size: 0.82rem;
-  color: var(--color-text-muted);
+  border: 1px solid var(--color-text-muted);
 }
 
 /* ===== Prev/Next Navigation ===== */

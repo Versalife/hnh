@@ -5,86 +5,305 @@ import { getCollection } from 'astro:content';
 const allSketches = (await getCollection('sketches', ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
-// Pre-render all content in the frontmatter — async in template .map() is not safe in dev mode
-const sketchItems = await Promise.all(
-  allSketches
-    .filter(s => s.data.type === 'sketch')
-    .map(async s => {
-      const { Content } = await s.render();
-      return { s, Content };
-    })
-);
-
-const snippetItems = await Promise.all(
-  allSketches
-    .filter(s => s.data.type === 'snippet')
-    .map(async s => {
-      const { Content } = await s.render();
-      return { s, Content };
-    })
+// Pre-render all content at build time
+const rendered = await Promise.all(
+  allSketches.map(async s => {
+    const { Content } = await s.render();
+    return { s, Content };
+  })
 );
 ---
 
-<BaseLayout title="Sketches & Snippets" description="Day-to-day observations, ideas, and quotes.">
-  <main style="max-width: 900px; margin: 0 auto; padding: 3rem 1.5rem;">
-    <h1 style="font-size: 1.5rem; margin-bottom: 2.5rem;">Sketches & Snippets</h1>
+<BaseLayout title="Sketches & Snippets" description="Rough ideas and passing thoughts, arranged chronologically.">
 
-    {sketchItems.length > 0 && (
-      <section style="margin-bottom: 3rem;">
-        <h2 style="font-size: 1rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-text-muted); font-weight: bold; border-bottom: 1px solid var(--color-border); padding-bottom: 0.5rem; margin-bottom: 1.5rem;">
-          Sketches
-        </h2>
-        <div class="sketch-grid">
-          {sketchItems.map(({ s, Content }) => (
-            <div class="sketch-card">
-              <div class="card-meta">
-                <span class="card-date">
-                  {s.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' })}
-                </span>
-                <span class="card-tag">Sketch</span>
-              </div>
-              <h3>{s.data.title}</h3>
-              <div style="font-size: 0.9rem; color: var(--color-text-muted);">
-                <Content />
-              </div>
-            </div>
-          ))}
+  <!-- Hidden content store: all MDX rendered at build time, JS copies into modal -->
+  <div id="sketch-store" hidden aria-hidden="true">
+    {rendered.map(({ s, Content }) => (
+      <div
+        id={`sketch-${s.slug}`}
+        data-title={s.data.title}
+        data-date={s.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+        data-type={s.data.type}
+        data-attribution={s.data.attribution ?? ''}
+        data-attribution-url={s.data.attributionUrl ?? ''}
+        data-refs={JSON.stringify(s.data.refs ?? [])}
+      >
+        <Content />
+      </div>
+    ))}
+  </div>
+
+  <!-- Modal -->
+  <dialog id="sketch-modal" class="sketch-modal" aria-labelledby="modal-title">
+    <div class="modal-inner">
+      <header class="modal-header">
+        <div class="modal-header-text">
+          <h2 id="modal-title" class="modal-title"></h2>
+          <p id="modal-meta" class="modal-meta"></p>
         </div>
-      </section>
-    )}
+        <button id="modal-close" class="modal-close" aria-label="Close">&#x2715;</button>
+      </header>
+      <div id="modal-body" class="modal-body"></div>
+      <footer id="modal-footer" class="modal-footer"></footer>
+    </div>
+  </dialog>
 
-    {snippetItems.length > 0 && (
-      <section>
-        <h2 style="font-size: 1rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-text-muted); font-weight: bold; border-bottom: 1px solid var(--color-border); padding-bottom: 0.5rem; margin-bottom: 1.5rem;">
-          Snippets
-        </h2>
-        <div class="sketch-grid">
-          {snippetItems.map(({ s, Content }) => (
-            <div class="snippet-card">
-              <div class="card-meta" style="margin-bottom: 0.75rem;">
-                <span class="card-date">
-                  {s.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' })}
-                </span>
-                <span class="card-tag">Snippet</span>
-              </div>
-              <blockquote style="border: none; padding: 0; margin: 0 0 0.75rem; font-style: italic; color: var(--color-text);">
-                <Content />
-              </blockquote>
-              {s.data.attribution && (
-                <p class="attribution">
-                  — {s.data.attributionUrl
-                    ? <a href={s.data.attributionUrl} target="_blank" rel="noopener">{s.data.attribution}</a>
-                    : s.data.attribution}
-                </p>
-              )}
-            </div>
-          ))}
-        </div>
-      </section>
-    )}
+  <!-- Listing -->
+  <main class="sketches-main">
+    <h1 style="font-size: 1.5rem; margin-bottom: 0.25rem;">Sketches & Snippets</h1>
+    <p style="color: var(--color-text-muted); font-size: 0.9rem; margin-bottom: 2rem;">
+      Rough ideas and passing thoughts, arranged as they occurred.
+    </p>
 
-    {allSketches.length === 0 && (
-      <p style="color: var(--color-text-muted);">Coming soon.</p>
-    )}
+    <ol class="post-list" reversed start={allSketches.length}>
+      {rendered.map(({ s }) => (
+        <li class="post-list-item">
+          <span class="post-date">
+            {s.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' })}
+          </span>
+          <span class="post-title">
+            <a href={`#sketch-${s.slug}`} class="sketch-link" data-slug={s.slug}>
+              {s.data.title}
+            </a>
+          </span>
+          <span class="post-reading-time">
+            <span class={`sketch-type-badge sketch-type-${s.data.type}`}>{s.data.type}</span>
+          </span>
+        </li>
+      ))}
+    </ol>
   </main>
 </BaseLayout>
+
+<style>
+  .sketches-main {
+    max-width: var(--content-width);
+    margin: 0 auto;
+    padding: 3rem 1.5rem;
+  }
+
+  /* ── Modal shell ── */
+  .sketch-modal {
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 0;
+    max-width: min(720px, calc(100vw - 2rem));
+    max-height: calc(100vh - 4rem);
+    width: 100%;
+    background: var(--color-surface);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12);
+    color: var(--color-text);
+    /* center vertically and horizontally */
+    margin: auto;
+  }
+
+  .sketch-modal::backdrop {
+    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(2px);
+  }
+
+  .modal-inner {
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 4rem);
+    margin: 0;
+  }
+
+  /* ── Modal header ── */
+  .modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.5rem 1.75rem 1.1rem;
+    border-bottom: 1px solid var(--color-border);
+    flex-shrink: 0;
+  }
+
+  .modal-header-text {
+    min-width: 0;
+  }
+
+  .modal-title {
+    font-size: 1.2rem;
+    margin: 0 0 0.3rem;
+    line-height: 1.3;
+  }
+
+  .modal-meta {
+    font-size: 0.82rem;
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--color-text-muted);
+    padding: 0.1rem 0.2rem;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+  }
+
+  .modal-close:hover {
+    color: var(--color-text);
+  }
+
+  /* ── Modal body ── */
+  .modal-body {
+    padding: 1.5rem 1.75rem;
+    overflow-y: auto;
+    flex: 1;
+    /* Sidenotes: collapse the float inside modal */
+  }
+
+  /* Collapse right-margin sidenotes to inline block inside modal */
+  :global(.modal-body .sidenote) {
+    float: none;
+    clear: none;
+    display: block;
+    width: auto;
+    margin: 0.5rem 0 1rem;
+    margin-right: 0;
+    border-left: 2px solid var(--color-border);
+    padding-left: 0.75rem;
+    font-size: 0.82rem;
+    color: var(--color-text-muted);
+  }
+
+  /* ── Modal footer (attribution + cf. refs) ── */
+  .modal-footer {
+    padding: 0.9rem 1.75rem 1.25rem;
+    border-top: 1px solid var(--color-border);
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    flex-shrink: 0;
+  }
+
+  .modal-footer:empty {
+    display: none;
+  }
+
+  /* ── Type badges ── */
+  .sketch-type-badge {
+    font-size: 0.65rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.1em 0.45em;
+    border-radius: 3px;
+    vertical-align: middle;
+  }
+
+  .sketch-type-sketch {
+    color: var(--color-accent);
+    border: 1px solid var(--color-accent);
+  }
+
+  .sketch-type-snippet {
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-text-muted);
+  }
+</style>
+
+<script>
+  const modal = document.getElementById('sketch-modal') as HTMLDialogElement;
+  const store = document.getElementById('sketch-store')!;
+  const modalTitle = document.getElementById('modal-title')!;
+  const modalMeta = document.getElementById('modal-meta')!;
+  const modalBody = document.getElementById('modal-body')!;
+  const modalFooter = document.getElementById('modal-footer')!;
+  const modalClose = document.getElementById('modal-close')!;
+
+  function openSketch(slug: string) {
+    const entry = store.querySelector(`#sketch-${slug}`) as HTMLElement | null;
+    if (!entry) return;
+
+    const { title, date, type, attribution, attributionUrl } = entry.dataset;
+    const refs: string[] = JSON.parse(entry.dataset.refs || '[]');
+
+    // Populate header
+    modalTitle.textContent = title ?? '';
+    modalMeta.innerHTML = `
+      <span>${date}</span>
+      &ensp;
+      <span class="sketch-type-badge sketch-type-${type}">${type}</span>
+    `;
+
+    // Copy pre-rendered content into modal body
+    modalBody.innerHTML = entry.innerHTML;
+
+    // Build footer
+    const parts: string[] = [];
+
+    if (attribution) {
+      const src = attributionUrl
+        ? `<a href="${attributionUrl}" target="_blank" rel="noopener noreferrer">${attribution}</a>`
+        : attribution;
+      parts.push(`<p style="margin:0 0 0.4rem; font-style:italic;">&#x2014; ${src}</p>`);
+    }
+
+    if (refs.length > 0) {
+      const cfLinks = refs.map(refSlug => {
+        const refEntry = store.querySelector(`#sketch-${refSlug}`) as HTMLElement | null;
+        const refTitle = refEntry?.dataset.title ?? refSlug;
+        return `<a href="#sketch-${refSlug}" class="sketch-link" data-slug="${refSlug}" style="color:var(--color-text-muted);text-decoration:underline;text-underline-offset:2px;">${refTitle}</a>`;
+      });
+      parts.push(`<p style="margin:0; font-style:italic;">cf. ${cfLinks.join(', ')}</p>`);
+    }
+
+    modalFooter.innerHTML = parts.join('');
+
+    // Wire cf. links inside footer to open their modal
+    modalFooter.querySelectorAll<HTMLAnchorElement>('a.sketch-link').forEach(link => {
+      link.addEventListener('click', e => {
+        e.preventDefault();
+        const targetSlug = (link as HTMLAnchorElement).dataset.slug!;
+        history.pushState(null, '', `#sketch-${targetSlug}`);
+        openSketch(targetSlug);
+      });
+    });
+
+    modal.showModal();
+    history.pushState(null, '', `#sketch-${slug}`);
+  }
+
+  function closeModal() {
+    modal.close();
+    if (location.hash.startsWith('#sketch-')) {
+      history.pushState(null, '', location.pathname);
+    }
+  }
+
+  // List-item link clicks
+  document.querySelectorAll<HTMLAnchorElement>('a.sketch-link').forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      openSketch(link.dataset.slug!);
+    });
+  });
+
+  // Close button
+  modalClose.addEventListener('click', closeModal);
+
+  // Click on backdrop (the dialog element itself, outside the article)
+  modal.addEventListener('click', e => {
+    if (e.target === modal) closeModal();
+  });
+
+  // ESC is handled natively by <dialog>; clean up the hash afterward
+  modal.addEventListener('close', () => {
+    if (location.hash.startsWith('#sketch-')) {
+      history.pushState(null, '', location.pathname);
+    }
+  });
+
+  // Deep-link: open modal on load if URL already has a matching hash
+  const hash = location.hash;
+  if (hash.startsWith('#sketch-')) {
+    openSketch(hash.slice('#sketch-'.length));
+  }
+</script>
