@@ -1,0 +1,11 @@
+---
+// Client-side island: medium-zoom for article images
+---
+
+<script>
+  import mediumZoom from 'medium-zoom';
+  mediumZoom('article img:not([data-no-zoom])', {
+    background: 'var(--color-bg)',
+    margin: 24,
+  });
+</script>

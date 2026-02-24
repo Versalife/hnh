@@ -1,0 +1,51 @@
+---
+export interface Props {
+  headings: { depth: number; slug: string; text: string }[];
+}
+
+const { headings } = Astro.props;
+const filtered = headings.filter(h => h.depth === 2 || h.depth === 3);
+---
+
+{filtered.length > 0 && (
+  <nav class="toc" id="toc" aria-label="Table of contents">
+    <p style="font-size: 0.75rem; font-weight: bold; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-text-muted); margin-bottom: 0.75rem;">
+      Contents
+    </p>
+    {filtered.map(h => (
+      <a
+        href={`#${h.slug}`}
+        class={h.depth === 3 ? 'toc-h3' : ''}
+        data-toc-id={h.slug}
+      >
+        {h.text}
+      </a>
+    ))}
+  </nav>
+)}
+
+<script>
+  const tocLinks = document.querySelectorAll('[data-toc-id]');
+  const headingIds = Array.from(tocLinks).map(l => (l as HTMLElement).dataset.tocId as string);
+  const headingEls = headingIds.map(id => document.getElementById(id)).filter(Boolean);
+
+  if (headingEls.length > 0) {
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          const id = entry.target.id;
+          const link = document.querySelector(`[data-toc-id="${id}"]`);
+          if (link) {
+            if (entry.isIntersecting) {
+              document.querySelectorAll('[data-toc-id]').forEach(l => l.classList.remove('active'));
+              link.classList.add('active');
+            }
+          }
+        });
+      },
+      { rootMargin: '-20% 0px -70% 0px' }
+    );
+
+    headingEls.forEach(el => el && observer.observe(el));
+  }
+</script>

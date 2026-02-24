@@ -1,0 +1,90 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const allSketches = (await getCollection('sketches', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+// Pre-render all content in the frontmatter — async in template .map() is not safe in dev mode
+const sketchItems = await Promise.all(
+  allSketches
+    .filter(s => s.data.type === 'sketch')
+    .map(async s => {
+      const { Content } = await s.render();
+      return { s, Content };
+    })
+);
+
+const snippetItems = await Promise.all(
+  allSketches
+    .filter(s => s.data.type === 'snippet')
+    .map(async s => {
+      const { Content } = await s.render();
+      return { s, Content };
+    })
+);
+---
+
+<BaseLayout title="Sketches & Snippets" description="Day-to-day observations, ideas, and quotes.">
+  <main style="max-width: 900px; margin: 0 auto; padding: 3rem 1.5rem;">
+    <h1 style="font-size: 1.5rem; margin-bottom: 2.5rem;">Sketches & Snippets</h1>
+
+    {sketchItems.length > 0 && (
+      <section style="margin-bottom: 3rem;">
+        <h2 style="font-size: 1rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-text-muted); font-weight: bold; border-bottom: 1px solid var(--color-border); padding-bottom: 0.5rem; margin-bottom: 1.5rem;">
+          Sketches
+        </h2>
+        <div class="sketch-grid">
+          {sketchItems.map(({ s, Content }) => (
+            <div class="sketch-card">
+              <div class="card-meta">
+                <span class="card-date">
+                  {s.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' })}
+                </span>
+                <span class="card-tag">Sketch</span>
+              </div>
+              <h3>{s.data.title}</h3>
+              <div style="font-size: 0.9rem; color: var(--color-text-muted);">
+                <Content />
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+
+    {snippetItems.length > 0 && (
+      <section>
+        <h2 style="font-size: 1rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-text-muted); font-weight: bold; border-bottom: 1px solid var(--color-border); padding-bottom: 0.5rem; margin-bottom: 1.5rem;">
+          Snippets
+        </h2>
+        <div class="sketch-grid">
+          {snippetItems.map(({ s, Content }) => (
+            <div class="snippet-card">
+              <div class="card-meta" style="margin-bottom: 0.75rem;">
+                <span class="card-date">
+                  {s.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' })}
+                </span>
+                <span class="card-tag">Snippet</span>
+              </div>
+              <blockquote style="border: none; padding: 0; margin: 0 0 0.75rem; font-style: italic; color: var(--color-text);">
+                <Content />
+              </blockquote>
+              {s.data.attribution && (
+                <p class="attribution">
+                  — {s.data.attributionUrl
+                    ? <a href={s.data.attributionUrl} target="_blank" rel="noopener">{s.data.attribution}</a>
+                    : s.data.attribution}
+                </p>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+
+    {allSketches.length === 0 && (
+      <p style="color: var(--color-text-muted);">Coming soon.</p>
+    )}
+  </main>
+</BaseLayout>

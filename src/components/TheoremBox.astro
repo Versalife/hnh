@@ -1,0 +1,48 @@
+---
+export interface Props {
+  type?: 'definition' | 'theorem' | 'lemma' | 'corollary' | 'proposition' | 'remark' | 'example';
+  title?: string;
+}
+
+const { type = 'theorem', title } = Astro.props;
+const label = type.charAt(0).toUpperCase() + type.slice(1);
+---
+
+<div class="theorem-box">
+  <div class="theorem-label">{label}{title ? ` — ${title}` : ''}</div>
+  {Astro.slots.has('given') && (
+    <div>
+      <div class="theorem-section-label">Given</div>
+      <slot name="given" />
+    </div>
+  )}
+  {Astro.slots.has('where') && (
+    <div>
+      <div class="theorem-section-label">Where</div>
+      <slot name="where" />
+    </div>
+  )}
+  {Astro.slots.has('then') && (
+    <div>
+      <div class="theorem-section-label">Then</div>
+      <slot name="then" />
+    </div>
+  )}
+  {Astro.slots.has('default') && (
+    <div>
+      <slot />
+    </div>
+  )}
+  {Astro.slots.has('notes') && (
+    <div>
+      <div class="theorem-section-label">Notes</div>
+      <slot name="notes" />
+    </div>
+  )}
+  {Astro.slots.has('proof') && (
+    <div>
+      <div class="theorem-section-label">Proof</div>
+      <slot name="proof" />
+    </div>
+  )}
+</div>

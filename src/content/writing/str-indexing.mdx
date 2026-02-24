@@ -1,0 +1,582 @@
+---
+title: "String Indexing: A Rust Implementation"
+date: 2023-07-01
+description: "Building suffix arrays and LCP arrays in Rust, from a naïve O(n log n) sort to the linear-time SA-IS algorithm."
+tags: ["algorithms", "strings", "rust", "data-structures"]
+citationKey: "jlikhuva2021string_indexing"
+citationUrl: "https://github.com/jlikhuva/blog/blob/main/posts/string_indexing.md"
+---
+
+import TheoremBox from '../../components/TheoremBox.astro';
+import AlgorithmBox from '../../components/AlgorithmBox.astro';
+import Sidenote from '../../components/Sidenote.astro';
+
+In this article, we discuss two structures that are foundational to tasks that need to do substring matching: The Suffix Array and The Longest Common Prefix Array. We'll explore two linear time procedures (SA-IS & Kasai's Algorithm) for constructing these data structures given some underlying, fairly static string from some alphabet $\Sigma$.<Sidenote n={1}>Another name for an alphabet is a Vocabulary.</Sidenote>
+
+## Substring Search
+
+We begin by pinning down what it means for a string to be a substring of another.
+
+<TheoremBox type="definition" title="Substring">
+  <Fragment slot="given">
+    - A string $\alpha$
+    - Another string $\beta$
+  </Fragment>
+  <Fragment slot="where">
+    - Both strings belong to the same alphabet $\Sigma$
+    - $|\alpha| = m \leq |\beta| = n$
+    - There exists some suffix of $\beta$, call it $\beta_{[k:]}$, such that $\alpha$ is a prefix of $\beta_{[k:]}$
+  </Fragment>
+  <Fragment slot="then">
+    We say that $\alpha$ is a substring of $\beta$
+  </Fragment>
+</TheoremBox>
+
+That the notion of a substring relies, in its definition, on the notion of a suffix explains why we would want to construct a suffix array if our goal is to do substring matching. But, before we proceed any further, we need to start from the beginning by explaining what a suffix array is.
+
+A suffix array for some string $\Omega$ is an array of all the suffixes of that string. Note that, since a suffix is fully defined by its starting index in the string, there are $m + 1$ possible suffixes (where the extra 1 comes from counting the empty suffix). This array is sorted lexicographically. To save space, suffix arrays do not store the full suffixes, instead, they only store the starting index of each suffix. To sum up, a suffix array for some string is a lexicographically sorted array of all the indexes of all suffixes in the underlying string.
+
+<AlgorithmBox title="Example Algorithm: Enhanced Binary Search">
+
+**Inputs:** A sorted array $A$ of $n$ elements. A target value $T$.
+
+**Outputs:** Index $i$ if $A[i] = T$, else -1.
+
+**Procedure:**
+1. Set $L=0, R=n-1$.
+2. While $L \leq R$:
+   - $m = \lfloor(L+R)/2\rfloor$.
+   - If $A[m] < T$, $L=m+1$.
+   - Else if $A[m] > T$, $R=m-1$.
+   - Else return $m$.
+3. Return -1.
+
+**Notes:** Complexity: $O(\log n)$. Array must be sorted.
+
+</AlgorithmBox>
+
+Finally, most algorithms that operate on strings assume that each string has a sentinel character appended at the end. This sentinel character should not appear anywhere else in the string and should be lexicographically smaller than all characters that could appear in the string. For the ASCII alphabet, we often use the character `$` as the sentinel.
+
+## The Suffix Array: A Naïve Solution via Sorting
+
+How can we create the suffix array? The most straightforward way would be to first generate all possible suffixes, then sort them lexicographically. This runtime of this approach is at least `m lg m` as that is the comparison-based sorting lower bound.
+
+For instance, suppose our string is $\Omega$ = `banana`. We would start by appending the sentinel at the end to get $\Omega'$ = `banana$`. Then we would generate all the 7 different suffixes of the string in linear time by doing a single scan over the string. This would give us the table on the left below:
+
+$$
+\begin{array}{lr}
+\hline \text{start index} & \text{suffix} \\ \hline
+0 & \text{banana}\$ \\
+1 & \text{anana}\$ \\
+2 & \text{nana}\$ \\
+3 & \text{ana}\$ \\
+4 & \text{na}\$ \\
+5 & \text{a}\$ \\
+6 & \$ \\
+\hline
+\end{array}
+\quad\quad
+\begin{array}{lr}
+\hline \text{start index} & \text{suffix} \\ \hline
+6 & \$ \\
+5 & \text{a}\$ \\
+3 & \text{ana}\$ \\
+1 & \text{anana}\$ \\
+0 & \text{banana}\$ \\
+4 & \text{na}\$ \\
+2 & \text{nana}\$ \\
+\hline
+\end{array}
+$$
+
+We would then sort these suffixes to get the table on the right. The start index column of that table is the suffix array. Right off the bat, we can notice a few salient features about the suffix array. These features are the source of its utility. First, notice that all suffixes that start with the same character occupy a contiguous slice in the array. In fact, all suffixes that begin with the same prefix are all next to one another.
+
+We implement this scheme below.
+
+```rust
+//! We will be working with indexes to different arrays a lot. Having many
+//! raw indexes flying around increases the cognitive load as it requires
+//! one to be super vigilant not to use an index of one array in another different array.
+//! To solve this problem, we use the `NewType Index Pattern`. By giving each index
+//! a concrete type, we offload the cognitive load to the compiler.
+
+/// This is an index into the underlying string
+#[derive(Debug, PartialEq, Eq, Hash, Clone)]
+pub struct SuffixIndex(usize);
+
+/// To make things even more ergonomic, we implement the `Index` trait to allow
+/// us to use our new type without retrieving the wrapped index. For now,
+/// We assume that our string will be a collection of bytes. That is of course
+/// the case for the ascii alphabet
+impl std::ops::Index<SuffixIndex> for [u8] {
+    type Output = u8;
+    fn index(&self, index: SuffixIndex) -> &Self::Output {
+        &self[index.0]
+    }
+}
+
+pub struct SuffixArray<'a> {
+    /// The string over which we are building this suffix array
+    underlying: &'a str,
+
+    /// The suffix array is simply all the suffixes of the
+    /// underlying string in sorted order
+    suffix_array: Vec<SuffixIndex>,
+}
+
+/// This is an index into the suffix array
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Ord, PartialOrd)]
+pub struct SuffixArrayIndex(usize);
+
+/// This allows us to easily retrieve the suffix strings by using bracket
+/// notation.
+impl <'a> std::ops::Index<SuffixArrayIndex> for SuffixArray<'a>  {
+    type Output = str;
+    fn index(&self, index: SuffixArrayIndex) -> &Self::Output {
+        let suffix_idx = &self.suffix_array[index.0];
+        &self.underlying[suffix_idx.0..]
+    }
+}
+```
+
+With these abstractions in place, we can go ahead and implement our naive SACA.
+
+```rust
+impl<'a> SuffixArray<'a> {
+    /// Construct the suffix array by sorting. This has worst case performance
+    /// of O(n log n)
+    pub fn make_sa_by_sorting(s: &'a str) -> Self {
+        let mut suffixes = vec![];
+        for i in 0..s.len() {
+            suffixes.push(&s[i..]);
+        }
+        suffixes.sort();
+        let mut suffix_array = vec![];
+        for suffix in suffixes {
+            let cur = SuffixIndex(s.len() - suffix.len());
+            suffix_array.push(cur);
+        }
+        Self {
+            underlying: s,
+            suffix_array,
+        }
+    }
+}
+```
+
+Now that we have our suffix array, how can we use it to do substring search? In particular, suppose that we build a suffix array for the string $\Omega, |\Omega| = m$ and we want to find all places that another query string $\alpha, |\alpha| = n$ occurs in the first string. How fast can we do this? One approach would be to use two binary searches to find the left and right region in the suffix array where our query string occurs. We'll have to make at least $\lg m$ comparisons. To fully characterize the runtime, we need to figure out how long each comparison takes. If each lexicographic comparison is implemented by linear scanning, then the runtime to find the boundaries will be $O(n \lg m)$. Do note that it is possible to implement string comparisons in near constant time using word-level parallelism techniques that are at the heart of [specialized containers for integers](https://github.com/jlikhuva/blog/blob/main/posts/integer.md). Once we know the boundaries of our region of interest, we can simply retrieve the matching locations by doing a linear scan. If we have $z$ matches, the total runtime for this scheme becomes $O(n \lg m + z)$. We leave the implementation details as an exercise to the reader.
+
+## The LCP Array: Kasai's Procedure
+
+Suffix arrays are fairly useful on their own. However, they become even more useful when coupled with information about the lengths of common prefixes. In particular, the time to do substring matching is greatly reduced if we know the length of the longest common prefixes between all pairs of adjacent suffixes in the suffix array. How can we get that information? We explore that here.
+
+### A Naive Solution
+
+Given a suffix array, the most straightforward way to construct an LCP array is to scan over the elements of the array, calculating the lengths of common prefixes for all adjacent suffixes. We implement that below.
+
+```rust
+/// The length of the longest common prefix between the
+/// suffixes that start at `left` and `right`. These
+/// suffixes are adjacent to each other in the suffix array
+#[derive(Debug)]
+pub struct LCPHeight {
+    left: SuffixIndex,
+    right: SuffixIndex,
+    height: usize,
+}
+
+impl<'a> SuffixArray<'a> {
+    /// Retrieve the index of the suffix stored at this location
+    /// in the suffix array. Put another way, we retrieve the id
+    /// of the (idx + 1) smallest suffix in the string
+    pub fn get_suffix_idx_at(&self, idx: usize) -> SuffixIndex {
+        // These clones are quite cheap
+        self.suffix_array[idx].clone()
+    }
+    // Add a helper to get length for Vec::with_capacity
+    pub fn len(&self) -> usize {
+        self.suffix_array.len()
+    }
+}
+
+/// Calculate the length of the longest common prefix
+/// between the two string slices in linear time
+fn calculate_lcp_len(left: &str, right: &str) -> usize {
+    let mut len = 0;
+    for (l, r) in left.as_bytes().iter().zip(right.as_bytes()) {
+        if l != r {
+            break;
+        }
+        len += 1;
+    }
+    len
+}
+
+/// The naive procedure described in the preceding section
+fn make_lcp_by_scanning(sa: &SuffixArray) -> Vec<LCPHeight> {
+    let mut lcp_len_array = Vec::with_capacity(sa.len());
+    for i in 1..sa.len() {
+        let prev_sa_idx = SuffixArrayIndex(i - 1);
+        let cur_sa_idx = SuffixArrayIndex(i);
+        let lcp_len = calculate_lcp_len(&sa[prev_sa_idx], &sa[cur_sa_idx]);
+        lcp_len_array.push(LCPHeight {
+            left: sa.get_suffix_idx_at(i - 1),
+            right: sa.get_suffix_idx_at(i),
+            height: lcp_len,
+        });
+    }
+    lcp_len_array
+}
+```
+
+How fast is this procedure? Well, clearly it takes at least $O(n)$. To get a tighter bound, we need to investigate the worst case behavior of the inner loop that calculates the `LCP` between two suffixes. Suppose that the two strings are identical except that one is one character shorter than the other. In that case, the inner loop will iterate $n-1$ times. This means that the runtime of this procedure is $O(n^2)$. This is bad. Do note that the example used is not a degenerate case, it is quite likely to occur when dealing with really long strings (for example 3 billion characters) from a really small alphabet (for instance $\Sigma = 4$). We need a faster method.
+
+### [Kasai's Procedure](http://web.cs.iastate.edu/~cs548/references/linear_lcp.pdf)
+
+The main reason why the naive solution is sub-optimal is the inner loop. If we could somehow reduce the time needed to compute `LCP` values, we could markedly improve the overall runtime. The first thing to observe is that when implementing the naïve procedure, we iterated over the suffix array — not the underlying string. Because of this, we are unable to exploit the fact that the only difference between two suffixes $S_i$ and $S_{i + 1}$ that are adjacent to each other *in the string* is that one has one more character at the start. Suppose we have already found the `lcp` length between $S_i$ and the $S_k$, a suffix adjacent to it *in the suffix array*, to be $h > 1$. How can we use this information to calculate the lcp length between $S_{i+1}$ and $S_j$, the suffix adjacent to it in the suffix array? The key insight stems from observing that if we delete the first character from $S_i$ we get $S_{i+1}$, and since $h > 1$ deleting that character from $S_j$ yields another suffix that is adjacent to $S_{i+1}$ with overlap in at least $h-1$ location. Therefore, to calculate the `lcp` between the shorter suffixes, we do not need to compare the first $h-1$ suffixes for we already know that they are the same. This effectively reduces the number of times the inner loop iterates and results in a linear time solution. See the linked paper for a proof of correctness and runtime analysis. We implement this scheme below.
+
+```rust
+use std::collections::HashMap;
+
+impl From<(SuffixIndex, SuffixIndex, usize)> for LCPHeight {
+    fn from((l, r, h): (SuffixIndex, SuffixIndex, usize)) -> Self {
+        LCPHeight {
+            left: l,
+            right: r,
+            height: h,
+        }
+    }
+}
+/// Computes the lcp array in O(n) using Kasai's algorithm. This procedure assumes that
+/// the sentinel character has been appended onto `s`.
+fn make_lcp_by_kasai(s: &str, sa: &SuffixArray) -> Vec<LCPHeight> {
+    let n = s.len();
+    if n == 0 { return Vec::new(); }
+
+    let s_ascii = s.as_bytes();
+    let mut lcp_values = vec![0; n];
+
+    // rank_array[i] stores the rank of suffix s[i..] in the suffix array.
+    let mut rank_array = vec![0; n];
+    for r in 0..n {
+        rank_array[sa.get_suffix_idx_at(r).0] = r;
+    }
+
+    let mut h = 0;
+    for i in 0..n {
+        let rank_of_si = rank_array[i];
+        if rank_of_si > 0 {
+            let j = sa.get_suffix_idx_at(rank_of_si - 1).0;
+            while i + h < n && j + h < n && s_ascii[i + h] == s_ascii[j + h] {
+                h += 1;
+            }
+            lcp_values[rank_of_si] = h;
+            if h > 0 {
+                h -= 1;
+            }
+        }
+    }
+
+    let mut lcp_height_array = Vec::with_capacity(if n > 0 { n - 1 } else { 0 });
+    for rank in 1..n {
+        lcp_height_array.push(LCPHeight {
+            left: sa.get_suffix_idx_at(rank-1),
+            right: sa.get_suffix_idx_at(rank),
+            height: lcp_values[rank]
+        });
+    }
+    lcp_height_array
+}
+```
+
+## The Suffix Array: A Linear Time Solution [WIP]
+
+In the first section, we implemented a suffix array construction algorithm (SACA) that worked by sorting the suffixes. During that discussion, we noted that the runtime of that scheme is lower bounded by the time it takes to sort the suffixes. For long sequences, this time can be quite large. For example, we may want to build a suffix array of the human genome approx: 3 billion characters. Can we do better? Can we shave off a log factor? Yes. Yes we can. We won't use the method of four russians though.
+
+### [SA-IS: A suffix array via Induced Sorting](https://ieeexplore.ieee.org/document/4976463)
+
+What is `induced sorting?` and how does it differ from normal sorting? The word `induce` in the title of this procedure refers to inductive reasoning or, more plainly, inference. `induced sorting` is thus sorting by inference. Note that I'm using the term `inference` in its natural language sense, not its statistical sense. As we shall see, in induced sorting, we are able to infer the order of certain suffixes once we know the order of some specific suffixes. This means that we can sort without comparisons and can thus beat the $n \lg n$ lower bound that hamstrung the naive SACA method.
+
+#### Foundational Concepts
+
+Below, we briefly discuss some key ideas that we need in order to fully understand the SA-IS procedure.
+
+**L-Type & S-Type Suffixes:** A suffix starting at some position $k$ in some text $T$ is an `S-type` suffix if: $T[k] < T[k + 1]$, OR $T[k]==T[K + 1]$ and $k + 1$ is an S-type suffix, OR $T[k]$ is the sentinel character. Similarly, a suffix starting at some position $k$ in some text $T$ is an `L-type` suffix if $T[k] > T[k + 1]$, OR $T[k] == T[K + 1]$ and $k + 1$ is an L-type suffix.
+
+**LMS Suffixes and Substrings:** An `S` type suffix is said to be a Left Most S-suffix (LMS suffix for short) if it is an `S` type suffix that has an `L` type suffix as its left neighbor. The sentinel `$` is an `LMS` suffix by definition. An `LMS substring` is a contiguous slice of the underlying string that starts at the starting index of some `LMS` suffix and runs up to the start of the next, closest `LMS` suffix.
+
+What's the purpose of all these concepts? Well, SA-IS is based on two key ideas. The first one is that if we know the locations of the `LMS` suffixes in the suffix array, then we can infer the location of all the other suffixes (induced sorting). The second one is divide and conquer. Since SA-IS is a divide and conquer method it needs a way of reducing the problem space. This is called `substring renaming` in the literature. Since `LMS` suffixes are sparsely distributed in a string, SA-IS leverages the substrings that they produce (`LMS Substrings`) to reduce the problem size. We shall discuss how `substring renaming` is done later on. For now, let us introduce abstractions that allow us to work with the concepts we have seen so far.
+
+```rust
+#[derive(Debug, PartialEq, Eq, Clone)]
+enum SuffixType {
+    S(bool), // true if LMS
+    L,
+}
+
+#[derive(Debug)]
+pub struct Suffix<'a> {
+    start: SuffixIndex,
+    suffix_type: SuffixType,
+    underlying: &'a str,
+}
+
+impl<'a> Suffix<'a> {
+    pub fn is_lms(&self) -> bool {
+        match self.suffix_type {
+            SuffixType::L => false,
+            SuffixType::S(lms) => lms,
+        }
+    }
+}
+
+impl<'a> From<(SuffixIndex, SuffixType, &'a str)> for Suffix<'a> {
+    fn from((start, suffix_type, underlying): (SuffixIndex, SuffixType, &'a str)) -> Self {
+        Suffix {
+            start,
+            suffix_type,
+            underlying,
+        }
+    }
+}
+
+impl<'a> SuffixArray<'a> {
+    fn create_suffixes(underlying: &'a str) -> (Vec<Suffix<'a>>, Vec<SuffixIndex>) {
+        let s_len = underlying.len();
+        if s_len == 0 { return (Vec::new(), Vec::new()); }
+
+        let mut tags = vec![SuffixType::S(false); s_len];
+        let s_ascii = underlying.as_bytes();
+
+        if s_len > 1 {
+            for i in (0..s_len - 1).rev() {
+                if s_ascii[i] > s_ascii[i + 1] {
+                    tags[i] = SuffixType::L;
+                } else if s_ascii[i] == s_ascii[i + 1] {
+                    if tags[i + 1] == SuffixType::L {
+                        tags[i] = SuffixType::L;
+                    } else {
+                        tags[i] = SuffixType::S(false);
+                    }
+                } else {
+                    tags[i] = SuffixType::S(false);
+                }
+            }
+        }
+
+        if s_len > 0 {
+            if let SuffixType::S(ref mut is_lms) = tags[s_len-1] {
+                *is_lms = true;
+            }
+        }
+
+        if s_len > 1 {
+            for i in (0..s_len - 1).rev() {
+                if i > 0 {
+                    if tags[i-1] == SuffixType::L {
+                        if let SuffixType::S(ref mut is_lms) = tags[i] {
+                            *is_lms = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        let mut final_lms_locations = Vec::new();
+        for i in 0..s_len {
+            if let SuffixType::S(true) = tags[i] {
+                final_lms_locations.push(SuffixIndex(i));
+            }
+        }
+
+        let mut suffixes_vec = Vec::with_capacity(s_len);
+        for (i, tag) in tags.into_iter().enumerate() {
+            suffixes_vec.push(Suffix::from((SuffixIndex(i), tag, underlying)));
+        }
+        (suffixes_vec, final_lms_locations)
+    }
+}
+```
+
+**Buckets:** A bucket is a contiguous region of the suffix array where all suffixes begin with the same character. That starting character serves as the label for that bucket. Buckets are important in SA-IS because, as we'll soon see, we use them for induced sorting. Specifically, by placing `LMS` suffixes in their buckets at the right locations, we are able to infer the appropriate locations of the other suffixes in those buckets. Below we introduce the abstraction for a bucket.
+
+```rust
+/// The first character of the suffixes in a bucket
+/// uniquely identifies that bucket
+#[derive(Eq, PartialEq, Hash, Debug, Clone, Copy)]
+pub struct BucketId<T>(T);
+
+#[derive(Debug, Clone)]
+pub struct Bucket {
+    start: SuffixArrayIndex,
+    end: SuffixArrayIndex,
+    offset_from_start: usize,
+    offset_from_end: usize,
+    lms_offset_from_end: usize,
+}
+
+impl<'a> Suffix<'a> {
+    pub fn get_bucket(&self) -> BucketId<u8> {
+        let first_char_byte = self.underlying.as_bytes().get(self.start.0);
+        debug_assert!(first_char_byte.is_some(), "Suffix start index out of bounds");
+        BucketId(*first_char_byte.unwrap())
+    }
+}
+```
+
+**The Alphabet $\Sigma$:** An alphabet, simply put, is the ordered unique list of all the characters that can ever appear in our strings. For instance, if our problem domain is genomics, then our alphabet could be `{A, T, U, C, G}`. If it is proteomics, the alphabet could be the 20 amino acids. For our case, our alphabet is the `256` ascii characters. To create a bucket, we need to know where it starts and where it ends. For each unique character in the underlying string, we can obtain this information by leveraging the associated alphabet to implement a modified version of counting sort. In particular, we start by keeping a count of how many times each character appears in the underlying string — just as we do in counting sort. We then scan across this array of counts using the count information to generate our buckets. We implement this functionality below.
+
+```rust
+pub struct AlphabetCounter([usize; 1 << 8]);
+impl AlphabetCounter {
+    pub fn from_ascii_str(s: &str) -> Self {
+        let mut alphabet = [0_usize; 1 << 8];
+        for byte in s.as_bytes() {
+            alphabet[*byte as usize] += 1;
+        }
+        Self(alphabet)
+    }
+
+    pub fn create_buckets(&self) -> HashMap<BucketId<u8>, Bucket> {
+        let mut buckets = HashMap::new();
+        let mut start_location = 0;
+        let alphabet_counter = self.0;
+        for i in 0..alphabet_counter.len() {
+            if alphabet_counter[i] > 0 {
+                let count = alphabet_counter[i];
+                let end_location = start_location + count - 1;
+                let bucket = Bucket {
+                    start: SuffixArrayIndex(start_location),
+                    end: SuffixArrayIndex(end_location),
+                    offset_from_end: 0,
+                    offset_from_start: 0,
+                    lms_offset_from_end: 0,
+                };
+                buckets.insert(BucketId(i as u8), bucket);
+                start_location = end_location + 1;
+            }
+        }
+        buckets
+    }
+}
+```
+
+**Induced Sorting Part One:** Once we know the nature of all our suffixes and the locations of all our buckets, we can begin slotting suffixes in place. First, we place all `lms` suffixes in their buckets. Because they are `S` type suffixes, we know that they will occupy the latter portions of their respective buckets. Why is this so? Well, think about how the suffixes in a given bucket compare if we exclude the first character. Once we have all the lms suffixes in position, we proceed to place L type suffixes at their appropriate location, after which we do the same for S type suffixes. We implement this logic below.
+
+```rust
+type Buckets = HashMap<BucketId<u8>, Bucket>;
+
+impl Bucket {
+    fn insert_stype_suffix(&mut self, suffix: &Suffix, sa: &mut [SuffixIndex]) {
+        sa[self.end.0 - self.offset_from_end] = suffix.start.clone();
+        self.offset_from_end += 1;
+    }
+
+    fn insert_lms_suffix(&mut self, suffix: &Suffix, sa: &mut [SuffixIndex]) {
+        sa[self.end.0 - self.lms_offset_from_end] = suffix.start.clone();
+        self.lms_offset_from_end += 1;
+    }
+
+    fn insert_ltype_suffix(&mut self, suffix: &Suffix, sa: &mut [SuffixIndex]) {
+        sa[self.start.0 + self.offset_from_start] = suffix.start.clone();
+        self.offset_from_start += 1;
+    }
+}
+
+impl<'a> SuffixArray<'a> {
+    fn induced_sort_pass1(
+        s: &'a str,
+        suffixes_meta: &[Suffix<'a>],
+        lms_indices: &[SuffixIndex],
+        buckets: &mut Buckets,
+        sa: &mut [SuffixIndex]
+    ) {
+        for item in sa.iter_mut() {
+            *item = SuffixIndex(usize::MAX);
+        }
+
+        for bucket_val in buckets.values_mut() {
+            bucket_val.offset_from_start = 0;
+            bucket_val.offset_from_end = 0;
+            bucket_val.lms_offset_from_end = 0;
+        }
+
+        // 1. Place LMS suffixes into SA from right-to-left in their buckets
+        for lms_idx_obj in lms_indices.iter().rev() {
+            let cur_lms_suffix = suffixes_meta.iter().find(|s_obj| s_obj.start == *lms_idx_obj)
+                .expect("LMS index must correspond to a suffix object");
+            let bucket_id = cur_lms_suffix.get_bucket();
+            if let Some(bucket_ref) = buckets.get_mut(&bucket_id) {
+                bucket_ref.insert_lms_suffix(cur_lms_suffix, sa);
+            }
+        }
+
+        for bucket_val in buckets.values_mut() {
+            bucket_val.offset_from_start = 0;
+            bucket_val.offset_from_end = bucket_val.lms_offset_from_end;
+        }
+
+        // 2. Scan SA left-to-right. If SA[p] is L-type, place T[SA[p]-1] into its bucket head.
+        for p in 0..sa.len() {
+            let current_sa_val = &sa[p];
+            if current_sa_val.0 != usize::MAX && current_sa_val.0 > 0 {
+                let prev_suffix_start_idx = SuffixIndex(current_sa_val.0 - 1);
+                let prev_suffix_obj = suffixes_meta.iter().find(|s_obj| s_obj.start == prev_suffix_start_idx)
+                    .expect("Previous suffix must exist");
+                if prev_suffix_obj.suffix_type == SuffixType::L {
+                    let bucket_id = prev_suffix_obj.get_bucket();
+                    if let Some(bucket_ref) = buckets.get_mut(&bucket_id) {
+                        bucket_ref.insert_ltype_suffix(prev_suffix_obj, sa);
+                    }
+                }
+            }
+        }
+
+        for bucket_val in buckets.values_mut() {
+            bucket_val.offset_from_end = bucket_val.lms_offset_from_end;
+        }
+
+        // 3. Scan SA right-to-left. If SA[p] is S-type, place T[SA[p]-1] into its bucket tail.
+        for p in (0..sa.len()).rev() {
+            let current_sa_val = &sa[p];
+            if current_sa_val.0 != usize::MAX && current_sa_val.0 > 0 {
+                let prev_suffix_start_idx = SuffixIndex(current_sa_val.0 - 1);
+                let prev_suffix_obj = suffixes_meta.iter().find(|s_obj| s_obj.start == prev_suffix_start_idx)
+                    .expect("Previous suffix must exist");
+                if let SuffixType::S(_) = prev_suffix_obj.suffix_type {
+                    let bucket_id = prev_suffix_obj.get_bucket();
+                    if let Some(bucket_ref) = buckets.get_mut(&bucket_id) {
+                        bucket_ref.insert_stype_suffix(prev_suffix_obj, sa);
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+**Substring Renaming:** In substring renaming, we'd like to reduce the size of our input. We do so by forming a new string out of our `LMS substrings`. That is, all the characters that belong to a single substring are reduced to a single label. We implement substring renaming below.
+
+```rust
+/// WIP
+```
+
+After obtaining the shorter substring, we check to see if it contains any repeated labels. If it does not, then we are done, we can go ahead and create a suffix array for the reduced string. If it contains duplicates, we recurse on the reduced string and alphabet. In the next section we discuss how to compute the suffix array given the suffix array of the reduced string.
+
+**Inducing the SA from an approximate SA:**
+
+```rust
+/// WIP
+```
+
+#### The Whole Enchilada
+
+```rust
+/// WIP
+```
+
+## References
+
+1. [CS 166 Lecture 3](http://web.stanford.edu/class/archive/cs/cs166/cs166.1196/lectures/03/Small03.pdf)
+2. [CS 166 Lecture 4](http://web.stanford.edu/class/archive/cs/cs166/cs166.1196/lectures/04/Small04.pdf)
+3. [This Exposition](https://zork.net/~st/jottings/sais.html#induced-sorting-l-type-suffixes)

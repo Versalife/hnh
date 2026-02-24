@@ -1,0 +1,42 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import readingTime from 'reading-time';
+
+const allPosts = (await getCollection('writing', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const postsWithTime = allPosts.map(post => ({
+  post,
+  rt: readingTime(post.body).text,
+}));
+---
+
+<BaseLayout title="Hubris+Humility">
+  <main style="max-width: var(--content-width); margin: 0 auto; padding: 3rem 1.5rem;">
+    <div style="margin-bottom: 2.5rem;">
+      <h1 style="font-size: 1.75rem; margin: 0 0 0.25rem;">Hubris+Humility</h1>
+      <p style="color: var(--color-text-muted); margin: 0; font-size: 0.95rem;">
+        Notes on algorithms, biology, and the craft of computation. — <a href="/about">Joseph Okonda</a>
+      </p>
+    </div>
+
+    {postsWithTime.length === 0 ? (
+      <p style="color: var(--color-text-muted);">Posts coming soon.</p>
+    ) : (
+      <ol class="post-list" reversed start={allPosts.length}>
+        {postsWithTime.map(({ post, rt }) => (
+          <li class="post-list-item">
+            <span class="post-date">
+              {post.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+            </span>
+            <span class="post-title">
+              <a href={`/writing/${post.slug}`}>{post.data.title}</a>
+            </span>
+            <span class="post-reading-time">{rt}</span>
+          </li>
+        ))}
+      </ol>
+    )}
+  </main>
+</BaseLayout>

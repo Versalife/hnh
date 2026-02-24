@@ -1,0 +1,142 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import TableOfContents from '../components/TableOfContents.astro';
+import PrevNext from '../components/PrevNext.astro';
+import Citation from '../components/Citation.astro';
+import KeyboardNav from '../components/KeyboardNav.astro';
+import MediumZoom from '../components/MediumZoom.astro';
+
+export interface Props {
+  title: string;
+  description?: string;
+  date: Date;
+  readingTime?: string;
+  headings: { depth: number; slug: string; text: string }[];
+  prev?: { slug: string; title: string } | null;
+  next?: { slug: string; title: string } | null;
+  citationKey?: string;
+  citationUrl?: string;
+}
+
+const { title, description, date, readingTime, headings, prev, next, citationKey, citationUrl } = Astro.props;
+
+const dateStr = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="post-page-wrapper">
+    <aside class="post-toc-col" aria-label="Table of contents">
+      <div class="toc-sticky">
+        <TableOfContents headings={headings} />
+      </div>
+    </aside>
+
+    <div class="post-article-col">
+      <article>
+        <header style="margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--color-border);">
+          <h1 style="margin-top: 0;">{title}</h1>
+          <p style="font-size: 0.875rem; color: var(--color-text-muted); margin: 0;">
+            Joseph Okonda · {dateStr}{readingTime ? ` · ${readingTime}` : ''}
+          </p>
+        </header>
+
+        <slot />
+
+        {citationKey && (
+          <Citation
+            citationKey={citationKey}
+            citationUrl={citationUrl}
+            title={title}
+            year={date.getFullYear().toString()}
+          />
+        )}
+
+        <PrevNext prev={prev} next={next} />
+
+        <a href="#top" class="back-to-top">↑ Back to top</a>
+      </article>
+    </div>
+  </div>
+
+  <KeyboardNav />
+  <MediumZoom />
+</BaseLayout>
+
+<style>
+  /*
+   * True 3-column layout: [TOC] [content] [sidenotes]
+   * No max-width — fills the full viewport.
+   *
+   * The article col spans grid columns 2+3 so that the Tufte float
+   * approach works: article text fills column 2 (1fr), sidenotes
+   * float into column 3 (--sidenote-width) via negative margin-right.
+   *
+   * CSS custom properties are set here and cascade into article/sidenote
+   * rules in global.css, so they update automatically at each breakpoint.
+   */
+
+  .post-page-wrapper {
+    --toc-width:       180px;
+    --sidenote-width:  220px;
+    --sidenote-gap:    2rem;
+
+    display: grid;
+    grid-template-columns: var(--toc-width) 1fr var(--sidenote-width);
+    column-gap: var(--sidenote-gap);
+    padding: 2.5rem 2rem;
+    /* no max-width */
+  }
+
+  /* Left column: TOC stretches to full grid row height so sticky works */
+  .post-toc-col {
+    grid-column: 1;
+    align-self: stretch;
+  }
+
+  .toc-sticky {
+    position: sticky;
+    top: calc(var(--header-height) + 1.5rem);
+    max-height: calc(100vh - var(--header-height) - 3rem);
+    overflow-y: auto;
+  }
+
+  /* Middle + right columns: article spans both so text + sidenotes fill them */
+  .post-article-col {
+    grid-column: 2 / 4;
+    min-width: 0;
+  }
+
+  /* Tablet: shrink sidebars so center text column stays generous */
+  @media (max-width: 1100px) {
+    .post-page-wrapper {
+      --toc-width:      150px;
+      --sidenote-width: 180px;
+      --sidenote-gap:   1.5rem;
+    }
+  }
+
+  /* Small tablet: compact sidebars, all 3 columns still present */
+  @media (max-width: 800px) {
+    .post-page-wrapper {
+      --toc-width:      120px;
+      --sidenote-width: 150px;
+      --sidenote-gap:   1.25rem;
+    }
+  }
+
+  /* Small mobile: collapse to single column */
+  @media (max-width: 600px) {
+    .post-page-wrapper {
+      grid-template-columns: 1fr;
+      padding: 1.5rem 1rem;
+    }
+
+    .post-toc-col {
+      display: none;
+    }
+
+    .post-article-col {
+      grid-column: 1;
+    }
+  }
+</style>

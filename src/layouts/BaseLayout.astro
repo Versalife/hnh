@@ -1,0 +1,31 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+
+export interface Props {
+  title: string;
+  description?: string;
+  canonicalUrl?: string;
+}
+
+const { title, description = 'Hubris+Humility — notes on algorithms, biology, and computation.', canonicalUrl } = Astro.props;
+const siteTitle = title === 'Hubris+Humility' ? title : `${title} · Hubris+Humility`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{siteTitle}</title>
+    <meta name="description" content={description} />
+    {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+    <link rel="alternate" type="application/rss+xml" title="Hubris+Humility" href="/rss.xml" />
+    <!-- KaTeX CSS (local, no CDN) -->
+    <link rel="stylesheet" href="/katex/katex.min.css" />
+  </head>
+  <body>
+    <Header />
+    <slot />
+  </body>
+</html>

@@ -1,0 +1,12 @@
+---
+export interface Props {
+  title?: string;
+}
+
+const { title } = Astro.props;
+---
+
+<div class="theorem-box" style="border-left: 3px solid var(--color-accent);">
+  {title && <div class="theorem-label">Algorithm — {title}</div>}
+  <slot />
+</div>

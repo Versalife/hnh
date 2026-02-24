@@ -1,0 +1,27 @@
+---
+/**
+ * Right-margin reference note, thinkingmachines.ai style.
+ *
+ * Plain note:
+ *   <Sidenote n={1}>Some marginal commentary.</Sidenote>
+ *
+ * Reference with linked title and citation:
+ *   <Sidenote n={1} href="https://..." citation="Taori et al, 2021">
+ *     Alpaca: A Strong, Replicable Instruction-Following Model
+ *   </Sidenote>
+ *
+ * Unnumbered margin note:
+ *   <Sidenote>Note text here.</Sidenote>
+ */
+interface Props {
+  n?: number;
+  href?: string;
+  citation?: string;
+}
+
+const { n, href, citation } = Astro.props;
+---
+
+{n !== undefined && <sup class="sidenote-ref">{n}</sup>}<span class="sidenote">{n !== undefined && <span class="sidenote-num">{n}</span>}{href
+  ? <a href={href}><slot /></a>
+  : <slot />}{citation && <span class="sidenote-citation">{citation}</span>}</span>

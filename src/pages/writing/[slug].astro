@@ -1,0 +1,54 @@
+---
+import PostLayout from '../../layouts/PostLayout.astro';
+import { getCollection } from 'astro:content';
+import readingTime from 'reading-time';
+
+export async function getStaticPaths() {
+  const allPosts = (await getCollection('writing'))
+    .sort((a, b) => a.data.date.valueOf() - b.data.date.valueOf());
+
+  // Only published posts participate in prev/next navigation
+  const published = allPosts
+    .filter(p => !p.data.draft)
+    .sort((a, b) => a.data.date.valueOf() - b.data.date.valueOf());
+
+  return allPosts.map(post => {
+    // Drafts have no prev/next
+    if (post.data.draft) {
+      return { params: { slug: post.slug }, props: { post, prev: null, next: null } };
+    }
+    const idx = published.findIndex(p => p.slug === post.slug);
+    return {
+      params: { slug: post.slug },
+      props: {
+        post,
+        prev: idx > 0 ? { slug: published[idx - 1].slug, title: published[idx - 1].data.title } : null,
+        next: idx < published.length - 1 ? { slug: published[idx + 1].slug, title: published[idx + 1].data.title } : null,
+      },
+    };
+  });
+}
+
+const { post, prev, next } = Astro.props;
+const { Content, headings } = await post.render();
+const rt = post.data.draft ? null : readingTime(post.body);
+---
+
+<PostLayout
+  title={post.data.title}
+  description={post.data.description}
+  date={post.data.date}
+  readingTime={rt?.text}
+  headings={headings}
+  prev={prev}
+  next={next}
+  citationKey={post.data.citationKey}
+  citationUrl={post.data.citationUrl}
+>
+  {post.data.draft && (
+    <p style="color: var(--color-text-muted); font-style: italic; border-left: 3px solid var(--color-border); padding-left: 1rem; margin-bottom: 2rem;">
+      This post is a work in progress and will be published soon.
+    </p>
+  )}
+  <Content />
+</PostLayout>

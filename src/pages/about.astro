@@ -1,0 +1,127 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="About" description="About Joseph Okonda — Research Engineer at the Broad Institute.">
+  <main style="max-width: var(--content-width); margin: 0 auto; padding: 3rem 1.5rem;">
+    <h1 style="font-size: 1.5rem; margin-bottom: 2rem;">About</h1>
+
+    <div class="bio-layout">
+      <div class="bio-text">
+        <p>
+          I'm a Research Engineer at <a href="https://www.broadinstitute.org/" target="_blank" rel="noopener">The Broad Institute</a>,
+          where I work at the intersection of software engineering and computational biology.
+          I design and build tools to process, organize, and analyze data from high throughput single cell sequencing experiments.
+        </p>
+        <p>
+          Previously, I was at <a href="https://www.gsam.com/content/gsam/global/en/homepage.html" target="_blank" rel="noopener">Goldman Sachs</a>,
+          building computational systems in the asset management division.
+          I graduated from Stanford with a B.S. in Computer Science.
+        </p>
+        <ul style="list-style: none; padding: 0; margin: 1.5rem 0;">
+          <li><a href="https://github.com/jlikhuva" target="_blank" rel="noopener">[GitHub]</a></li>
+          <li style="margin-top: 0.25rem;"><a href="https://www.linkedin.com/in/jlikhuva" target="_blank" rel="noopener">[LinkedIn]</a></li>
+          <li style="margin-top: 0.25rem;"><a href="/cv.pdf" target="_blank">[CV]</a></li>
+        </ul>
+        <p style="font-size: 0.875rem; color: var(--color-text-muted);">
+          Email: jlikhuva at alumni dot stanford dot edu
+        </p>
+      </div>
+      <div class="bio-img">
+        <img src="/assets/bio.jpg" alt="Joseph Okonda" style="border-radius: 4px; max-width: 200px;" />
+      </div>
+    </div>
+
+    <hr />
+
+    <h2>About the Website</h2>
+    <p>
+      This website is a mix of three things: a repository of detailed notes I take during personal study,
+      a collection of day-to-day unrefined thoughts that seemed interesting at the time (Sketches+Snippets),
+      and a collection of refined essays or distillations of ideas (Writing).
+    </p>
+
+    <h2>About the Name</h2>
+    <p>
+      Why Hubris+Humility? To do any meaningful work you have to first believe that you <em>can</em> do
+      meaningful work — work that is field-defining. This requires a certain degree of self-confidence.
+      This is Hubris. On its own, this belief is not enough. However, when coupled with the ability to
+      recognize one's limitations in skill and the patience to systematically remedy those deficiencies —
+      this is Humility.
+    </p>
+
+    <hr />
+
+    <h2>Notable Projects & Research</h2>
+
+    <div style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 2rem;">
+      <div class="project-card">
+        <div style="flex: 1;">
+          <h3 style="margin-top: 0; font-size: 1.05rem;">Spotting and Transcribing Structured Nutrition Information for Product Images</h3>
+          <p style="font-size: 0.85rem; color: var(--color-text-muted); margin: 0.25rem 0 0.5rem;">Computer Vision · Spring 2018; Updated Summer 2022</p>
+          <p style="font-size: 0.9rem;">Back before the era of powerful multimodal AI systems, I designed a system for reading nutrition labels.</p>
+          <a href="https://github.com/jlikhuva/NutritionProject/blob/master/Data/arxiv.pdf" target="_blank" rel="noopener" style="font-size: 0.875rem;">[Paper]</a>
+        </div>
+        <a href="https://github.com/jlikhuva/NutritionProject/blob/master/Data/_poster.pdf" target="_blank" rel="noopener">
+          <img src="/assets/231.png" alt="Nutrition project poster" style="max-width: 120px; border-radius: 4px;" data-no-zoom />
+        </a>
+      </div>
+
+      <div class="project-card">
+        <div style="flex: 1;">
+          <h3 style="margin-top: 0; font-size: 1.05rem;">Building a Robust and Reliable Genomics Data API</h3>
+          <p style="font-size: 0.85rem; color: var(--color-text-muted); margin: 0.25rem 0 0.5rem;">
+            Joseph Okonda, Qiuyue Liu, Jared Nedzel, Kristin Ardlie ·
+            <a href="https://commonfund.nih.gov/dataecosystem" target="_blank" rel="noopener">NIH CFDE Poster</a>
+            · <span style="color: var(--color-accent);">Best Poster Award</span>
+          </p>
+          <p style="font-size: 0.9rem;">Designed and led the implementation of a full genomic data retrieval and exploration API.</p>
+          <a href="https://www.gtexportal.org/home/" target="_blank" rel="noopener" style="font-size: 0.875rem; margin-right: 0.75rem;">[Website]</a>
+          <a href="https://gtexportal.org/api/v2/redoc#tag/Dynamic-Association-Endpoints" target="_blank" rel="noopener" style="font-size: 0.875rem;">[API Docs]</a>
+        </div>
+        <a href="/assets/GTEx Poster Hi-Res.pdf" target="_blank">
+          <img src="/assets/gtex.png" alt="GTEx project poster" style="max-width: 120px; border-radius: 4px;" data-no-zoom />
+        </a>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .bio-layout {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+  }
+
+  .bio-text {
+    flex: 1;
+  }
+
+  .bio-img {
+    flex-shrink: 0;
+  }
+
+  .project-card {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  @media (max-width: 600px) {
+    .bio-layout {
+      flex-direction: column-reverse;
+    }
+
+    .bio-img img {
+      max-width: 100% !important;
+    }
+
+    .project-card {
+      flex-direction: column;
+    }
+  }
+</style>

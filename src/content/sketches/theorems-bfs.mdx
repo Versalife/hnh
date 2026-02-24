@@ -1,0 +1,22 @@
+---
+title: "Proving Theorems is an Exercise in Breadth First Search"
+date: 2023-08-11
+type: sketch
+---
+
+Mathematical ideas (definitions, theorems ...) can be thought of as nodes in a directed graph
+depicting the entailment relationships among them. When equipped with such an entailment graph,
+proving a theorem becomes an exercise in searching for a path between some two particular nodes.
+To prove a theorem, we start by exploring nodes in the neighborhood of our proposition. We
+systematically expand our search until we find the node corresponding to our conclusion. Since
+most theorems would include multiple nodes as starting points (i.e. multiple premises), we could
+also think in terms of paths from meta-nodes to nodes.
+
+With this framework, we can note the following: First, different proofs to the same theorem
+correspond to different paths between the same pair of nodes. Secondly, learning mathematics
+is the act of building a mental version of this entailment graph.
+
+This general idea can be extended beyond logical reasoning to encompass
+[plausible reasoning](https://en.wikipedia.org/wiki/Plausible_reasoning) by equipping each
+edge with a non-negative weight representing the degree to which we believe that the source
+entails the destination.

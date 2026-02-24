@@ -1,0 +1,24 @@
+---
+const navItems = [
+  { href: '/writing', label: 'Writing' },
+  { href: '/sketches', label: 'Sketches' },
+  { href: '/about', label: 'About' },
+];
+
+const currentPath = Astro.url.pathname;
+---
+
+<header class="site-header">
+  <a href="/" class="logo">H+H</a>
+  <nav>
+    {navItems.map(item => (
+      <a
+        href={item.href}
+        class={currentPath.startsWith(item.href) ? 'active' : ''}
+        style={currentPath.startsWith(item.href) ? 'color: var(--color-accent)' : ''}
+      >
+        {item.label}
+      </a>
+    ))}
+  </nav>
+</header>

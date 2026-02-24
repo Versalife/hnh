@@ -1,0 +1,27 @@
+---
+export interface Props {
+  citationKey: string;
+  citationUrl?: string;
+  title: string;
+  author?: string;
+  year?: string;
+}
+
+const { citationKey, citationUrl, title, author = 'Joseph Okonda', year } = Astro.props;
+const yearStr = year ?? new Date().getFullYear().toString();
+const url = citationUrl ?? `https://hubrishumility.com/writing/${citationKey}`;
+
+const bibtex = `@article{${citationKey}${yearStr},
+  title   = {${title}},
+  author  = {${author}},
+  year    = {${yearStr}},
+  url     = {${url}}
+}`;
+---
+
+<div class="citation-block">
+  <p style="font-size: 0.75rem; font-weight: bold; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-text-muted); margin: 0 0 0.75rem;">
+    Cite this article
+  </p>
+  <pre><code>{bibtex}</code></pre>
+</div>
