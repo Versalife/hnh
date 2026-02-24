@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
 <BaseLayout title="About" description="About Joseph Okonda — Research Engineer at the Broad Institute.">
@@ -21,14 +22,14 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         <ul style="list-style: none; padding: 0; margin: 1.5rem 0;">
           <li><a href="https://github.com/jlikhuva" target="_blank" rel="noopener">[GitHub]</a></li>
           <li style="margin-top: 0.25rem;"><a href="https://www.linkedin.com/in/jlikhuva" target="_blank" rel="noopener">[LinkedIn]</a></li>
-          <li style="margin-top: 0.25rem;"><a href="/cv.pdf" target="_blank">[CV]</a></li>
+          <li style="margin-top: 0.25rem;"><a href={`${base}/cv.pdf`} target="_blank">[CV]</a></li>
         </ul>
         <p style="font-size: 0.875rem; color: var(--color-text-muted);">
           Email: jlikhuva at alumni dot stanford dot edu
         </p>
       </div>
       <div class="bio-img">
-        <img src="/assets/bio.jpg" alt="Joseph Okonda" style="border-radius: 4px; max-width: 200px;" />
+        <img src={`${base}/assets/bio.jpg`} alt="Joseph Okonda" style="border-radius: 4px; max-width: 200px;" />
       </div>
     </div>
 
@@ -63,7 +64,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           <a href="https://github.com/jlikhuva/NutritionProject/blob/master/Data/arxiv.pdf" target="_blank" rel="noopener" style="font-size: 0.875rem;">[Paper]</a>
         </div>
         <a href="https://github.com/jlikhuva/NutritionProject/blob/master/Data/_poster.pdf" target="_blank" rel="noopener">
-          <img src="/assets/231.png" alt="Nutrition project poster" style="max-width: 120px; border-radius: 4px;" data-no-zoom />
+          <img src={`${base}/assets/231.png`} alt="Nutrition project poster" style="max-width: 120px; border-radius: 4px;" data-no-zoom />
         </a>
       </div>
 
@@ -79,8 +80,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           <a href="https://www.gtexportal.org/home/" target="_blank" rel="noopener" style="font-size: 0.875rem; margin-right: 0.75rem;">[Website]</a>
           <a href="https://gtexportal.org/api/v2/redoc#tag/Dynamic-Association-Endpoints" target="_blank" rel="noopener" style="font-size: 0.875rem;">[API Docs]</a>
         </div>
-        <a href="/assets/GTEx Poster Hi-Res.pdf" target="_blank">
-          <img src="/assets/gtex.png" alt="GTEx project poster" style="max-width: 120px; border-radius: 4px;" data-no-zoom />
+        <a href={`${base}/assets/GTEx Poster Hi-Res.pdf`} target="_blank">
+          <img src={`${base}/assets/gtex.png`} alt="GTEx project poster" style="max-width: 120px; border-radius: 4px;" data-no-zoom />
         </a>
       </div>
     </div>

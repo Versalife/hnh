@@ -5,13 +5,14 @@ export interface Props {
 }
 
 const { prev, next } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
 {(prev || next) && (
   <nav class="prev-next" aria-label="Post navigation">
     <div>
       {prev && (
-        <a href={`/writing/${prev.slug}`} rel="prev">
+        <a href={`${base}/writing/${prev.slug}`} rel="prev">
           <span class="nav-label">← Previous</span>
           {prev.title}
         </a>
@@ -19,7 +20,7 @@ const { prev, next } = Astro.props;
     </div>
     <div style="text-align: right;">
       {next && (
-        <a href={`/writing/${next.slug}`} rel="next">
+        <a href={`${base}/writing/${next.slug}`} rel="next">
           <span class="nav-label">Next →</span>
           {next.title}
         </a>
