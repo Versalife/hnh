@@ -122,12 +122,14 @@ img {
 
 /* ===== Code Font ===== */
 code, pre, kbd, samp {
-  font-family: ui-monospace, "Cascadia Code", "Fira Code", "JetBrains Mono", "SF Mono", Menlo, Monaco, Consolas, monospace;
+  font-family: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.82em;
+  font-feature-settings: "liga" 1, "calt" 1; /* enable ligatures */
 }
 
 /* ===== Inline Code ===== */
 :not(pre) > code {
-  font-size: 0.875em;
+  font-size: 1em; /* inherits the 0.82em from the code rule above */
   background-color: var(--color-code-bg);
   border: 1px solid var(--color-border);
   padding: 0.15em 0.4em;
@@ -141,8 +143,7 @@ code, pre, kbd, samp {
   padding: 1.25rem 1.5rem;
   margin: 1.5rem 0;
   overflow-x: auto;
-  font-size: 0.875rem;
-  line-height: 1.65;
+  line-height: 1.7;
 }
 
 .astro-code code {
@@ -161,8 +162,7 @@ pre:not(.astro-code) {
   overflow-x: auto;
   padding: 1.25rem;
   margin: 1.5rem 0;
-  font-size: 0.875rem;
-  line-height: 1.6;
+  line-height: 1.65;
 }
 
 pre:not(.astro-code) code {
@@ -172,10 +172,25 @@ pre:not(.astro-code) code {
 }
 
 /* ===== KaTeX ===== */
+/*
+ * KaTeX defaults: inline .katex is 1.21em, display is 1.21em.
+ * Scale down slightly so math feels proportional to et-book body text.
+ * 1.0em = same size as surrounding prose; 1.05em gives slight
+ * prominence to display math without towering over normal text.
+ */
+.katex {
+  font-size: 1.05em;
+}
+
 .katex-display {
   overflow-x: auto;
   overflow-y: hidden;
   padding: 0.5rem 0;
+  margin: 1.25rem 0;
+}
+
+.katex-display > .katex {
+  font-size: 1.1em;
 }
 
 /* ===== Article / Post Layout ===== */
