@@ -1,0 +1,35 @@
+---
+/**
+ * Lightweight callout / admonition box. Deliberately understated —
+ * journal-style, not GitHub-style colored blocks.
+ *
+ * Usage in MDX:
+ *   import Callout from '../../components/Callout.astro';
+ *
+ *   <Callout type="note">This is a note.</Callout>
+ *   <Callout type="warning">Watch out for X.</Callout>
+ *   <Callout type="definition" title="Suffix Array">A sorted array of all suffixes…</Callout>
+ *   <Callout type="aside">An editorial aside.</Callout>
+ */
+interface Props {
+  type?: 'note' | 'aside' | 'warning' | 'definition';
+  /** Override the auto-label (e.g. "Definition" → a term name) */
+  title?: string;
+}
+
+const { type = 'note', title } = Astro.props;
+
+const defaultLabels: Record<string, string> = {
+  note:       'Note',
+  aside:      'Aside',
+  warning:    'Warning',
+  definition: 'Definition',
+};
+
+const label = title ?? defaultLabels[type];
+---
+
+<div class={`callout callout-${type}`}>
+  <span class="callout-label">{label}</span>
+  <slot />
+</div>

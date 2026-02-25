@@ -1,0 +1,26 @@
+---
+/**
+ * Image with optional caption. Use instead of bare markdown ![alt](src)
+ * when you need a caption or want to control display width.
+ *
+ * Usage in MDX:
+ *   import Figure from '../../components/Figure.astro';
+ *
+ *   <Figure src="/hnh/assets/diagram.png" alt="A diagram" caption="Figure 1. The pipeline." />
+ *   <Figure src="/hnh/assets/wide.png" alt="..." caption="..." wide />
+ */
+interface Props {
+  src: string;
+  alt: string;
+  caption?: string;
+  /** Stretch to full article width instead of natural image width */
+  wide?: boolean;
+}
+
+const { src, alt, caption, wide = false } = Astro.props;
+---
+
+<figure class={`article-figure${wide ? ' article-figure--wide' : ''}`}>
+  <img src={src} alt={alt} />
+  {caption && <figcaption set:html={caption} />}
+</figure>

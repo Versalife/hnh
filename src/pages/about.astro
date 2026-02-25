@@ -4,125 +4,314 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
 <BaseLayout title="About" description="About Joseph Okonda — Research Engineer at the Broad Institute.">
-  <main style="max-width: var(--content-width); margin: 0 auto; padding: 3rem 1.5rem;">
-    <h1 style="font-size: 1.5rem; margin-bottom: 2rem;">About</h1>
+  <main class="about-main">
 
-    <div class="bio-layout">
-      <div class="bio-text">
+    <!-- ── Bio ── -->
+    <div class="about-bio">
+      <div class="about-bio-text">
+        <h1 class="about-name">Joseph Okonda</h1>
+        <p class="about-role">Research Engineer · Broad Institute of MIT and Harvard</p>
+
         <p>
-          I'm a Research Engineer at <a href="https://www.broadinstitute.org/" target="_blank" rel="noopener">The Broad Institute</a>,
-          where I work at the intersection of software engineering and computational biology.
-          I design and build tools to process, organize, and analyze data from high throughput single cell sequencing experiments.
+          I work at the intersection of software engineering and computational biology,
+          designing and building tools to process, organize, and analyze data from
+          high-throughput single-cell sequencing experiments.
         </p>
         <p>
-          Previously, I was at <a href="https://www.gsam.com/content/gsam/global/en/homepage.html" target="_blank" rel="noopener">Goldman Sachs</a>,
+          Previously I was at
+          <a href="https://www.gsam.com/content/gsam/global/en/homepage.html" target="_blank" rel="noopener">Goldman Sachs</a>,
           building computational systems in the asset management division.
-          I graduated from Stanford with a B.S. in Computer Science.
+          I studied Computer Science at Stanford.
         </p>
-        <ul style="list-style: none; padding: 0; margin: 1.5rem 0;">
-          <li><a href="https://github.com/jlikhuva" target="_blank" rel="noopener">[GitHub]</a></li>
-          <li style="margin-top: 0.25rem;"><a href="https://www.linkedin.com/in/jlikhuva" target="_blank" rel="noopener">[LinkedIn]</a></li>
-          <li style="margin-top: 0.25rem;"><a href={`${base}/cv.pdf`} target="_blank">[CV]</a></li>
-        </ul>
-        <p style="font-size: 0.875rem; color: var(--color-text-muted);">
-          Email: jlikhuva at alumni dot stanford dot edu
-        </p>
+
+        <nav class="about-links" aria-label="Contact and profiles">
+          <a href="https://github.com/jlikhuva" target="_blank" rel="noopener">GitHub</a>
+          <span class="about-links-sep" aria-hidden="true">·</span>
+          <a href="https://www.linkedin.com/in/jlikhuva" target="_blank" rel="noopener">LinkedIn</a>
+          <span class="about-links-sep" aria-hidden="true">·</span>
+          <a href={`${base}/cv.pdf`} target="_blank">CV</a>
+          <span class="about-links-sep" aria-hidden="true">·</span>
+          <span class="about-email">jlikhuva&#64;alumni.stanford.edu</span>
+        </nav>
       </div>
-      <div class="bio-img">
-        <img src={`${base}/assets/bio.jpg`} alt="Joseph Okonda" style="border-radius: 4px; max-width: 200px;" />
+
+      <div class="about-photo">
+        <img src={`${base}/assets/bio.jpg`} alt="Joseph Okonda" />
       </div>
     </div>
 
-    <hr />
+    <!-- ── About this site ── -->
+    <section class="about-section">
+      <h2>This Site</h2>
+      <p>
+        Hubris+Humility is a personal journal of ideas in three registers: detailed technical
+        notes from sustained study (Writing), rough day-to-day observations and curated
+        passages that struck me as worth keeping (Sketches &amp; Snippets), and eventually,
+        more polished essays.
+      </p>
+      <p>
+        The name comes from a belief about creative work. To attempt anything field-defining
+        you first have to believe that you <em>can</em> — that the problem is yours to solve.
+        That is Hubris. But conviction alone accomplishes nothing without the patience to
+        recognize your limitations and systematically remedy them. That is Humility.
+        Both are necessary.
+      </p>
+    </section>
 
-    <h2>About the Website</h2>
-    <p>
-      This website is a mix of three things: a repository of detailed notes I take during personal study,
-      a collection of day-to-day unrefined thoughts that seemed interesting at the time (Sketches+Snippets),
-      and a collection of refined essays or distillations of ideas (Writing).
-    </p>
+    <!-- ── Projects ── -->
+    <section class="about-section">
+      <h2>Selected Work</h2>
 
-    <h2>About the Name</h2>
-    <p>
-      Why Hubris+Humility? To do any meaningful work you have to first believe that you <em>can</em> do
-      meaningful work — work that is field-defining. This requires a certain degree of self-confidence.
-      This is Hubris. On its own, this belief is not enough. However, when coupled with the ability to
-      recognize one's limitations in skill and the patience to systematically remedy those deficiencies —
-      this is Humility.
-    </p>
+      <div class="project-list">
 
-    <hr />
-
-    <h2>Notable Projects & Research</h2>
-
-    <div style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 2rem;">
-      <div class="project-card">
-        <div style="flex: 1;">
-          <h3 style="margin-top: 0; font-size: 1.05rem;">Spotting and Transcribing Structured Nutrition Information for Product Images</h3>
-          <p style="font-size: 0.85rem; color: var(--color-text-muted); margin: 0.25rem 0 0.5rem;">Computer Vision · Spring 2018; Updated Summer 2022</p>
-          <p style="font-size: 0.9rem;">Back before the era of powerful multimodal AI systems, I designed a system for reading nutrition labels.</p>
-          <a href="https://github.com/jlikhuva/NutritionProject/blob/master/Data/arxiv.pdf" target="_blank" rel="noopener" style="font-size: 0.875rem;">[Paper]</a>
+        <div class="project">
+          <div class="project-info">
+            <h3 class="project-title">Spotting and Transcribing Structured Nutrition Information for Product Images</h3>
+            <p class="project-meta">Computer Vision · Spring 2018, updated 2022</p>
+            <p class="project-desc">
+              Before the era of powerful multimodal models, I designed a computer vision pipeline
+              for automatically reading and extracting nutrition labels from product photographs.
+            </p>
+            <div class="project-links">
+              <a href="https://github.com/jlikhuva/NutritionProject/blob/master/Data/arxiv.pdf" target="_blank" rel="noopener">Paper</a>
+            </div>
+          </div>
+          <a class="project-thumb" href="https://github.com/jlikhuva/NutritionProject/blob/master/Data/_poster.pdf" target="_blank" rel="noopener" aria-label="View poster PDF">
+            <img src={`${base}/assets/231.png`} alt="Nutrition project poster thumbnail" data-no-zoom />
+          </a>
         </div>
-        <a href="https://github.com/jlikhuva/NutritionProject/blob/master/Data/_poster.pdf" target="_blank" rel="noopener">
-          <img src={`${base}/assets/231.png`} alt="Nutrition project poster" style="max-width: 120px; border-radius: 4px;" data-no-zoom />
-        </a>
-      </div>
 
-      <div class="project-card">
-        <div style="flex: 1;">
-          <h3 style="margin-top: 0; font-size: 1.05rem;">Building a Robust and Reliable Genomics Data API</h3>
-          <p style="font-size: 0.85rem; color: var(--color-text-muted); margin: 0.25rem 0 0.5rem;">
-            Joseph Okonda, Qiuyue Liu, Jared Nedzel, Kristin Ardlie ·
-            <a href="https://commonfund.nih.gov/dataecosystem" target="_blank" rel="noopener">NIH CFDE Poster</a>
-            · <span style="color: var(--color-accent);">Best Poster Award</span>
-          </p>
-          <p style="font-size: 0.9rem;">Designed and led the implementation of a full genomic data retrieval and exploration API.</p>
-          <a href="https://www.gtexportal.org/home/" target="_blank" rel="noopener" style="font-size: 0.875rem; margin-right: 0.75rem;">[Website]</a>
-          <a href="https://gtexportal.org/api/v2/redoc#tag/Dynamic-Association-Endpoints" target="_blank" rel="noopener" style="font-size: 0.875rem;">[API Docs]</a>
+        <div class="project">
+          <div class="project-info">
+            <h3 class="project-title">Building a Robust and Reliable Genomics Data API</h3>
+            <p class="project-meta">
+              Computational Biology · Joseph Okonda, Qiuyue Liu, Jared Nedzel, Kristin Ardlie ·
+              <a href="https://commonfund.nih.gov/dataecosystem" target="_blank" rel="noopener">NIH CFDE</a>
+              · <span class="project-award">Best Poster Award</span>
+            </p>
+            <p class="project-desc">
+              Designed and led the implementation of a full genomic data retrieval and exploration
+              API powering the GTEx portal, one of the largest public gene expression resources.
+            </p>
+            <div class="project-links">
+              <a href="https://www.gtexportal.org/home/" target="_blank" rel="noopener">Website</a>
+              <span class="about-links-sep" aria-hidden="true">·</span>
+              <a href="https://gtexportal.org/api/v2/redoc#tag/Dynamic-Association-Endpoints" target="_blank" rel="noopener">API Docs</a>
+            </div>
+          </div>
+          <a class="project-thumb" href={`${base}/assets/GTEx Poster Hi-Res.pdf`} target="_blank" aria-label="View GTEx poster PDF">
+            <img src={`${base}/assets/gtex.png`} alt="GTEx project poster thumbnail" data-no-zoom />
+          </a>
         </div>
-        <a href={`${base}/assets/GTEx Poster Hi-Res.pdf`} target="_blank">
-          <img src={`${base}/assets/gtex.png`} alt="GTEx project poster" style="max-width: 120px; border-radius: 4px;" data-no-zoom />
-        </a>
+
       </div>
-    </div>
+    </section>
+
   </main>
 </BaseLayout>
 
 <style>
-  .bio-layout {
+  .about-main {
+    max-width: var(--content-width);
+    margin: 0 auto;
+    padding: 3rem 1.5rem 4rem;
+  }
+
+  /* ── Bio block ── */
+  .about-bio {
     display: flex;
-    gap: 2rem;
+    gap: 2.5rem;
     align-items: flex-start;
-    margin-bottom: 2rem;
+    margin-bottom: 3rem;
   }
 
-  .bio-text {
+  .about-bio-text {
     flex: 1;
+    min-width: 0;
   }
 
-  .bio-img {
+  .about-name {
+    font-size: 1.75rem;
+    margin: 0 0 0.2rem;
+    line-height: 1.2;
+  }
+
+  .about-role {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    margin: 0 0 1.25rem;
+    font-style: italic;
+  }
+
+  /* ── Contact links row ── */
+  .about-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.3rem 0;
+    margin-top: 1.25rem;
+    font-size: 0.875rem;
+  }
+
+  .about-links a {
+    color: var(--color-text-muted);
+  }
+
+  .about-links a:hover {
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+
+  .about-links-sep {
+    color: var(--color-border);
+    margin: 0 0.4rem;
+    user-select: none;
+  }
+
+  .about-email {
+    color: var(--color-text-muted);
+    font-style: italic;
+  }
+
+  /* ── Photo ── */
+  .about-photo {
     flex-shrink: 0;
   }
 
-  .project-card {
+  .about-photo img {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 4px;
+    display: block;
+    border: 1px solid var(--color-border);
+  }
+
+  /* ── Sections ── */
+  .about-section {
+    padding-top: 2.5rem;
+    border-top: 1px solid var(--color-border);
+    margin-top: 0;
+  }
+
+  .about-section h2 {
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--color-text-muted);
+    margin: 0 0 1.25rem;
+  }
+
+  /* ── Project list ── */
+  .project-list {
     display: flex;
-    gap: 1.5rem;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .project {
+    display: flex;
+    gap: 1.75rem;
     align-items: flex-start;
-    padding-bottom: 2rem;
+    padding: 1.75rem 0;
     border-bottom: 1px solid var(--color-border);
   }
 
+  .project:first-child {
+    padding-top: 0;
+  }
+
+  .project:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .project-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .project-title {
+    font-size: 1rem;
+    font-weight: bold;
+    margin: 0 0 0.3rem;
+    line-height: 1.4;
+  }
+
+  .project-meta {
+    font-size: 0.82rem;
+    color: var(--color-text-muted);
+    margin: 0 0 0.65rem;
+    line-height: 1.5;
+  }
+
+  .project-award {
+    color: var(--color-accent);
+    font-style: normal;
+  }
+
+  .project-desc {
+    font-size: 0.92rem;
+    margin: 0 0 0.75rem;
+    line-height: 1.6;
+  }
+
+  .project-links {
+    display: flex;
+    align-items: center;
+    font-size: 0.82rem;
+    gap: 0;
+  }
+
+  .project-links a {
+    color: var(--color-text-muted);
+  }
+
+  .project-links a:hover {
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+
+  .project-thumb {
+    flex-shrink: 0;
+    display: block;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    transition: border-color 0.15s;
+  }
+
+  .project-thumb:hover {
+    border-color: var(--color-text-muted);
+  }
+
+  .project-thumb img {
+    display: block;
+    width: 130px;
+    height: 100px;
+    object-fit: cover;
+  }
+
+  /* ── Mobile ── */
   @media (max-width: 600px) {
-    .bio-layout {
+    .about-bio {
       flex-direction: column-reverse;
+      gap: 1.5rem;
     }
 
-    .bio-img img {
-      max-width: 100% !important;
+    .about-photo img {
+      width: 100%;
+      height: 220px;
     }
 
-    .project-card {
+    .project {
       flex-direction: column;
+    }
+
+    .project-thumb img {
+      width: 100%;
+      height: 160px;
     }
   }
 </style>

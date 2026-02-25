@@ -19,30 +19,7 @@
   --header-height:   51px;
 }
 
-/* ===== Et-Book Font Face ===== */
-@font-face {
-  font-family: "et-book";
-  src: url("/fonts/et-book-roman-line-figures.woff2") format("woff2"),
-       url("/fonts/et-book-roman-line-figures.woff") format("woff");
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "et-book";
-  src: url("/fonts/et-book-display-italic-old-style-figures.woff2") format("woff2"),
-       url("/fonts/et-book-display-italic-old-style-figures.woff") format("woff");
-  font-weight: normal;
-  font-style: italic;
-}
-
-@font-face {
-  font-family: "et-book";
-  src: url("/fonts/et-book-bold-line-figures.woff2") format("woff2"),
-       url("/fonts/et-book-bold-line-figures.woff") format("woff");
-  font-weight: bold;
-  font-style: normal;
-}
+/* @font-face for et-book is in BaseLayout.astro (needs BASE_URL for the font paths) */
 
 /* ===== Base Styles ===== */
 *, *::before, *::after {
@@ -119,6 +96,100 @@ img {
   height: auto;
   display: block;
 }
+
+/* ===== Figures ===== */
+figure.article-figure {
+  margin: 2rem 0;
+}
+
+figure.article-figure img {
+  margin: 0 auto;
+}
+
+figure.article-figure--wide img {
+  width: 100%;
+}
+
+figcaption {
+  margin-top: 0.55rem;
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  line-height: 1.45;
+  text-align: center;
+  font-style: italic;
+}
+
+figcaption strong {
+  font-style: normal;
+  color: var(--color-text);
+}
+
+/* ===== Tables ===== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.75rem 0;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+thead th {
+  text-align: left;
+  padding: 0.45rem 0.85rem;
+  border-bottom: 2px solid var(--color-text);
+  font-weight: bold;
+  color: var(--color-text);
+  white-space: nowrap;
+}
+
+tbody td {
+  padding: 0.45rem 0.85rem;
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: top;
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+tbody tr:nth-child(even) td {
+  background-color: var(--color-code-bg);
+}
+
+/* ===== Callouts ===== */
+.callout {
+  margin: 1.75rem 0;
+  padding: 0.85rem 1.25rem;
+  border-left: 3px solid var(--color-border);
+  border-radius: 0 4px 4px 0;
+  background: var(--color-surface);
+}
+
+/* suppress paragraph bottom margin on the last child inside a callout */
+.callout > p:last-child,
+.callout > :last-child {
+  margin-bottom: 0;
+}
+
+.callout-label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.45rem;
+}
+
+/* type-specific left-border color + label color */
+.callout-note     { border-left-color: var(--color-text-muted); }
+.callout-aside    { border-left-color: var(--color-border); }
+.callout-warning  { border-left-color: #b45309; }
+.callout-definition { border-left-color: var(--color-accent); }
+
+.callout-note     .callout-label { color: var(--color-text-muted); }
+.callout-aside    .callout-label { color: var(--color-text-muted); }
+.callout-warning  .callout-label { color: #b45309; }
+.callout-definition .callout-label { color: var(--color-accent); }
 
 /* ===== Code Font ===== */
 code, pre, kbd, samp {
