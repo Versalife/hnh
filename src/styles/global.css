@@ -13,8 +13,8 @@
 
   /* Layout — post page grid vars are set in PostLayout.astro and cascade down */
   --content-width:   720px;    /* listing/about/homepage pages */
-  --toc-width:       180px;    /* matches PostLayout default, used by header calc */
-  --sidenote-width:  220px;    /* default, overridden by PostLayout at each breakpoint */
+  --toc-width:       220px;    /* matches .post-page-wrapper default */
+  --sidenote-width:  260px;    /* overridden per breakpoint in .post-page-wrapper */
   --sidenote-gap:    2rem;
   --header-height:   51px;
 }
@@ -581,14 +581,17 @@ article h3[id] {
  * they update automatically at each breakpoint.
  */
 .post-page-wrapper {
-  --toc-width:       180px;
-  --sidenote-width:  220px;
+  --toc-width:       220px;
+  --sidenote-width:  260px;
   --sidenote-gap:    2rem;
 
   display: grid;
   grid-template-columns: var(--toc-width) 1fr var(--sidenote-width);
   column-gap: var(--sidenote-gap);
   padding: 2.5rem 2rem;
+  max-width: 1300px;   /* caps article text at ~692px on wide monitors */
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .post-toc-col {
@@ -610,8 +613,8 @@ article h3[id] {
 
 @media (max-width: 1100px) {
   .post-page-wrapper {
-    --toc-width:      150px;
-    --sidenote-width: 180px;
+    --toc-width:      160px;
+    --sidenote-width: 200px;
     --sidenote-gap:   1.5rem;
   }
 }
