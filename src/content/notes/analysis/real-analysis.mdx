@@ -1,0 +1,147 @@
+---
+title: Real Analysis
+date: 2024-01-15
+description: Sequences, convergence, and the foundations of analysis on the real line.
+draft: false
+---
+
+import TheoremBox from '../../../components/TheoremBox.astro';
+import Callout from '../../../components/Callout.astro';
+import Sidenote from '../../../components/Sidenote.astro';
+
+Real analysis is the rigorous study of the real number system and functions defined on it.
+These notes build up from the completeness axiom to sequences, series, and the Cauchy criterion.
+
+## The Real Numbers
+
+The real numbers $\mathbb{R}$ form the unique (up to isomorphism) complete ordered field.
+The word *complete* is doing the essential work:
+
+<TheoremBox type="axiom" title="Completeness Axiom">
+Every nonempty subset $S \subseteq \mathbb{R}$ that is bounded above has a *least upper bound*
+(supremum) $\sup S$ in $\mathbb{R}$.
+</TheoremBox>
+
+This axiom rules out $\mathbb{Q}$: the set $\{x \in \mathbb{Q} : x^2 < 2\}$ is bounded above
+but has no rational supremum. Every theorem in real analysis ultimately traces back to it.
+
+A useful consequence is the **Archimedean property**: for any $x \in \mathbb{R}$ there exists
+$n \in \mathbb{N}$ with $n > x$. Equivalently, $\inf\{1/n : n \in \mathbb{N}\} = 0$.
+
+## Sequences
+
+<TheoremBox type="definition" title="Sequence">
+A *sequence* in $\mathbb{R}$ is a function $a : \mathbb{N} \to \mathbb{R}$.
+We write $(a_n)_{n=1}^\infty$ or simply $(a_n)$.
+</TheoremBox>
+
+<TheoremBox type="definition" title="Convergence">
+$(a_n)$ *converges* to a limit $L \in \mathbb{R}$, written $\lim_{n\to\infty} a_n = L$, if
+
+$$\forall\, \varepsilon > 0,\ \exists\, N \in \mathbb{N},\ \forall\, n \geq N : |a_n - L| < \varepsilon.$$
+</TheoremBox>
+
+The adversary picks an error tolerance $\varepsilon > 0$; we must exhibit a threshold $N$ beyond
+which every term lies within $\varepsilon$ of $L$.
+
+<Callout type="note">
+Convergence is a tail property. Changing any finite number of terms cannot affect whether
+$(a_n)$ converges or what it converges to.
+</Callout>
+
+**Example.** $a_n = 1/n \to 0$.
+
+*Proof.* Given $\varepsilon > 0$, the Archimedean property gives $N \in \mathbb{N}$ with $N > 1/\varepsilon$.
+Then for all $n \geq N$:
+
+$$|a_n - 0| = \frac{1}{n} \leq \frac{1}{N} < \varepsilon. \qquad \square$$
+
+### Algebra of Limits
+
+<TheoremBox type="theorem" title="Limit Laws">
+If $a_n \to L$ and $b_n \to M$, then:
+- $a_n + b_n \to L + M$
+- $c \cdot a_n \to cL$ for any constant $c \in \mathbb{R}$
+- $a_n \cdot b_n \to L \cdot M$
+- $a_n / b_n \to L / M$ whenever $M \neq 0$
+</TheoremBox>
+
+<TheoremBox type="theorem" title="Squeeze Theorem">
+If $a_n \leq b_n \leq c_n$ for all sufficiently large $n$, and $a_n \to L$ and $c_n \to L$,
+then $b_n \to L$.
+</TheoremBox>
+
+## Monotone Sequences
+
+<TheoremBox type="theorem" title="Monotone Convergence Theorem">
+Every bounded monotone sequence converges. Specifically:
+- If $(a_n)$ is increasing and bounded above, then $a_n \to \sup_n a_n$.
+- If $(a_n)$ is decreasing and bounded below, then $a_n \to \inf_n a_n$.
+</TheoremBox>
+
+This theorem is the completeness axiom in sequence form. It is often the easiest route to
+convergence when you can establish both monotonicity and a bound.
+
+## Cauchy Sequences
+
+The Cauchy criterion gives a characterization of convergence that requires no knowledge of
+the limit in advance.
+
+<TheoremBox type="definition" title="Cauchy Sequence">
+$(a_n)$ is *Cauchy* if
+
+$$\forall\, \varepsilon > 0,\ \exists\, N \in \mathbb{N},\ \forall\, m, n \geq N : |a_m - a_n| < \varepsilon.$$
+</TheoremBox>
+
+<TheoremBox type="theorem" title="Cauchy Criterion">
+A sequence of real numbers converges if and only if it is Cauchy.
+</TheoremBox>
+
+<Callout type="note">
+The forward direction (convergent $\Rightarrow$ Cauchy) holds in any metric space.
+The converse (Cauchy $\Rightarrow$ convergent) characterizes *complete* metric spaces.
+$\mathbb{R}$ is complete; $\mathbb{Q}$ is not.
+</Callout>
+
+## Subsequences
+
+<TheoremBox type="definition" title="Subsequence">
+Given $(a_n)$ and a strictly increasing function $k : \mathbb{N} \to \mathbb{N}$,
+the sequence $(a_{k(n)})_{n=1}^\infty$ is a *subsequence* of $(a_n)$.
+</TheoremBox>
+
+<TheoremBox type="theorem" title="Bolzano–Weierstrass">
+Every bounded sequence in $\mathbb{R}$ has a convergent subsequence.
+</TheoremBox>
+
+*Proof sketch.* Suppose $(a_n) \subset [a, b]$. Bisect $[a, b]$; at least one half contains
+infinitely many terms — call it $[a_1, b_1]$. Recurse. The nested closed intervals
+$[a_1, b_1] \supset [a_2, b_2] \supset \cdots$ with $b_k - a_k = (b-a)/2^k$ pin down a unique
+point $L = \sup_k a_k$. Picking one term $a_{n_k} \in [a_k, b_k]$ at each step yields a
+subsequence converging to $L$. $\square$
+
+<Callout type="aside">
+Bolzano–Weierstrass is compactness of closed bounded intervals in disguise.
+The generalization: every sequence in a compact metric space has a convergent subsequence.
+</Callout>
+
+## Series
+
+A *series* $\sum_{n=1}^\infty a_n$ converges if the sequence of partial sums
+$S_N = \sum_{n=1}^N a_n$ converges; its value is $\lim_{N \to \infty} S_N$.
+
+<TheoremBox type="theorem" title="Term Test (Necessary Condition)">
+If $\sum a_n$ converges, then $a_n \to 0$.
+</TheoremBox>
+
+The converse fails: the harmonic series $\sum 1/n$ diverges even though $1/n \to 0$.
+
+<TheoremBox type="theorem" title="Cauchy Condensation Test">
+For a decreasing, nonnegative sequence $(a_n)$, $\sum a_n$ converges if and only if
+$\sum_{n=0}^\infty 2^n a_{2^n}$ converges.
+</TheoremBox>
+
+**Application: the $p$-series.** $\sum n^{-p}$ converges iff $p > 1$.
+
+Apply condensation: the condensed series is $\sum 2^n \cdot (2^n)^{-p} = \sum 2^{n(1-p)}$,
+a geometric series with ratio $2^{1-p}$. This converges iff $2^{1-p} < 1$, i.e.\ $p > 1$.

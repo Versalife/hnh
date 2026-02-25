@@ -26,7 +26,18 @@ const sketchesCollection = defineCollection({
   }),
 });
 
+const notesCollection = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    date: z.coerce.date(),
+    description: z.string().optional(),
+    draft: z.boolean().optional().default(false),
+  }),
+});
+
 export const collections = {
   writing: writingCollection,
   sketches: sketchesCollection,
+  notes: notesCollection,
 };

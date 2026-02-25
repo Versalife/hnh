@@ -1,7 +1,7 @@
 {
-  "$ref": "#/definitions/sketches",
+  "$ref": "#/definitions/notes",
   "definitions": {
-    "sketches": {
+    "notes": {
       "type": "object",
       "properties": {
         "title": {
@@ -23,30 +23,12 @@
             }
           ]
         },
-        "type": {
-          "type": "string",
-          "enum": [
-            "sketch",
-            "snippet"
-          ]
-        },
-        "attribution": {
+        "description": {
           "type": "string"
-        },
-        "attributionUrl": {
-          "type": "string",
-          "format": "uri"
         },
         "draft": {
           "type": "boolean",
           "default": false
-        },
-        "refs": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "default": []
         },
         "$schema": {
           "type": "string"
@@ -54,8 +36,7 @@
       },
       "required": [
         "title",
-        "date",
-        "type"
+        "date"
       ],
       "additionalProperties": false
     }

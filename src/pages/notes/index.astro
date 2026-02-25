@@ -1,0 +1,209 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+// Load all notes; build a map from slug → entry for dynamic linking
+const allNotes = await getCollection('notes');
+const noteMap = new Map(allNotes.map(n => [n.slug, n]));
+
+// Hardcoded curriculum — all 21 napkins across 4 disciplines
+const curriculum = [
+  {
+    discipline: 'Algebra',
+    id: 'algebra',
+    topics: [
+      { slug: 'algebra/group-theory',   title: 'Group Theory',   description: 'Groups, subgroups, homomorphisms, and the isomorphism theorems.' },
+      { slug: 'algebra/ring-theory',    title: 'Ring Theory',    description: 'Rings, ideals, quotient rings, and polynomial rings.' },
+      { slug: 'algebra/module-theory',  title: 'Module Theory',  description: 'Modules over rings, free and projective modules, the structure theorem.' },
+      { slug: 'algebra/field-theory',   title: 'Field Theory',   description: 'Field extensions, algebraic and transcendental elements, splitting fields.' },
+      { slug: 'algebra/galois-theory',  title: 'Galois Theory',  description: 'The Galois correspondence, solvability by radicals, and finite fields.' },
+    ],
+  },
+  {
+    discipline: 'Analysis',
+    id: 'analysis',
+    topics: [
+      { slug: 'analysis/real-analysis',                  title: 'Real Analysis',                  description: 'Sequences, convergence, and the foundations of analysis on the real line.' },
+      { slug: 'analysis/complex-analysis',               title: 'Complex Analysis',               description: 'Holomorphic functions, Cauchy\'s theorem, residues, and conformal maps.' },
+      { slug: 'analysis/functional-analysis',            title: 'Functional Analysis',            description: 'Banach and Hilbert spaces, linear operators, and the spectral theorem.' },
+      { slug: 'analysis/measure-theory',                 title: 'Measure Theory',                 description: 'Sigma-algebras, Lebesgue measure, integration, and convergence theorems.' },
+      { slug: 'analysis/ordinary-differential-equations',  title: 'Ordinary Differential Equations', description: 'Existence and uniqueness, linear systems, and stability theory.' },
+      { slug: 'analysis/partial-differential-equations',   title: 'Partial Differential Equations',  description: 'Classification, the heat and wave equations, and variational methods.' },
+      { slug: 'analysis/fourier-analysis',               title: 'Fourier Analysis',               description: 'Fourier series, the Fourier transform, and applications to PDEs.' },
+      { slug: 'analysis/harmonic-analysis',              title: 'Harmonic Analysis',              description: 'Singular integrals, Littlewood–Paley theory, and maximal functions.' },
+      { slug: 'analysis/stochastic-analysis',            title: 'Stochastic Analysis',            description: 'Brownian motion, the Itô integral, and stochastic differential equations.' },
+      { slug: 'analysis/numerical-analysis',             title: 'Numerical Analysis',             description: 'Floating point, interpolation, numerical integration, and iterative solvers.' },
+    ],
+  },
+  {
+    discipline: 'Algorithms',
+    id: 'algorithms',
+    topics: [
+      { slug: 'algorithms/graph-algorithms',       title: 'Graph Algorithms',       description: 'Shortest paths, spanning trees, flows, and matching.' },
+      { slug: 'algorithms/dynamic-programming',    title: 'Dynamic Programming',    description: 'Optimal substructure, memoization, and classical DP problems.' },
+      { slug: 'algorithms/randomized-algorithms',  title: 'Randomized Algorithms',  description: 'Randomized complexity classes, concentration bounds, and probabilistic constructions.' },
+    ],
+  },
+  {
+    discipline: 'Biology',
+    id: 'biology',
+    topics: [
+      { slug: 'biology/genomics',             title: 'Genomics',             description: 'Sequence analysis, variant calling, and the computational biology of genomes.' },
+      { slug: 'biology/population-genetics',  title: 'Population Genetics',  description: 'Hardy–Weinberg equilibrium, genetic drift, selection, and coalescent theory.' },
+      { slug: 'biology/systems-biology',      title: 'Systems Biology',      description: 'Gene regulatory networks, signaling pathways, and dynamical systems models of cells.' },
+    ],
+  },
+];
+
+// For each slug, determine if it's published (exists + not draft)
+function getStatus(slug: string) {
+  const entry = noteMap.get(slug);
+  if (!entry) return 'missing';
+  if (entry.data.draft) return 'draft';
+  return 'published';
+}
+---
+
+<BaseLayout title="Notes" description="An outline of mathematical notes — Infinite Napkins.">
+  <main class="notes-main">
+    <header class="notes-header">
+      <h1>Notes</h1>
+      <p class="notes-subtitle">
+        An evolving collection of mathematical notes — one napkin per topic,
+        written to be dense, precise, and useful for rapid review.
+      </p>
+    </header>
+
+    {curriculum.map(section => (
+      <section class="notes-section" id={section.id}>
+        <h2 class="notes-discipline">{section.discipline}</h2>
+        <ol class="notes-list">
+          {section.topics.map((topic, i) => {
+            const status = getStatus(topic.slug);
+            return (
+              <li class={`notes-item notes-item--${status}`}>
+                <span class="notes-num">{String(i + 1).padStart(2, '0')}</span>
+                {status === 'published' ? (
+                  <div class="notes-info">
+                    <a href={`${base}/notes/${topic.slug}`} class="notes-title">{topic.title}</a>
+                    <span class="notes-desc">{topic.description}</span>
+                  </div>
+                ) : (
+                  <div class="notes-info">
+                    <span class="notes-title notes-title--dim">{topic.title}</span>
+                    <span class="notes-desc">{topic.description}</span>
+                  </div>
+                )}
+              </li>
+            );
+          })}
+        </ol>
+      </section>
+    ))}
+  </main>
+</BaseLayout>
+
+<style>
+  .notes-main {
+    max-width: var(--content-width);
+    margin: 0 auto;
+    padding: 3rem 1.5rem 5rem;
+  }
+
+  .notes-header {
+    margin-bottom: 3rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .notes-header h1 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+  }
+
+  .notes-subtitle {
+    font-size: 0.95rem;
+    color: var(--color-text-muted);
+    font-style: italic;
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  /* Discipline heading */
+  .notes-section {
+    margin-bottom: 2.5rem;
+  }
+
+  .notes-discipline {
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--color-text-muted);
+    margin: 0 0 0.75rem;
+  }
+
+  /* Topic list */
+  .notes-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .notes-item {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 0.65rem 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .notes-num {
+    font-size: 0.78rem;
+    color: var(--color-border);
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+    width: 1.8rem;
+    text-align: right;
+  }
+
+  .notes-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
+  }
+
+  .notes-title {
+    font-size: 0.95rem;
+    color: var(--color-text);
+  }
+
+  a.notes-title {
+    color: var(--color-text);
+  }
+
+  a.notes-title:hover {
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+
+  .notes-title--dim {
+    color: var(--color-text-muted);
+    opacity: 0.6;
+  }
+
+  .notes-desc {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    line-height: 1.4;
+  }
+
+  .notes-item--draft .notes-num,
+  .notes-item--missing .notes-num {
+    opacity: 0.4;
+  }
+</style>
