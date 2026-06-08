@@ -15,7 +15,7 @@ const postsWithTime = allPosts.map(post => ({
 ---
 
 <BaseLayout title="Hubris+Humility">
-  <main style="max-width: var(--content-width); margin: 0 auto; padding: 3rem 1.5rem;">
+  <main class="page-main">
     <div style="margin-bottom: 2.5rem;">
       <h1 style="font-size: 1.75rem; margin: 0 0 0.25rem;">Hubris+Humility</h1>
       <p style="color: var(--color-text-muted); margin: 0; font-size: 0.95rem;">
@@ -42,3 +42,17 @@ const postsWithTime = allPosts.map(post => ({
     )}
   </main>
 </BaseLayout>
+
+<style>
+  .page-main {
+    max-width: var(--content-width);
+    margin: 0 auto;
+    padding: 3rem 1.5rem;
+  }
+
+  @media (max-width: 760px) {
+    .page-main {
+      padding: 2rem 1rem;
+    }
+  }
+</style>

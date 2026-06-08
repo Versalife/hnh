@@ -4,19 +4,10 @@ import { getCollection } from 'astro:content';
 import readingTime from 'reading-time';
 
 export async function getStaticPaths() {
-  const allPosts = (await getCollection('writing'))
+  const published = (await getCollection('writing', ({ data }) => !data.draft))
     .sort((a, b) => a.data.date.valueOf() - b.data.date.valueOf());
 
-  // Only published posts participate in prev/next navigation
-  const published = allPosts
-    .filter(p => !p.data.draft)
-    .sort((a, b) => a.data.date.valueOf() - b.data.date.valueOf());
-
-  return allPosts.map(post => {
-    // Drafts have no prev/next
-    if (post.data.draft) {
-      return { params: { slug: post.slug }, props: { post, prev: null, next: null } };
-    }
+  return published.map(post => {
     const idx = published.findIndex(p => p.slug === post.slug);
     return {
       params: { slug: post.slug },
@@ -31,7 +22,7 @@ export async function getStaticPaths() {
 
 const { post, prev, next } = Astro.props;
 const { Content, headings } = await post.render();
-const rt = post.data.draft ? null : readingTime(post.body);
+const rt = readingTime(post.body);
 ---
 
 <PostLayout
@@ -45,10 +36,5 @@ const rt = post.data.draft ? null : readingTime(post.body);
   citationKey={post.data.citationKey}
   citationUrl={post.data.citationUrl}
 >
-  {post.data.draft && (
-    <p style="color: var(--color-text-muted); font-style: italic; border-left: 3px solid var(--color-border); padding-left: 1rem; margin-bottom: 2rem;">
-      This post is a work in progress and will be published soon.
-    </p>
-  )}
   <Content />
 </PostLayout>

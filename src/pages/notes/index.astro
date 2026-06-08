@@ -76,32 +76,26 @@ function getStatus(slug: string) {
       </p>
     </header>
 
-    {curriculum.map(section => (
-      <section class="notes-section" id={section.id}>
-        <h2 class="notes-discipline">{section.discipline}</h2>
-        <ol class="notes-list">
-          {section.topics.map((topic, i) => {
-            const status = getStatus(topic.slug);
-            return (
-              <li class={`notes-item notes-item--${status}`}>
+    {curriculum.map(section => {
+      const published = section.topics.filter(t => getStatus(t.slug) === 'published');
+      if (published.length === 0) return null;
+      return (
+        <section class="notes-section" id={section.id}>
+          <h2 class="notes-discipline">{section.discipline}</h2>
+          <ol class="notes-list">
+            {published.map((topic, i) => (
+              <li class="notes-item notes-item--published">
                 <span class="notes-num">{String(i + 1).padStart(2, '0')}</span>
-                {status === 'published' ? (
-                  <div class="notes-info">
-                    <a href={`${base}/notes/${topic.slug}`} class="notes-title">{topic.title}</a>
-                    <span class="notes-desc">{topic.description}</span>
-                  </div>
-                ) : (
-                  <div class="notes-info">
-                    <span class="notes-title notes-title--dim">{topic.title}</span>
-                    <span class="notes-desc">{topic.description}</span>
-                  </div>
-                )}
+                <div class="notes-info">
+                  <a href={`${base}/notes/${topic.slug}`} class="notes-title">{topic.title}</a>
+                  <span class="notes-desc">{topic.description}</span>
+                </div>
               </li>
-            );
-          })}
-        </ol>
-      </section>
-    ))}
+            ))}
+          </ol>
+        </section>
+      );
+    })}
   </main>
 </BaseLayout>
 
@@ -191,19 +185,16 @@ function getStatus(slug: string) {
     text-decoration: none;
   }
 
-  .notes-title--dim {
-    color: var(--color-text-muted);
-    opacity: 0.6;
-  }
-
   .notes-desc {
     font-size: 0.8rem;
     color: var(--color-text-muted);
     line-height: 1.4;
   }
 
-  .notes-item--draft .notes-num,
-  .notes-item--missing .notes-num {
-    opacity: 0.4;
+  @media (max-width: 760px) {
+    .notes-main {
+      padding: 2rem 1rem 3rem;
+    }
   }
+
 </style>

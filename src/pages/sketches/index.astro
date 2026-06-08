@@ -5,72 +5,67 @@ import { getCollection } from 'astro:content';
 const allSketches = (await getCollection('sketches', ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
-// Pre-render all content at build time
 const rendered = await Promise.all(
   allSketches.map(async s => {
     const { Content } = await s.render();
     return { s, Content };
   })
 );
+
+const slugToTitle = new Map(allSketches.map(s => [s.slug, s.data.title]));
 ---
 
 <BaseLayout title="Sketches & Snippets" description="Rough ideas and passing thoughts, arranged chronologically.">
-
-  <!-- Hidden content store: all MDX rendered at build time, JS copies into modal -->
-  <div id="sketch-store" hidden aria-hidden="true">
-    {rendered.map(({ s, Content }) => (
-      <div
-        id={`sketch-${s.slug}`}
-        data-title={s.data.title}
-        data-date={s.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-        data-type={s.data.type}
-        data-attribution={s.data.attribution ?? ''}
-        data-attribution-url={s.data.attributionUrl ?? ''}
-        data-refs={JSON.stringify(s.data.refs ?? [])}
-      >
-        <Content />
-      </div>
-    ))}
-  </div>
-
-  <!-- Modal -->
-  <dialog id="sketch-modal" class="sketch-modal" aria-labelledby="modal-title">
-    <div class="modal-inner">
-      <header class="modal-header">
-        <div class="modal-header-text">
-          <h2 id="modal-title" class="modal-title"></h2>
-          <p id="modal-meta" class="modal-meta"></p>
-        </div>
-        <button id="modal-close" class="modal-close" aria-label="Close">&#x2715;</button>
-      </header>
-      <div id="modal-body" class="modal-body"></div>
-      <footer id="modal-footer" class="modal-footer"></footer>
-    </div>
-  </dialog>
-
-  <!-- Listing -->
   <main class="sketches-main">
     <h1 style="font-size: 1.5rem; margin-bottom: 0.25rem;">Sketches & Snippets</h1>
     <p style="color: var(--color-text-muted); font-size: 0.9rem; margin-bottom: 2rem;">
       Rough ideas and passing thoughts, arranged as they occurred.
     </p>
 
-    <ol class="post-list" reversed start={allSketches.length}>
-      {rendered.map(({ s }) => (
-        <li class="post-list-item">
-          <span class="post-date">
-            {s.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' })}
-          </span>
-          <span class="post-title">
-            <a href={`#sketch-${s.slug}`} class="sketch-link" data-slug={s.slug}>
-              {s.data.title}
-            </a>
-          </span>
-          <span class="post-reading-time">
-            <span class={`sketch-type-badge sketch-type-${s.data.type}`}>{s.data.type}</span>
-          </span>
-        </li>
-      ))}
+    <ol class="sketch-list">
+      {rendered.map(({ s, Content }) => {
+        const refs = s.data.refs ?? [];
+        const hasFooter = !!s.data.attribution || refs.length > 0;
+        return (
+          <li id={`sketch-${s.slug}`} class="sketch-item">
+            <details class="sketch-details">
+              <summary class="sketch-summary">
+                <span class="sketch-date">
+                  {s.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' })}
+                </span>
+                <span class="sketch-title">{s.data.title}</span>
+                <span class={`sketch-type-badge sketch-type-${s.data.type}`}>{s.data.type}</span>
+              </summary>
+              <div class="sketch-body">
+                <Content />
+                {hasFooter && (
+                  <div class="sketch-footer">
+                    {s.data.attribution && (
+                      <p class="sketch-attribution">
+                        &#x2014;{' '}
+                        {s.data.attributionUrl
+                          ? <a href={s.data.attributionUrl} target="_blank" rel="noopener noreferrer">{s.data.attribution}</a>
+                          : s.data.attribution}
+                      </p>
+                    )}
+                    {refs.length > 0 && (
+                      <p class="sketch-refs">
+                        cf.{' '}
+                        {refs.map((r, i) => (
+                          <span>
+                            <a href={`#sketch-${r}`}>{slugToTitle.get(r) ?? r}</a>
+                            {i < refs.length - 1 ? ', ' : ''}
+                          </span>
+                        ))}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            </details>
+          </li>
+        );
+      })}
     </ol>
   </main>
 </BaseLayout>
@@ -82,228 +77,155 @@ const rendered = await Promise.all(
     padding: 3rem 1.5rem;
   }
 
-  /* ── Modal shell ── */
-  .sketch-modal {
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
+  /* ── List container ── */
+  .sketch-list {
+    list-style: none;
     padding: 0;
-    max-width: min(720px, calc(100vw - 2rem));
-    max-height: calc(100vh - 4rem);
-    width: 100%;
-    background: var(--color-surface);
-    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12);
-    color: var(--color-text);
-    /* center vertically and horizontally */
-    margin: auto;
-  }
-
-  .sketch-modal::backdrop {
-    background: rgba(0, 0, 0, 0.35);
-    backdrop-filter: blur(2px);
-  }
-
-  .modal-inner {
-    display: flex;
-    flex-direction: column;
-    max-height: calc(100vh - 4rem);
     margin: 0;
   }
 
-  /* ── Modal header ── */
-  .modal-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 1.5rem 1.75rem 1.1rem;
+  .sketch-item {
     border-bottom: 1px solid var(--color-border);
-    flex-shrink: 0;
   }
 
-  .modal-header-text {
-    min-width: 0;
+  .sketch-item:first-child {
+    border-top: 1px solid var(--color-border);
   }
 
-  .modal-title {
-    font-size: 1.2rem;
-    margin: 0 0 0.3rem;
-    line-height: 1.3;
+  /* ── Summary row ── */
+  .sketch-summary {
+    display: grid;
+    grid-template-columns: 7.5rem 1fr auto;
+    gap: 0 1.5rem;
+    align-items: center;
+    padding: 0.65rem 0;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
   }
 
-  .modal-meta {
+  /* Remove browser default disclosure triangle */
+  .sketch-summary::-webkit-details-marker { display: none; }
+  .sketch-summary::marker { content: ''; }
+
+  .sketch-date {
     font-size: 0.82rem;
     color: var(--color-text-muted);
+    white-space: nowrap;
+  }
+
+  .sketch-title {
+    color: var(--color-text);
+    font-size: 1rem;
+  }
+
+  /* Subtle expand indicator via rotating chevron */
+  .sketch-title::before {
+    content: '›';
+    display: inline-block;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    margin-right: 0.35rem;
+    transition: transform 0.15s ease;
+    line-height: 1;
+  }
+
+  .sketch-details[open] .sketch-title::before {
+    transform: rotate(90deg);
+  }
+
+  .sketch-summary:hover .sketch-title {
+    color: var(--color-accent);
+  }
+
+  .sketch-summary:hover .sketch-title::before {
+    color: var(--color-accent);
+  }
+
+  /* ── Expanded body ── */
+  .sketch-body {
+    padding: 0.75rem 0 1.5rem 9rem; /* align with title column: 7.5rem + 1.5rem gap */
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+
+  /* ── Footer (attribution + cf. refs) ── */
+  .sketch-footer {
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--color-border);
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    font-style: italic;
+  }
+
+  .sketch-footer p {
     margin: 0;
   }
 
-  .modal-close {
-    background: none;
-    border: none;
-    font-size: 1.1rem;
-    line-height: 1;
-    cursor: pointer;
-    color: var(--color-text-muted);
-    padding: 0.1rem 0.2rem;
-    flex-shrink: 0;
-    margin-top: 0.1rem;
+  .sketch-footer p + p {
+    margin-top: 0.2rem;
   }
 
-  .modal-close:hover {
-    color: var(--color-text);
-  }
-
-  /* ── Modal body ── */
-  .modal-body {
-    padding: 1.5rem 1.75rem;
-    overflow-y: auto;
-    flex: 1;
-    /* Sidenotes: collapse the float inside modal */
-  }
-
-  /* Collapse right-margin sidenotes to inline block inside modal */
-  :global(.modal-body .sidenote) {
+  /* Flatten sidenotes inside sketch body */
+  :global(.sketch-body .sidenote) {
     float: none;
     clear: none;
     display: block;
     width: auto;
     margin: 0.5rem 0 1rem;
-    margin-right: 0;
     border-left: 2px solid var(--color-border);
     padding-left: 0.75rem;
     font-size: 0.82rem;
     color: var(--color-text-muted);
   }
 
-  /* ── Modal footer (attribution + cf. refs) ── */
-  .modal-footer {
-    padding: 0.9rem 1.75rem 1.25rem;
-    border-top: 1px solid var(--color-border);
-    font-size: 0.85rem;
-    color: var(--color-text-muted);
-    flex-shrink: 0;
-  }
+  /* ── Responsive ── */
+  @media (max-width: 760px) {
+    .sketches-main {
+      padding: 2rem 1rem;
+    }
 
-  .modal-footer:empty {
-    display: none;
-  }
+    .sketch-summary {
+      grid-template-columns: 1fr auto;
+      row-gap: 0.1rem;
+    }
 
-  /* ── Type badges ── */
-  .sketch-type-badge {
-    font-size: 0.65rem;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    padding: 0.1em 0.45em;
-    border-radius: 3px;
-    vertical-align: middle;
-  }
+    .sketch-date {
+      grid-column: 1;
+      grid-row: 2;
+      font-size: 0.75rem;
+    }
 
-  .sketch-type-sketch {
-    color: var(--color-accent);
-    border: 1px solid var(--color-accent);
-  }
+    .sketch-title {
+      grid-column: 1;
+      grid-row: 1;
+    }
 
-  .sketch-type-snippet {
-    color: var(--color-text-muted);
-    border: 1px solid var(--color-text-muted);
+    .sketch-type-badge {
+      grid-column: 2;
+      grid-row: 1;
+      align-self: start;
+    }
+
+    .sketch-body {
+      padding-left: 0;
+    }
   }
 </style>
 
 <script>
-  const modal = document.getElementById('sketch-modal') as HTMLDialogElement;
-  const store = document.getElementById('sketch-store')!;
-  const modalTitle = document.getElementById('modal-title')!;
-  const modalMeta = document.getElementById('modal-meta')!;
-  const modalBody = document.getElementById('modal-body')!;
-  const modalFooter = document.getElementById('modal-footer')!;
-  const modalClose = document.getElementById('modal-close')!;
-
-  function openSketch(slug: string) {
-    const entry = store.querySelector(`#sketch-${slug}`) as HTMLElement | null;
-    if (!entry) return;
-
-    const { title, date, type, attribution, attributionUrl } = entry.dataset;
-    const refs: string[] = JSON.parse(entry.dataset.refs || '[]');
-
-    // Populate header
-    modalTitle.textContent = title ?? '';
-    modalMeta.innerHTML = `
-      <span>${date}</span>
-      &ensp;
-      <span class="sketch-type-badge sketch-type-${type}">${type}</span>
-    `;
-
-    // Copy pre-rendered content into modal body
-    modalBody.innerHTML = entry.innerHTML;
-
-    // Build footer
-    const parts: string[] = [];
-
-    if (attribution) {
-      const src = attributionUrl
-        ? `<a href="${attributionUrl}" target="_blank" rel="noopener noreferrer">${attribution}</a>`
-        : attribution;
-      parts.push(`<p style="margin:0 0 0.4rem; font-style:italic;">&#x2014; ${src}</p>`);
-    }
-
-    if (refs.length > 0) {
-      const cfLinks = refs.map(refSlug => {
-        const refEntry = store.querySelector(`#sketch-${refSlug}`) as HTMLElement | null;
-        const refTitle = refEntry?.dataset.title ?? refSlug;
-        return `<a href="#sketch-${refSlug}" class="sketch-link" data-slug="${refSlug}" style="color:var(--color-text-muted);text-decoration:underline;text-underline-offset:2px;">${refTitle}</a>`;
-      });
-      parts.push(`<p style="margin:0; font-style:italic;">cf. ${cfLinks.join(', ')}</p>`);
-    }
-
-    modalFooter.innerHTML = parts.join('');
-
-    // Wire cf. links inside footer to open their modal
-    modalFooter.querySelectorAll<HTMLAnchorElement>('a.sketch-link').forEach(link => {
-      link.addEventListener('click', e => {
-        e.preventDefault();
-        const targetSlug = (link as HTMLAnchorElement).dataset.slug!;
-        history.pushState(null, '', `#sketch-${targetSlug}`);
-        openSketch(targetSlug);
-      });
-    });
-
-    modal.showModal();
-    history.pushState(null, '', `#sketch-${slug}`);
-  }
-
-  function closeModal() {
-    modal.close();
-    if (location.hash.startsWith('#sketch-')) {
-      history.pushState(null, '', location.pathname);
+  function openSketchFromHash(hash: string) {
+    if (!hash.startsWith('#sketch-')) return;
+    const li = document.getElementById(hash.slice(1));
+    if (!li) return;
+    const det = li.querySelector('details') as HTMLDetailsElement | null;
+    if (det && !det.open) {
+      det.open = true;
+      setTimeout(() => li.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
     }
   }
 
-  // List-item link clicks
-  document.querySelectorAll<HTMLAnchorElement>('a.sketch-link').forEach(link => {
-    link.addEventListener('click', e => {
-      e.preventDefault();
-      openSketch(link.dataset.slug!);
-    });
-  });
-
-  // Close button
-  modalClose.addEventListener('click', closeModal);
-
-  // Click on backdrop (the dialog element itself, outside the article)
-  modal.addEventListener('click', e => {
-    if (e.target === modal) closeModal();
-  });
-
-  // ESC is handled natively by <dialog>; clean up the hash afterward
-  modal.addEventListener('close', () => {
-    if (location.hash.startsWith('#sketch-')) {
-      history.pushState(null, '', location.pathname);
-    }
-  });
-
-  // Deep-link: open modal on load if URL already has a matching hash
-  const hash = location.hash;
-  if (hash.startsWith('#sketch-')) {
-    openSketch(hash.slice('#sketch-'.length));
-  }
+  openSketchFromHash(location.hash);
+  window.addEventListener('hashchange', () => openSketchFromHash(location.hash));
 </script>
