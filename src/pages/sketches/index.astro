@@ -232,6 +232,9 @@ const slugToTitle = new Map(allSketches.map(s => [s.slug, s.data.title]));
     det.addEventListener('toggle', () => {
       if (det.open) {
         allDetails.forEach(other => { if (other !== det) other.open = false; });
+        requestAnimationFrame(() =>
+          det.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+        );
       }
     });
   });
