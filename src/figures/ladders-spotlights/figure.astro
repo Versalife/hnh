@@ -1,0 +1,42 @@
+---
+interface Props {
+  id?: string;
+}
+const { id = 'fig-quadrant' } = Astro.props;
+---
+
+<figure {id} class="article-figure">
+  <svg viewBox="0 0 480 480" xmlns="http://www.w3.org/2000/svg" style="max-width:480px;width:100%;display:block;margin:0 auto">
+    <defs>
+      <marker id="q-fwd" markerWidth="8" markerHeight="7" refX="7" refY="3.5" orient="auto">
+        <polygon points="0 0, 8 3.5, 0 7" fill="currentColor"/>
+      </marker>
+      <marker id="q-rev" markerWidth="8" markerHeight="7" refX="1" refY="3.5" orient="auto">
+        <polygon points="8 0, 0 3.5, 8 7" fill="currentColor"/>
+      </marker>
+    </defs>
+
+    <line x1="55"  y1="240" x2="425" y2="240" stroke="currentColor" stroke-width="1.1" marker-start="url(#q-rev)" marker-end="url(#q-fwd)"/>
+    <line x1="240" y1="425" x2="240" y2="55"  stroke="currentColor" stroke-width="1.1" marker-start="url(#q-rev)" marker-end="url(#q-fwd)"/>
+
+    <text x="44"  y="244" text-anchor="end"    font-size="11" fill="currentColor" opacity="0.6">Invisible</text>
+    <text x="436" y="244" text-anchor="start"  font-size="11" fill="currentColor" opacity="0.6">Visible</text>
+    <text x="240" y="462" text-anchor="middle" font-size="11" fill="currentColor" opacity="0.6">Low</text>
+    <text x="240" y="36"  text-anchor="middle" font-size="11" fill="currentColor" opacity="0.6">High</text>
+
+    <text x="145" y="133" text-anchor="middle" font-size="13" font-weight="600" fill="currentColor">High and Invisible</text>
+    <text x="145" y="151" text-anchor="middle" font-size="10" fill="currentColor" opacity="0.55">ladder + spotlight</text>
+
+    <text x="335" y="133" text-anchor="middle" font-size="13" font-weight="600" fill="currentColor">High but Visible</text>
+    <text x="335" y="151" text-anchor="middle" font-size="10" fill="currentColor" opacity="0.55">need a ladder</text>
+
+    <text x="335" y="342" text-anchor="middle" font-size="13" font-weight="600" fill="currentColor">Low and Visible</text>
+    <text x="335" y="360" text-anchor="middle" font-size="10" fill="currentColor" opacity="0.55">the conventional framing</text>
+
+    <text x="145" y="342" text-anchor="middle" font-size="13" font-weight="600" fill="currentColor">Low but Invisible</text>
+    <text x="145" y="360" text-anchor="middle" font-size="10" fill="currentColor" opacity="0.55">need a spotlight</text>
+  </svg>
+  <figcaption>
+    <strong>Figure 1.</strong> The ladders-and-spotlights quadrant. Accessibility (how high the fruit hangs) and visibility (whether it is illuminated at all) are orthogonal axes. The conventional "low-hanging fruit" framing occupies only the bottom-right cell; each remaining cell calls for a different intervention.
+  </figcaption>
+</figure>

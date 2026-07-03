@@ -226,6 +226,16 @@ const slugToTitle = new Map(allSketches.map(s => [s.slug, s.data.title]));
     }
   }
 
+  const allDetails = Array.from(document.querySelectorAll<HTMLDetailsElement>('.sketch-details'));
+
+  allDetails.forEach(det => {
+    det.addEventListener('toggle', () => {
+      if (det.open) {
+        allDetails.forEach(other => { if (other !== det) other.open = false; });
+      }
+    });
+  });
+
   openSketchFromHash(location.hash);
   window.addEventListener('hashchange', () => openSketchFromHash(location.hash));
 </script>
