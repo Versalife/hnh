@@ -1,18 +1,18 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 
 const allSketches = (await getCollection('sketches', ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
 const rendered = await Promise.all(
   allSketches.map(async s => {
-    const { Content } = await s.render();
+    const { Content } = await render(s);
     return { s, Content };
   })
 );
 
-const slugToTitle = new Map(allSketches.map(s => [s.slug, s.data.title]));
+const slugToTitle = new Map(allSketches.map(s => [s.id, s.data.title]));
 ---
 
 <BaseLayout title="Sketches & Snippets" description="Rough ideas and passing thoughts, arranged chronologically.">
@@ -27,7 +27,7 @@ const slugToTitle = new Map(allSketches.map(s => [s.slug, s.data.title]));
         const refs = s.data.refs ?? [];
         const hasFooter = !!s.data.attribution || refs.length > 0;
         return (
-          <li id={`sketch-${s.slug}`} class="sketch-item">
+          <li id={`sketch-${s.id}`} class="sketch-item">
             <details class="sketch-details">
               <summary class="sketch-summary">
                 <span class="sketch-date">

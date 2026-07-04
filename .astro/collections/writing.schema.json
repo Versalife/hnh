@@ -1,59 +1,41 @@
 {
-  "$ref": "#/definitions/writing",
-  "definitions": {
-    "writing": {
-      "type": "object",
-      "properties": {
-        "title": {
-          "type": "string"
-        },
-        "date": {
-          "anyOf": [
-            {
-              "type": "string",
-              "format": "date-time"
-            },
-            {
-              "type": "string",
-              "format": "date"
-            },
-            {
-              "type": "integer",
-              "format": "unix-time"
-            }
-          ]
-        },
-        "description": {
-          "type": "string"
-        },
-        "tags": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "default": []
-        },
-        "draft": {
-          "type": "boolean",
-          "default": false
-        },
-        "citationKey": {
-          "type": "string"
-        },
-        "citationUrl": {
-          "type": "string",
-          "format": "uri"
-        },
-        "$schema": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "title",
-        "date"
-      ],
-      "additionalProperties": false
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "description": {
+      "type": "string"
+    },
+    "tags": {
+      "default": [],
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "draft": {
+      "default": false,
+      "type": "boolean"
+    },
+    "citationKey": {
+      "type": "string"
+    },
+    "citationUrl": {
+      "type": "string",
+      "format": "uri"
+    },
+    "$schema": {
+      "type": "string"
     }
   },
-  "$schema": "http://json-schema.org/draft-07/schema#"
+  "required": [
+    "title",
+    "date"
+  ]
 }

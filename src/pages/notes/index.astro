@@ -6,7 +6,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 // Load all notes; build a map from slug → entry for dynamic linking
 const allNotes = await getCollection('notes');
-const noteMap = new Map(allNotes.map(n => [n.slug, n]));
+const noteMap = new Map(allNotes.map(n => [n.id, n]));
 
 // Hardcoded curriculum — all 21 napkins across 4 disciplines
 const curriculum = [

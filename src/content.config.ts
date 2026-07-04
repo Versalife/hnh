@@ -1,7 +1,8 @@
 import { defineCollection, z } from 'astro:content';
+import { glob } from 'astro/loaders';
 
 const writingCollection = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/writing' }),
   schema: z.object({
     title: z.string(),
     date: z.coerce.date(),
@@ -14,7 +15,7 @@ const writingCollection = defineCollection({
 });
 
 const sketchesCollection = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/sketches' }),
   schema: z.object({
     title: z.string(),
     date: z.coerce.date(),
@@ -22,12 +23,12 @@ const sketchesCollection = defineCollection({
     attribution: z.string().optional(),
     attributionUrl: z.string().url().optional(),
     draft: z.boolean().optional().default(false),
-    refs: z.array(z.string()).optional().default([]), // slugs of related entries, renders as "cf."
+    refs: z.array(z.string()).optional().default([]),
   }),
 });
 
 const notesCollection = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/notes' }),
   schema: z.object({
     title: z.string(),
     date: z.coerce.date(),

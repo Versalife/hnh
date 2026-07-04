@@ -28,7 +28,7 @@ const postsWithMeta = allPosts.map(post => ({
             {post.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' })}
           </span>
           <span class="post-title">
-            <a href={`${base}/writing/${post.slug}`}>{post.data.title}</a>
+            <a href={`${base}/writing/${post.id}`}>{post.data.title}</a>
           </span>
           <span class="post-reading-time">{rt}</span>
         </li>

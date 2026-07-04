@@ -1,20 +1,19 @@
 ---
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import NoteLayout from '../../layouts/NoteLayout.astro';
 
 export async function getStaticPaths() {
   const notes = await getCollection('notes', ({ data }) => !data.draft);
   return notes.map(note => ({
-    params: { slug: note.slug },
+    params: { slug: note.id },
     props: { note },
   }));
 }
 
 const { note } = Astro.props;
-const { Content, headings } = await note.render();
+const { Content, headings } = await render(note);
 
-// Derive discipline from the slug (first path segment)
-const discipline = note.slug.split('/')[0];
+const discipline = note.id.split('/')[0];
 ---
 
 <NoteLayout
