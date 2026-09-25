@@ -1,7 +1,93 @@
 ---
 title: "Orthogonalization, Gram-Schmidt, and Statistical Independence"
-date: 2025-08-01
+date: 2026-11-01
 draft: true
 ---
 
-Coming soon.
+import Sidenote from '../../components/Sidenote.astro';
+import SidenoteRef from '../../components/SidenoteRef.astro';
+import TheoremBox from '../../components/TheoremBox.astro';
+import AlgorithmBox from '../../components/AlgorithmBox.astro';
+import Details from '../../components/Details.astro';
+
+## Introduction
+
+1. Turning a family of sets into a disjoint family of sets
+2. Easy if we have a nested set.
+3. At each step, we ...
+2. This operation is quite useful in measure theory where disjointedness gives rise to additivity of measures, so turning a collection of sets into a disjointed family is quite useful.
+
+<TheoremBox type="example" title="Disjointification">
+  <Fragment slot="given">
+      an n-square matrix $A \in \mathbb{M}_n$
+  </Fragment>
+  <Fragment slot="then">
+      Compute an estimate for $\operatorname{Tr} A = k^n (A_{k, k})$
+  </Fragment>
+</TheoremBox>
+
+3. The gram-schmidt orthogonalization process a simple procedure that takes in a family of vectors and produces a family of orthogonal vectors
+4. Again listen to the audible rhyme. At step we ...subtract?
+5. Most efficient way to capture the "information" stored in the system. The resultant system encodes the exact same info in a much more ... A form of compression.
+6. why orthonormal systems are convenient
+
+<TheoremBox type="example" title="Orthogonalization">
+  <Fragment slot="given">
+      an n-square matrix $A \in \mathbb{M}_n$
+  </Fragment>
+  <Fragment slot="then">
+      Compute an estimate for $\operatorname{Tr} A = \sum_k^n (A_{k, k})$
+  </Fragment>
+</TheoremBox>
+
+## The Leitmotif
+
+6. Lets extract a general algorithmic recipe and then see what else we can use it on:
+  7. A notion of overlap between the elements in our set
+  8. A way to remove the mirror of one object in the other -- projection (intersection is projection)
+  9. A
+  <Details title="A note on Relaxation">
+      A useful thread, one which we wont pull on for now, is this: what if we consider weaker notions of overlap? degree of disjointedness? Jaccard similarity ...  degree of orthogonality? angle between the vectors captures this. Almost orthogonal 
+  </Details>
+
+## What about Independence?
+8. Now, given a family of random variables from the same distribution, can we devise an algorithmic process that turns it into an independent family?
+9. Why is this a useful thing to ponder? -- a veritable cornucopia of methods in prob&stats require as input independent (and identically distributed) random variables. Independence is such a useful property. It simplifies so much.
+10. Example: Concentration inequalities
+11. Example: High dimensional probability theory
+
+<Details title="Is Statistical Independence Common or Rare?">
+1. By analogy, when learning about invertibility of linear operators, and of their matrix representations, I thought that, surely, invertibility would be quite rare. This of course is quite the opposite. Invertibility is extremely common. Note that this is not an artifact of numerical imprecission. The subset of invertible matrices is dense in the set of M_n of square matrices. This means that if i hand you an arbitrary square matrix, you's be safe to assume that it was invertible. Of course this all makes sense when we look at the common test of invertibility $detA \neq 0$. clearly this condition is much easier to stisfy than $det A = 0$. This also means that if  given random list of $k \leq n$ n-vectors, you're safe to assume that they are linearly independent.
+2. In analysis (and mos prominently in teh theory of ODEs) we know that smooth functions are common, not rare. That is the set of differentible functions is dense in ... This is
+3. Cf. The continuity argument
+4. So, these conditions of immense mathematical significance turn out to be quite common. When faced with a similarly significant concept we naturally ask, is statistical indepencence rare or common? We shall not undertake this quistion in the present exposition, but ...
+</Details>
+
+## The Geometry of Random Variables
+10. The space Lp
+11. The geometry of random variables. The space L^2 of rvs with finite second moments.
+
+## Orthogonalization of Random Variables
+
+11. Given a family of vectors in an innner product space, we can always turn run Gram Schmit to obtain an orthogonal set.
+12. We've just spent time sonstructing ...
+
+## The Beauty of Gaussians
+1. Gram Schmitt is all you need.
+2. PCA
+
+## Conditional Independence
+
+## Innovation Processes
+- The temporal gram schidt
+- Martingales, filtrations
+
+## Information Geometry
+
+- Statistical manifold
+
+## The Information Bottleneck
+
+## Inducing Gaussianness
+
+## Further Reading

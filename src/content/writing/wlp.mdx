@@ -5,19 +5,20 @@ description: "Exploring bit-level algorithms for parallel operations on packed i
 tags: ["algorithms", "bit-manipulation", "rust"]
 citationKey: "wlp"
 ---
-
 import Sidenote from '../../components/Sidenote.astro';
+import SidenoteRef from '../../components/SidenoteRef.astro';
 
-<Sidenote>
-  <a href="https://crates.io/crates/bit-parallelism" target="_blank">
-    <img src="https://img.shields.io/crates/v/bit-parallelism.svg?style=for-the-badge&logo=rust" alt="Crates.io" />
+In this note, we shall explore a few bit level algorithms that we'll need when developing some of the <SidenoteRef/>
+
+<Sidenote noRef>
+  <a href="https://crates.io/crates/bit-parallelism" target="_blank" style="display:block; margin-bottom:0.35rem">
+    <img src="https://img.shields.io/crates/v/bit-parallelism.svg?style=flat-square&logo=rust" alt="Crates.io" data-no-zoom />
   </a>
-  <a href="https://docs.rs/bit-parallelism" target="_blank">
-    <img src="https://img.shields.io/docsrs/bit-parallelism/latest?style=for-the-badge&logo=docs.rs" alt="Documentation" />
+  <a href="https://docs.rs/bit-parallelism" target="_blank" style="display:block">
+    <img src="https://img.shields.io/docsrs/bit-parallelism/latest?style=flat-square&logo=docs.rs" alt="Documentation" data-no-zoom />
   </a>
 </Sidenote>
 
-In this note, we shall explore a few bit level algorithms that we'll need when developing some of the
 specialized integer data structures. We begin by discussing a procedure that allows us to extract the
 first (the top) `k` bits of any integer in constant time. We then proceed to discuss procedures that
 allow us, in constant time, to operate on integers in parallel.
@@ -345,7 +346,7 @@ of small integers we could pack in a single machine word — `8` in our case.
 
 ---
 
-## $O(1)$ Most Significant Bit
+## `O(1)` Most Significant Bit
 
 When we talk of the most significant bit of a number, we're often referring to the 0-indexed location
 of the highest bit set. Note that this is a more general problem than simply finding the number that
@@ -378,7 +379,7 @@ with an added preprocessing step to build the lookup table. The question we seek
 section is, can we locate the index of the most significant bit in constant time without using a
 lookup table?
 
-### The MSB(x)–Rank(x) Equivalence
+## The `msb(x)`–`rank(x)` Equivalence
 
 As a reminder, `MSB(x)` is the largest value of $k$ such that $2^k \leq x$. Remember also the
 definition of `Rank(x)`: it is the number of items, in some underlying ordered collection, that are
@@ -388,7 +389,7 @@ collection. If the underlying collection is a list of all the powers of two,
 $\langle 2^0, 2^1, 2^2, \ldots 2^{62}, 2^{63} \rangle$, then `MSB(x)` is the same as `Rank(x)` in
 that array.
 
-### Parallel Pack
+## Parallel Pack
 
 At this point, we're one step closer to the solution. We've redefined `MSB` as `Rank` and we have a
 method for solving `Rank` in constant time — `parallel_rank`. That procedure, however, assumes that
@@ -550,7 +551,7 @@ pub fn get_msb_idx_of(query: u64) -> u8 {
 }
 ```
 
-### $O(1)$ `LCP(x, y)`
+## `O(1) LCP(x, y)`
 
 The bit version of the LCP asks us to find the length of the longest common prefix between the
 bit-strings of the two numbers. This can simply be solved by leveraging our $O(1)$ `MSB(n)`

@@ -57,6 +57,8 @@ const curriculum = [
   },
 ];
 
+const showDrafts = import.meta.env.DEV && process.env.HIDE_DRAFTS !== 'true';
+
 // For each slug, determine if it's published (exists + not draft)
 function getStatus(slug: string) {
   const entry = noteMap.get(slug);
@@ -77,21 +79,30 @@ function getStatus(slug: string) {
     </header>
 
     {curriculum.map(section => {
-      const published = section.topics.filter(t => getStatus(t.slug) === 'published');
-      if (published.length === 0) return null;
+      const visible = section.topics.filter(t => {
+        const s = getStatus(t.slug);
+        return s === 'published' || (showDrafts && s === 'draft');
+      });
+      if (visible.length === 0) return null;
       return (
         <section class="notes-section" id={section.id}>
           <h2 class="notes-discipline">{section.discipline}</h2>
           <ol class="notes-list">
-            {published.map((topic, i) => (
-              <li class="notes-item notes-item--published">
-                <span class="notes-num">{String(i + 1).padStart(2, '0')}</span>
-                <div class="notes-info">
-                  <a href={`${base}/notes/${topic.slug}`} class="notes-title">{topic.title}</a>
-                  <span class="notes-desc">{topic.description}</span>
-                </div>
-              </li>
-            ))}
+            {visible.map((topic, i) => {
+              const isDraft = getStatus(topic.slug) === 'draft';
+              return (
+                <li class="notes-item notes-item--published">
+                  <span class="notes-num">{String(i + 1).padStart(2, '0')}</span>
+                  <div class="notes-info">
+                    <a href={`${base}/notes/${topic.slug}`} class="notes-title">
+                      {topic.title}
+                      {isDraft && <span class="draft-badge">draft</span>}
+                    </a>
+                    <span class="notes-desc">{topic.description}</span>
+                  </div>
+                </li>
+              );
+            })}
           </ol>
         </section>
       );
@@ -189,6 +200,20 @@ function getStatus(slug: string) {
     font-size: 0.8rem;
     color: var(--color-text-muted);
     line-height: 1.4;
+  }
+
+  .draft-badge {
+    display: inline-block;
+    margin-left: 0.4rem;
+    font-size: 0.6rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border);
+    border-radius: 3px;
+    padding: 0.1em 0.35em;
+    vertical-align: middle;
   }
 
   @media (max-width: 760px) {

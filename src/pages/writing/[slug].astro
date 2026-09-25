@@ -4,7 +4,8 @@ import { getCollection, render } from 'astro:content';
 import readingTime from 'reading-time';
 
 export async function getStaticPaths() {
-  const published = (await getCollection('writing', ({ data }) => !data.draft))
+  const showDrafts = import.meta.env.DEV && process.env.HIDE_DRAFTS !== 'true';
+  const published = (await getCollection('writing', ({ data }) => showDrafts || !data.draft))
     .sort((a, b) => a.data.date.valueOf() - b.data.date.valueOf());
 
   return published.map(post => {

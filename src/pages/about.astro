@@ -1,324 +1,737 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Sidenote from "../components/Sidenote.astro";
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 ---
 
-<BaseLayout title="About" description="About Joseph Okonda — Research Engineer at the Broad Institute.">
-  <main class="about-main">
+<BaseLayout
+    title="About"
+    description="About Joseph Okonda — Research Engineer at the Broad Institute."
+>
+    <main class="about-main">
+        <!-- ── Bio ── -->
+        <div class="about-bio">
+            <!-- Photo first in DOM so it floats to the top of the margin column -->
+            <figure class="about-photo">
+                <img src={`${base}/assets/bio.jpg`} alt="Joseph Okonda" />
+                <figcaption>
+                    Gazing upon the glorious Chihuly chandelier
+                </figcaption>
+            </figure>
 
-    <!-- ── Bio ── -->
-    <div class="about-bio">
-      <div class="about-bio-text">
-        <h1 class="about-name">Joseph Okonda</h1>
-        <p class="about-role">Research Engineer · Broad Institute of MIT and Harvard</p>
-
-        <p>
-          I work at the intersection of software engineering and computational biology,
-          designing and building tools to process, organize, and analyze data from
-          high-throughput single-cell sequencing experiments.
-        </p>
-        <p>
-          Previously I was at
-          <a href="https://www.gsam.com/content/gsam/global/en/homepage.html" target="_blank" rel="noopener">Goldman Sachs</a>,
-          building computational systems in the asset management division.
-          I studied Computer Science at Stanford.
-        </p>
-
-        <nav class="about-links" aria-label="Contact and profiles">
-          <a href="https://github.com/jlikhuva" target="_blank" rel="noopener">GitHub</a>
-          <span class="about-links-sep" aria-hidden="true">·</span>
-          <a href="https://www.linkedin.com/in/jlikhuva" target="_blank" rel="noopener">LinkedIn</a>
-          <span class="about-links-sep" aria-hidden="true">·</span>
-          <a href={`${base}/cv.pdf`} target="_blank">CV</a>
-          <span class="about-links-sep" aria-hidden="true">·</span>
-          <span class="about-email">jlikhuva&#64;alumni.stanford.edu</span>
-        </nav>
-      </div>
-
-      <div class="about-photo">
-        <figure class="about-photo-figure">
-          <img src={`${base}/assets/bio.jpg`} alt="Joseph Okonda" />
-          <figcaption>Gazing upon the glorious Chihuly chandelier</figcaption>
-        </figure>
-      </div>
-    </div>
-
-    <!-- ── About this site ── -->
-    <section class="about-section">
-      <h2>This Site</h2>
-      <p>
-        Hubris+Humility is a personal journal of ideas in three registers: detailed technical
-        notes from sustained study (Writing), rough day-to-day observations and curated
-        passages that struck me as worth keeping (Sketches &amp; Snippets), and eventually,
-        more polished essays.
-      </p>
-      <p>
-        The name comes from a belief about creative work. To attempt anything field-defining
-        you first have to believe that you <em>can</em> — that the problem is yours to solve.
-        That is Hubris. But conviction alone accomplishes nothing without the patience to
-        recognize your limitations and systematically remedy them. That is Humility.
-        Both are necessary.
-      </p>
-    </section>
-
-    <!-- ── Projects ── -->
-    <section class="about-section">
-      <h2>Selected Work</h2>
-
-      <div class="project-list">
-
-        <div class="project">
-          <div class="project-info">
-            <h3 class="project-title">Spotting and Transcribing Structured Nutrition Information for Product Images</h3>
-            <p class="project-meta">Computer Vision · Spring 2018, updated 2022</p>
-            <p class="project-desc">
-              Before the era of powerful multimodal models, I designed a computer vision pipeline
-              for automatically reading and extracting nutrition labels from product photographs.
+            <h1 class="about-name">Joseph Okonda</h1>
+            <p class="about-role">
+                Research Engineer · Broad Institute of MIT and Harvard
             </p>
-            <div class="project-links">
-              <a href="https://github.com/jlikhuva/NutritionProject/blob/master/Data/arxiv.pdf" target="_blank" rel="noopener">Paper</a>
-            </div>
-          </div>
-          <a class="project-thumb" href="https://github.com/jlikhuva/NutritionProject/blob/master/Data/_poster.pdf" target="_blank" rel="noopener" aria-label="View poster PDF">
-            <img src={`${base}/assets/231.png`} alt="Nutrition project poster thumbnail" data-no-zoom />
-          </a>
+
+            <p>
+                I'm a computer scientist specializing in the research, design,
+                and implementation of scalable algorithms and systems at the
+                intersection of computing and biology. I have deep expertise in
+                developing high-throughput systems for the analysis of
+                single-cell and bulk-tissue genomic, epigenomic, and
+                transcriptomic datasets — most notably for the Genotype-Tissue
+                Expression (GTEx) Project.<Sidenote
+                    ><a
+                        href="https://gtexportal.org/home/"
+                        target="_blank"
+                        rel="noopener"
+                        >The Genotype-Tissue Expression (GTEx) Projects</a
+                    ></Sidenote
+                >
+                My work facilitates a mechanistic, systems-level understanding of
+                biology and disease, aiding the development of more effective therapeutics.<Sidenote
+                    >GTEx has contributed to <a
+                        href="https://through.bio/23715323"
+                        target="_blank"
+                        rel="noopener">394 clinical trials for 727 diseases</a
+                    >.</Sidenote
+                >
+            </p>
+            <p>
+                Every month, my contributions power the research of over 20,000
+                global scientists<Sidenote
+                    >Measured using Google Analytics.</Sidenote
+                >
+                in industry,<Sidenote
+                    >Direct correspondence from researchers at Eli Lilly &amp;
+                    Novo Nordisk.</Sidenote
+                >
+                academia, and clinical settings.<Sidenote
+                    >Ophthalmology researchers from the UK use the GTEx API, as
+                    do pediatric researchers at Sick Kids Canada.</Sidenote
+                >
+                My work also underlies world-class AI systems for biology, including
+                DeepMind's AlphaGenome.<Sidenote
+                    ><a
+                        href="https://www.nature.com/articles/s41586-025-10014-0"
+                        target="_blank"
+                        rel="noopener">DeepMind's AlphaGenome</a
+                    > depends on GTEx.</Sidenote
+                >
+            </p>
+            <p>
+                Previously I was at <a
+                    href="https://www.gsam.com/content/gsam/global/en/homepage.html"
+                    target="_blank"
+                    rel="noopener">Goldman Sachs</a
+                >, building computational systems in the asset management
+                division. I studied Computer Science at Stanford.
+            </p>
+
+            <nav class="about-links" aria-label="Contact and profiles">
+                <a
+                    href="https://github.com/jlikhuva"
+                    target="_blank"
+                    rel="noopener">GitHub</a
+                >
+                <span class="about-links-sep" aria-hidden="true">·</span>
+                <a
+                    href="https://www.linkedin.com/in/jlikhuva"
+                    target="_blank"
+                    rel="noopener">LinkedIn</a
+                >
+                <span class="about-links-sep" aria-hidden="true">·</span>
+                <span class="about-links-sep" aria-hidden="true">·</span>
+                <span class="about-email">jlikhuva&#64;alumni.stanford.edu</span
+                >
+            </nav>
         </div>
 
-        <div class="project">
-          <div class="project-info">
-            <h3 class="project-title">Building a Robust and Reliable Genomics Data API</h3>
-            <p class="project-meta">
-              Computational Biology · Joseph Okonda, Qiuyue Liu, Jared Nedzel, Kristin Ardlie ·
-              <a href="https://commonfund.nih.gov/dataecosystem" target="_blank" rel="noopener">NIH CFDE</a>
-              · <span class="project-award">Best Poster Award</span>
-            </p>
-            <p class="project-desc">
-              Designed and led the implementation of a full genomic data retrieval and exploration
-              API powering the GTEx portal, one of the largest public gene expression resources.
-            </p>
-            <div class="project-links">
-              <a href="https://www.gtexportal.org/home/" target="_blank" rel="noopener">Website</a>
-              <span class="about-links-sep" aria-hidden="true">·</span>
-              <a href="https://gtexportal.org/api/v2/redoc#tag/Dynamic-Association-Endpoints" target="_blank" rel="noopener">API Docs</a>
+        <!-- ── Selected Works ── -->
+        <section class="about-section">
+            <h2>Selected Works</h2>
+
+            <div class="project-list">
+                <div class="project">
+                    <div class="project-info">
+                        <h3 class="project-title">
+                            The human and non-human primate developmental GTEx
+                            projects
+                        </h3>
+                        <p class="project-meta">
+                            The dGTEx Consortium ·
+                            <a
+                                href="https://www.genome.gov/Funded-Programs-Projects/Developmental-Genotype-Tissue-Expression"
+                                target="_blank"
+                                rel="noopener"
+                                >Developmental Genotype-Tissue Expression
+                                (dGTEx)</a
+                            >
+                            <a
+                                href="https://gtexportal.org/home/aboutnhpdgtex"
+                                target="_blank"
+                                rel="noopener"
+                                >Non-Human Primates Developmental
+                                Genotype-Tissue Expression (NHP-dGTEx)</a
+                            >
+                        </p>
+                        <p class="project-desc">
+                            The goal of the dGTEx initiative is to establish a
+                            resource database and associated tissue bank to
+                            study gene expression patterns in multiple reference
+                            tissues during human and non-human primate
+                            developmental stages
+                        </p>
+                        <div class="project-links">
+                            <a
+                                href="https://doi.org/10.1038/s41586-024-08244-9"
+                                target="_blank"
+                                rel="noopener"
+                                >DOI: 10.1038/s41586-024-08244-9</a
+                            >
+                        </div>
+                    </div>
+                    <a
+                        class="project-thumb"
+                        href="https://doi.org/10.1038/s41586-024-08244-9"
+                        target="_blank"
+                        aria-label="View dGTEx paper"
+                    >
+                        <img
+                            src={`${base}/assets/dgtex.png`}
+                            alt="GTEx Loaders project poster thumbnail"
+                            data-no-zoom
+                        />
+                    </a>
+                </div>
+                <!-- Research projects -->
+                <div class="project">
+                    <div class="project-info">
+                        <h3 class="project-title">
+                            The GTEx Data Ingestion Pipeline: Simple, Scalable,
+                            and Extensible
+                        </h3>
+                        <p class="project-meta">
+                            Computational Biology · Joseph Okonda, Qiuyue Liu,
+                            Jared Nedzel, Kristin Ardlie ·
+                            <a
+                                href="https://commonfund.nih.gov/dataecosystem"
+                                target="_blank"
+                                rel="noopener">NIH CFDE</a
+                            >
+                        </p>
+                        <p class="project-desc">
+                            The Data infrastructure behind the GTEx Platform
+                        </p>
+                        <div class="project-links">
+                            <a
+                                href="https://www.gtexportal.org/home/"
+                                target="_blank"
+                                rel="noopener">Website</a
+                            >
+                            <span class="about-links-sep" aria-hidden="true"
+                                >·</span
+                            >
+                        </div>
+                    </div>
+                    <a
+                        class="project-thumb"
+                        href={`${base}/assets/loaders.pdf`}
+                        target="_blank"
+                        aria-label="View GTEx poster PDF"
+                    >
+                        <img
+                            src={`${base}/assets/loaders.png`}
+                            alt="GTEx Loaders project poster thumbnail"
+                            data-no-zoom
+                        />
+                    </a>
+                </div>
+                <div class="project">
+                    <div class="project-info">
+                        <h3 class="project-title">
+                            Building a Robust and Reliable Genomics Data API
+                        </h3>
+                        <p class="project-meta">
+                            Computational Biology · Joseph Okonda, Qiuyue Liu,
+                            Jared Nedzel, Kristin Ardlie ·
+                            <a
+                                href="https://commonfund.nih.gov/dataecosystem"
+                                target="_blank"
+                                rel="noopener">NIH CFDE</a
+                            >
+                            · <span class="project-award"
+                                >Best Poster Award</span
+                            >
+                        </p>
+                        <p class="project-desc">
+                            Designed and led the implementation of a full
+                            genomic data retrieval and exploration API powering
+                            the GTEx portal, one of the largest public gene
+                            expression resources.
+                        </p>
+                        <div class="project-links">
+                            <a
+                                href="https://www.gtexportal.org/home/"
+                                target="_blank"
+                                rel="noopener">Website</a
+                            >
+                            <span class="about-links-sep" aria-hidden="true"
+                                >·</span
+                            >
+                            <a
+                                href="https://gtexportal.org/api/v2/redoc#tag/Dynamic-Association-Endpoints"
+                                target="_blank"
+                                rel="noopener">API Docs</a
+                            >
+                        </div>
+                    </div>
+                    <a
+                        class="project-thumb"
+                        href={`${base}/assets/api.pdf`}
+                        target="_blank"
+                        aria-label="View GTEx poster PDF"
+                    >
+                        <img
+                            src={`${base}/assets/gtex.png`}
+                            alt="GTEx project poster thumbnail"
+                            data-no-zoom
+                        />
+                    </a>
+                </div>
+
+                <div class="project">
+                    <div class="project-info">
+                        <h3 class="project-title">
+                            Spotting and Transcribing Structured Nutrition
+                            Information from Product Images
+                        </h3>
+                        <p class="project-meta">
+                            Computer Vision · Spring 2018, updated 2022
+                        </p>
+                        <p class="project-desc">
+                            Before the era of powerful multimodal models, I
+                            designed a computer vision pipeline for
+                            automatically reading and extracting nutrition
+                            labels from product photographs.
+                        </p>
+                        <div class="project-links">
+                            <a
+                                href="https://github.com/jlikhuva/NutritionProject/blob/master/Data/arxiv.pdf"
+                                target="_blank"
+                                rel="noopener">Paper</a
+                            >
+                        </div>
+                    </div>
+                    <a
+                        class="project-thumb"
+                        href="https://github.com/jlikhuva/NutritionProject/blob/master/Data/_poster.pdf"
+                        target="_blank"
+                        rel="noopener"
+                        aria-label="View poster PDF"
+                    >
+                        <img
+                            src={`${base}/assets/231.png`}
+                            alt="Nutrition project poster thumbnail"
+                            data-no-zoom
+                        />
+                    </a>
+                </div>
+
+                <div class="project">
+                    <div class="project-info">
+                        <h3 class="project-title">
+                            Neural Abstractive Summarization
+                        </h3>
+                        <p class="project-meta">
+                            NLP · Joseph Okonda · Stanford, 2019
+                        </p>
+                        <p class="project-desc">
+                            Investigated neural approaches to abstractive text
+                            summarization on the Gigaword corpus, exploring
+                            sequence-to-sequence architectures with attention
+                            mechanisms for generating concise, fluent summaries.
+                        </p>
+                        <div class="project-links">
+                            <a
+                                href="https://www.semanticscholar.org/paper/Neural-Abstractive-Summarization-on-the-Gigaword-Okonda/33ec2a50587b2ea97c716ed7a6ff55d126231851"
+                                target="_blank"
+                                rel="noopener">Paper</a
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Invited Presentations -->
+                <div class="pub-group-label">Invited Presentations</div>
+
+                <div class="project">
+                    <div class="project-info">
+                        <h3 class="project-title">
+                            Enriching the GTEx Project with Pediatric and NHP
+                            Data
+                        </h3>
+                        <p class="project-meta">
+                            Invited Talk · dGTEx and NHP-dGTEx Spring 2026
+                            Steering Committee Meeting, Yale University
+                        </p>
+                    </div>
+                </div>
+
+                <div class="project">
+                    <div class="project-info">
+                        <h3 class="project-title">
+                            Exploring Non-Human Primates' Gene Expression on the
+                            GTEx Platform
+                        </h3>
+                        <p class="project-meta">
+                            Invited Talk · Marmoset Working Group's Genetics and
+                            Genomics Subgroup
+                        </p>
+                    </div>
+                </div>
+
+                <div class="project">
+                    <div class="project-info">
+                        <h3 class="project-title">
+                            At the Interface of Genetics &amp; Neural Networks
+                        </h3>
+                        <p class="project-meta">
+                            Invited Talk · Broad Research Associates' Talk
+                            Series, 2022
+                        </p>
+                        <p class="project-desc">
+                            Explored applying functional genomics methodologies
+                            to gain mechanistic insights into trained neural
+                            networks.
+                        </p>
+                    </div>
+                </div>
             </div>
-          </div>
-          <a class="project-thumb" href={`${base}/assets/GTEx Poster Hi-Res.pdf`} target="_blank" aria-label="View GTEx poster PDF">
-            <img src={`${base}/assets/gtex.png`} alt="GTEx project poster thumbnail" data-no-zoom />
-          </a>
-        </div>
+        </section>
 
-      </div>
-    </section>
+        <!-- ── Teaching ── -->
+        <section class="about-section">
+            <h2>Teaching</h2>
+            <div class="teaching-list">
+                <div class="teaching-entry">
+                    <span class="teaching-date">Summer 2025</span>
+                    <div class="teaching-content">
+                        <div class="teaching-header">
+                            <span class="teaching-role"
+                                >Instructor, Broad Summer Scholars Program
+                                (BSSP)</span
+                            >
+                            <span class="teaching-inst">Broad Institute</span>
+                        </div>
+                        <p class="teaching-desc">
+                            Designed and delivered an intensive course on the
+                            computational and mathematical foundations of
+                            single-cell analysis. The curriculum guided students
+                            through the full scRNA-seq workflow, from processing
+                            raw base call data to generating analysis-ready
+                            count matrices. Core modules included: <strong
+                                >The Geometry of Cells:</strong
+                            > Taught principles of linear (PCA) and non-linear (UMAP)
+                            dimensionality reduction to visualize high-dimensional
+                            expression data. <strong
+                                >Graph-Based Clustering:</strong
+                            >
+                            Introduced methods for modeling cells as networks and
+                            applying the Leiden algorithm for community detection
+                            to define cell populations. <strong
+                                >Cell Annotation:</strong
+                            > Led exercises on identifying cell types through marker
+                            gene-driven analysis.
+                        </p>
+                    </div>
+                </div>
 
-  </main>
+                <div class="teaching-entry">
+                    <span class="teaching-date">Fall 2021 – Summer 2023</span>
+                    <div class="teaching-content">
+                        <div class="teaching-header">
+                            <span class="teaching-role"
+                                >Molecular Biology as a Second Language</span
+                            >
+                            <span class="teaching-inst">Broad Institute</span>
+                        </div>
+                        <p class="teaching-desc">
+                            Established and led a journal club aimed at
+                            equipping computational scientists with the
+                            foundational knowledge of molecular biology
+                            necessary to make impactful research contributions.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
 </BaseLayout>
 
 <style>
-  .about-main {
-    max-width: var(--content-width);
-    margin: 0 auto;
-    padding: 3rem 1.5rem 4rem;
-  }
-
-  /* ── Bio block ── */
-  .about-bio {
-    display: flex;
-    gap: 2.5rem;
-    align-items: flex-start;
-    margin-bottom: 3rem;
-  }
-
-  .about-bio-text {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .about-name {
-    font-size: 1.75rem;
-    margin: 0 0 0.2rem;
-    line-height: 1.2;
-  }
-
-  .about-role {
-    font-size: 0.875rem;
-    color: var(--color-text-muted);
-    margin: 0 0 1.25rem;
-    font-style: italic;
-  }
-
-  /* ── Contact links row ── */
-  .about-links {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.3rem 0;
-    margin-top: 1.25rem;
-    font-size: 0.875rem;
-  }
-
-  .about-links a {
-    color: var(--color-text-muted);
-  }
-
-  .about-links a:hover {
-    color: var(--color-accent);
-    text-decoration: none;
-  }
-
-  .about-links-sep {
-    color: var(--color-border);
-    margin: 0 0.4rem;
-    user-select: none;
-  }
-
-  .about-email {
-    color: var(--color-text-muted);
-    font-style: italic;
-  }
-
-  /* ── Photo ── */
-  .about-photo {
-    flex-shrink: 0;
-  }
-
-  .about-photo img {
-    width: 200px;
-    height: 200px;
-    object-fit: cover;
-    border-radius: 4px;
-    display: block;
-    border: 1px solid var(--color-border);
-  }
-
-  /* ── Sections ── */
-  .about-section {
-    padding-top: 2.5rem;
-    border-top: 1px solid var(--color-border);
-    margin-top: 0;
-  }
-
-  .about-section h2 {
-    font-size: 0.75rem;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 0.09em;
-    color: var(--color-text-muted);
-    margin: 0 0 1.25rem;
-  }
-
-  /* ── Project list ── */
-  .project-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-  }
-
-  .project {
-    display: flex;
-    gap: 1.75rem;
-    align-items: flex-start;
-    padding: 1.75rem 0;
-    border-bottom: 1px solid var(--color-border);
-  }
-
-  .project:first-child {
-    padding-top: 0;
-  }
-
-  .project:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
-  }
-
-  .project-info {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .project-title {
-    font-size: 1rem;
-    font-weight: bold;
-    margin: 0 0 0.3rem;
-    line-height: 1.4;
-  }
-
-  .project-meta {
-    font-size: 0.82rem;
-    color: var(--color-text-muted);
-    margin: 0 0 0.65rem;
-    line-height: 1.5;
-  }
-
-  .project-award {
-    color: var(--color-accent);
-    font-style: normal;
-  }
-
-  .project-desc {
-    font-size: 0.92rem;
-    margin: 0 0 0.75rem;
-    line-height: 1.6;
-  }
-
-  .project-links {
-    display: flex;
-    align-items: center;
-    font-size: 0.82rem;
-    gap: 0;
-  }
-
-  .project-links a {
-    color: var(--color-text-muted);
-  }
-
-  .project-links a:hover {
-    color: var(--color-accent);
-    text-decoration: none;
-  }
-
-  .project-thumb {
-    flex-shrink: 0;
-    display: block;
-    border-radius: 4px;
-    overflow: hidden;
-    border: 1px solid var(--color-border);
-    transition: border-color 0.15s;
-  }
-
-  .project-thumb:hover {
-    border-color: var(--color-text-muted);
-  }
-
-  .project-thumb img {
-    display: block;
-    width: 130px;
-    height: 100px;
-    object-fit: cover;
-  }
-
-  /* ── Mobile ── */
-  @media (max-width: 600px) {
     .about-main {
-      padding: 2rem 1rem 3rem;
+        max-width: var(--content-width);
+        margin: 0 auto;
+        padding: 3rem 1.5rem 4rem;
     }
 
+    /* ── Bio block — same padding-right as article, so sidenotes float normally ── */
     .about-bio {
-      flex-direction: column-reverse;
-      gap: 1.5rem;
+        padding-right: calc(var(--sidenote-width) + var(--sidenote-gap));
+        margin-bottom: 3rem;
+    }
+
+    /* Photo in the right margin column, identical mechanics to .sidenote */
+    .about-photo {
+        float: right;
+        clear: right;
+        margin: 0 calc(-1 * (var(--sidenote-width) + var(--sidenote-gap)))
+            1.5rem 0;
+        width: var(--sidenote-width);
     }
 
     .about-photo img {
-      width: 100%;
-      height: 220px;
+        width: 100%;
+        aspect-ratio: 1;
+        object-fit: cover;
+        border-radius: 4px;
+        display: block;
+        border: 1px solid var(--color-border);
+    }
+
+    .about-photo figcaption {
+        margin-top: 0.4rem;
+        font-size: 0.78rem;
+        line-height: 1.4;
+        text-align: center;
+        font-style: italic;
+        color: var(--color-text-muted);
+    }
+
+    .about-name {
+        font-size: 1.75rem;
+        margin: 0 0 0.2rem;
+        line-height: 1.2;
+    }
+
+    .about-role {
+        font-size: 0.875rem;
+        color: var(--color-text-muted);
+        margin: 0 0 1.25rem;
+        font-style: italic;
+    }
+
+    /* ── Contact links row ── */
+    .about-links {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.3rem 0;
+        margin-top: 1.25rem;
+        font-size: 0.875rem;
+    }
+
+    .about-links a {
+        color: var(--color-text-muted);
+    }
+
+    .about-links a:hover {
+        color: var(--color-accent);
+        text-decoration: none;
+    }
+
+    .about-links-sep {
+        color: var(--color-border);
+        margin: 0 0.4rem;
+        user-select: none;
+    }
+
+    .about-email {
+        color: var(--color-text-muted);
+        font-style: italic;
+    }
+
+    /* Contain the floated photo + sidenotes so the next section starts below them */
+    .about-bio::after {
+        content: "";
+        display: block;
+        clear: both;
+    }
+
+    /* ── Sections ── */
+    .about-section {
+        padding-top: 2.5rem;
+        border-top: 1px solid var(--color-border);
+        margin-top: 0;
+    }
+
+    .about-section h2 {
+        font-size: 0.75rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        color: var(--color-text-muted);
+        margin: 0 0 1.25rem;
+    }
+
+    /* ── Project list ── */
+    .project-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
     }
 
     .project {
-      flex-direction: column;
+        display: flex;
+        gap: 1.75rem;
+        align-items: flex-start;
+        padding: 1.75rem 0;
+        border-bottom: 1px solid var(--color-border);
+    }
+
+    .project:first-child {
+        padding-top: 0;
+    }
+
+    .project:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .project-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .project-title {
+        font-size: 1rem;
+        font-weight: bold;
+        margin: 0 0 0.3rem;
+        line-height: 1.4;
+    }
+
+    .project-meta {
+        font-size: 0.82rem;
+        color: var(--color-text-muted);
+        margin: 0 0 0.65rem;
+        line-height: 1.5;
+    }
+
+    .project-meta:last-child {
+        margin-bottom: 0;
+    }
+
+    .project-award {
+        color: var(--color-accent);
+        font-style: normal;
+    }
+
+    .project-desc {
+        font-size: 0.92rem;
+        margin: 0 0 0.75rem;
+        line-height: 1.6;
+    }
+
+    .project-links {
+        display: flex;
+        align-items: center;
+        font-size: 0.82rem;
+        gap: 0;
+    }
+
+    .project-links a {
+        color: var(--color-text-muted);
+    }
+
+    .project-links a:hover {
+        color: var(--color-accent);
+        text-decoration: none;
+    }
+
+    .project-thumb {
+        flex-shrink: 0;
+        display: block;
+        border-radius: 4px;
+        overflow: hidden;
+        border: 1px solid var(--color-border);
+        transition: border-color 0.15s;
+    }
+
+    .project-thumb:hover {
+        border-color: var(--color-text-muted);
     }
 
     .project-thumb img {
-      width: 100%;
-      height: 160px;
+        display: block;
+        width: 130px;
+        height: 100px;
+        object-fit: cover;
     }
-  }
+
+    /* ── Publication group labels ── */
+    .pub-group-label {
+        font-size: 0.72rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        color: var(--color-text-muted);
+        padding-top: 1.75rem;
+        margin: 0;
+    }
+
+    /* ── Teaching ── */
+    .teaching-list {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .teaching-entry {
+        display: grid;
+        grid-template-columns: 11rem 1fr;
+        gap: 0 1.5rem;
+        padding: 1.5rem 0;
+        border-bottom: 1px solid var(--color-border);
+        align-items: start;
+    }
+
+    .teaching-entry:first-child {
+        padding-top: 0;
+    }
+
+    .teaching-entry:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .teaching-date {
+        font-size: 0.82rem;
+        color: var(--color-text-muted);
+        font-style: italic;
+        padding-top: 0.15em;
+    }
+
+    .teaching-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 1rem;
+        margin-bottom: 0.4rem;
+    }
+
+    .teaching-role {
+        font-size: 0.95rem;
+        font-weight: bold;
+        line-height: 1.4;
+    }
+
+    .teaching-inst {
+        font-size: 0.75rem;
+        color: var(--color-text-muted);
+        font-variant: small-caps;
+        letter-spacing: 0.06em;
+        flex-shrink: 0;
+    }
+
+    .teaching-desc {
+        font-size: 0.9rem;
+        margin: 0;
+        line-height: 1.65;
+        color: var(--color-text);
+    }
+
+    /*
+     * Mid-width: collapse the sidenote column before the bio text gets
+     * too narrow. Photo becomes a small right-float within the text column.
+     */
+    @media (max-width: 750px) {
+        .about-bio {
+            padding-right: 0;
+        }
+
+        .about-photo,
+        .project-thumb {
+            display: none;
+        }
+
+        /* collapse sidenotes to inline footnote blocks */
+        .about-bio :global(.sidenote) {
+            float: none;
+            clear: none;
+            display: block;
+            width: auto;
+            margin: 0.3rem 0 0.8rem;
+            margin-right: 0;
+            border-left: 2px solid var(--color-border);
+            padding-left: 0.75rem;
+        }
+    }
+
+    /* ── Mobile ── */
+    @media (max-width: 600px) {
+        .about-main {
+            padding: 2rem 1rem 3rem;
+        }
+
+        .teaching-entry {
+            grid-template-columns: 1fr;
+            gap: 0.4rem;
+        }
+
+        .teaching-header {
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+    }
 </style>

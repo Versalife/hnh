@@ -1,0 +1,18 @@
+---
+interface Props {
+  title?: string;
+  label?: string;
+  open?: boolean;
+}
+const { title, label = "Details", open = false } = Astro.props;
+---
+
+<details class="details-block" open={open || undefined}>
+  <summary class="details-summary">
+    <span class="details-label">{label}</span>
+    {title && <span class="details-title">{title}</span>}
+  </summary>
+  <div class="details-body">
+    <slot />
+  </div>
+</details>

@@ -1,27 +1,39 @@
 ---
 /**
- * Right-margin reference note, thinkingmachines.ai style.
+ * Right-margin reference note. Numbers are assigned automatically by CSS
+ * counter in document order — no need to pass n.
  *
- * Plain note:
- *   <Sidenote n={1}>Some marginal commentary.</Sidenote>
+ * Inline (no block content):
+ *   <Sidenote>Some marginal commentary.</Sidenote>
+ *
+ * With code blocks — use SidenoteRef inline, then Sidenote noRef as a block:
+ *   text<SidenoteRef /> continues.
+ *
+ *   <Sidenote noRef>
+ *
+ *   Content with ```code blocks``` here.
+ *
+ *   </Sidenote>
  *
  * Reference with linked title and citation:
- *   <Sidenote n={1} href="https://..." citation="Taori et al, 2021">
+ *   <Sidenote href="https://..." citation="Taori et al, 2021">
  *     Alpaca: A Strong, Replicable Instruction-Following Model
  *   </Sidenote>
  *
  * Unnumbered margin note:
- *   <Sidenote>Note text here.</Sidenote>
+ *   <Sidenote unnumbered>Note text here.</Sidenote>
  */
 interface Props {
-  n?: number;
+  n?: number;       // ignored — kept for backward compat only
   href?: string;
   citation?: string;
+  noRef?: boolean;
+  unnumbered?: boolean;
 }
 
-const { n, href, citation } = Astro.props;
+const { href, citation, noRef = false, unnumbered = false } = Astro.props;
 ---
 
-{n !== undefined && <sup class="sidenote-ref">{n}</sup>}<span class="sidenote">{n !== undefined && <span class="sidenote-num">{n}</span>}{href
+{!noRef && <sup class="sidenote-ref"></sup>}<span class="sidenote">{!unnumbered && <span class="sidenote-num"></span>}{href
   ? <a href={href}><slot /></a>
   : <slot />}{citation && <span class="sidenote-citation">{citation}</span>}</span>

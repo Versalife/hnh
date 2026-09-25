@@ -4,7 +4,6 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const navItems = [
   { href: `${base}/writing`,  label: 'Writing'  },
   { href: `${base}/sketches`, label: 'Sketches' },
-  { href: `${base}/notes`,    label: 'Notes'    },
   { href: `${base}/about`,    label: 'About'    },
 ];
 
@@ -12,7 +11,7 @@ const currentPath = Astro.url.pathname;
 ---
 
 <header class="site-header">
-  <a href={`${base}/`} class="logo">H+H</a>
+  <a href={`${base}/writing`} class="logo">H+H</a>
   <nav>
     {navItems.map(item => (
       <a

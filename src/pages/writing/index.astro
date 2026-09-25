@@ -5,7 +5,8 @@ import readingTime from 'reading-time';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
-const allPosts = (await getCollection('writing', ({ data }) => !data.draft))
+const showDrafts = import.meta.env.DEV && process.env.HIDE_DRAFTS !== 'true';
+const allPosts = (await getCollection('writing', ({ data }) => showDrafts || !data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
 const postsWithMeta = allPosts.map(post => ({
@@ -29,6 +30,7 @@ const postsWithMeta = allPosts.map(post => ({
           </span>
           <span class="post-title">
             <a href={`${base}/writing/${post.id}`}>{post.data.title}</a>
+            {post.data.draft && <span class="draft-badge">draft</span>}
           </span>
           <span class="post-reading-time">{rt}</span>
         </li>
@@ -42,6 +44,20 @@ const postsWithMeta = allPosts.map(post => ({
     max-width: var(--content-width);
     margin: 0 auto;
     padding: 3rem 1.5rem;
+  }
+
+  .draft-badge {
+    display: inline-block;
+    margin-left: 0.5rem;
+    font-size: 0.65rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border);
+    border-radius: 3px;
+    padding: 0.1em 0.4em;
+    vertical-align: middle;
   }
 
   @media (max-width: 760px) {

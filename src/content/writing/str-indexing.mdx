@@ -36,24 +36,6 @@ That the notion of a substring relies, in its definition, on the notion of a suf
 
 A suffix array for some string $\Omega$ is an array of all the suffixes of that string. Note that, since a suffix is fully defined by its starting index in the string, there are $m + 1$ possible suffixes (where the extra 1 comes from counting the empty suffix). This array is sorted lexicographically. To save space, suffix arrays do not store the full suffixes, instead, they only store the starting index of each suffix. To sum up, a suffix array for some string is a lexicographically sorted array of all the indexes of all suffixes in the underlying string.
 
-<AlgorithmBox title="Example Algorithm: Enhanced Binary Search">
-
-**Inputs:** A sorted array $A$ of $n$ elements. A target value $T$.
-
-**Outputs:** Index $i$ if $A[i] = T$, else -1.
-
-**Procedure:**
-1. Set $L=0, R=n-1$.
-2. While $L \leq R$:
-   - $m = \lfloor(L+R)/2\rfloor$.
-   - If $A[m] < T$, $L=m+1$.
-   - Else if $A[m] > T$, $R=m-1$.
-   - Else return $m$.
-3. Return -1.
-
-**Notes:** Complexity: $O(\log n)$. Array must be sorted.
-
-</AlgorithmBox>
 
 Finally, most algorithms that operate on strings assume that each string has a sentinel character appended at the end. This sentinel character should not appear anywhere else in the string and should be lexicographically smaller than all characters that could appear in the string. For the ASCII alphabet, we often use the character `$` as the sentinel.
 

@@ -1,12 +1,41 @@
 ---
-export interface Props {
-  title?: string;
+interface Props {
+    title?: string;
 }
-
 const { title } = Astro.props;
+const hasIO = Astro.slots.has("input") || Astro.slots.has("output");
 ---
 
-<div class="theorem-box" style="border-left: 3px solid var(--color-accent);">
-  {title && <div class="theorem-label">Algorithm — {title}</div>}
-  <slot />
+<div class="algorithm-box">
+    <div class="algorithm-header">
+        <span class="algorithm-label">Algorithm</span>
+        {title && <span class="algorithm-title">{title}</span>}
+    </div>
+
+    {
+        hasIO && (
+            <div class="algorithm-io">
+                {Astro.slots.has("input") && (
+                    <>
+                        <span class="algorithm-io-label">Input</span>
+                        <div class="algorithm-io-content">
+                            <slot name="input" />
+                        </div>
+                    </>
+                )}
+                {Astro.slots.has("output") && (
+                    <>
+                        <span class="algorithm-io-label">Output</span>
+                        <div class="algorithm-io-content">
+                            <slot name="output" />
+                        </div>
+                    </>
+                )}
+            </div>
+        )
+    }
+
+    <div class="algorithm-body">
+        <slot />
+    </div>
 </div>
