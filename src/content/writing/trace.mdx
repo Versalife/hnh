@@ -14,7 +14,7 @@ import Details from "../../components/Details.astro";
 
 You've no doubt encountered, in your prior intellectual excursions, randomized algorithmic procedures. For example, quicksort and <a href="/hnh/writing/rmq#the-method-of-four-russians" target="_blank">quickselect</a> are standard fare in undergraduate computer science. The last decade in computer science, characterized as it was by "Big Data", popularized procedures for randomized sampling and randomized counting, <a href="/hnh/writing/sketch#the-count-min-sketch" target="_blank">some of which</a> we've covered on this blog. The next decade will, in all likelihood, be defined by large scale numerical linear algebra (NLA) under resource constraints. I expect this "Linear Algebra in the Large" regime to hasten the transition of randomized numerical linear algebra (randNLA) from the confines of academic research to production. <Sidenote>In my own work involving large scale PCA/SVD, I've been experimenting with the streaming variants of these procedures </Sidenote>
 
-Here, we use the task of estimating the trace of a matrix as a sandbox to explore the ideas that go into the design and analysis of randomized numerical linear algebraic procedures. <Sidenote n={1}>Obviously, Given $A \in \mathbb{M_n}$ the trace is the linear, cyclic function mapping into the underlying field of scalars. It takes on many forms, but two of its most common appearances are as $\operatorname{Tr} A = \sum_k^n (a_{k, k})$, the sum of the diagonal elements and $\operatorname{Tr} A = \sum_k (\lambda_k)$, the sum of eigenvalues.</Sidenote> <Sidenote>To me, $\operatorname{Tr} A = \sum_k^n (a_{k, k}) = \sum_k (\lambda_k)$ is such a surprising fact. Eigenvalues are basis invariant, while the diagonal clearly depends on the bases used, yet, regardless of the basis, the sum of diagonal elements is always equal to the sum of the eigenenvalues!</Sidenote>
+Here, we use the task of estimating the trace of a matrix as a sandbox to explore the ideas that go into the design and analysis of randomized numerical linear algebraic procedures. <Sidenote n={1}>Obviously, Given $A \in \mathbb{M_n}$ the trace is the linear, cyclic function mapping into the underlying field of scalars. It takes on many forms, but two of its most common appearances are as $\operatorname{Tr} A = \sum_k^n (a_{k, k})$, the sum of the diagonal elements and $\operatorname{Tr} A = \sum_k (\lambda_k)$, the sum of eigenvalues. To me, $\operatorname{Tr} A = \sum_k^n (a_{k, k}) = \sum_k (\lambda_k)$ is such a surprising fact. Eigenvalues are basis invariant, while the diagonal clearly depends on the bases used, yet, regardless of the basis, the sum of diagonal elements is always equal to the sum of the eigenenvalues!</Sidenote>
 
 ## The Task
 
@@ -23,19 +23,19 @@ Here, we use the task of estimating the trace of a matrix as a sandbox to explor
       a matrix $A \in \mathbb{M}_n$
   </Fragment>
   <Fragment slot="then">
-      Compute an estimate for $\operatorname{Tr} A = \sum_k^n (A_{k, k})$
+      Compute an estimate for $\operatorname{Tr} A = \sum_k^n A_{kk}$
   </Fragment>
 </TheoremBox>
-This task is trivial if we have access to the matrix and it fits in memory. We can get an exact answer using $2n-\text{flops}$. But, $A$ may be so large that accessing a single diagonal element becomes impractical. Or, we may not even have access to $A$. For instance, $A$ might be defined implicitly as the result of an expensive matrix function (e.g. $A = X^TX$) or it may be hidden behind an API and the only way to interact with the matrix is by sending vectors. <Sidenote n={2}>This paradigm is, by now, exceedingly familiar for this is essentially how we interact with hosted LLMs.</Sidenote>
+This task is trivial if we have access to the matrix, and if the matrix fits in memory. In that case we can get an exact answer using $n\mathtt{-flops}$ via the obvious linear time algorithm. But, $A$ may be so large that accessing a single diagonal element becomes impractical. Or, we may not even have access to $A$. For instance, $A$ might be defined implicitly as the result of some expensive matrix function (e.g. $A = X^TX$) or it may be hidden behind an opaque API and the only way to interact with the matrix is by sending vectors. <Sidenote>This paradigm is, by now, exceedingly familiar for this is essentially how we interact with hosted LLMs.</Sidenote>
 
 ## Notation and Terminology
 
 Before proceeding, let us pause to familiarize ourselves with some terminology and notational devices.
 
-1. We'll use $\langle x, y\rangle$ to denote the value of an inner product between the two vectors. In this write up, this inner product will coincide with the dot product $x . y = x_1y_1 + \ldots + x_ny_n$, the standard inner product on euclidean spaces.
+1. We'll use $\langle x, y\rangle$ to denote the value of an inner product between the two vectors. In this write up, this inner product will coincide with the dot product $x . y = x_1y_1 + \ldots + x_ny_n$, the standard inner product in euclidean spaces.
 2. $e_k$ will denote $k_{th}$ standard basis vector; the vector with $1$ in the $k_{th}$ slot and with zeros in all other slots. For instance, $e_4^T \in \mathbb{R^6} = [0, 0, 0, 1, 0, 0]$.
-3. Observe that, if $A$ is a matrix, then $Ae_k$ selects the $k_{th}$ column and $e_j^TA$ selects the $j_{th}$ row, meaning $\langle e_j, Ae_k \rangle$ selects the $(i, j)_{th}$ entry of the matrix.
-4. We refer to matrix-vector multiplications of the form $Ax$ $\boxed{\text{matvecs}}$, and those of the form $x^TA$ as $\boxed{\text{rmatvecs}}$. We'll often refer to both of them simply as matvecs.
+3. Observe that, if $A$ is a matrix, then $Ae_k$ selects the $k_{th}$ column and $e_j^TA$ selects the $j_{th}$ row, meaning $\langle e_i, Ae_j \rangle$ selects the $(i, j)_{th}$ entry of the matrix.
+4. We refer to matrix-vector multiplications of the form $Ax$ as $\boxed{\text{matvecs}}$, and those of the form $x^TA$ as $\boxed{\text{rmatvecs}}$. We'll often refer to both of them simply as matvecs.
 5. The _Estimand_ is the object we wish to approximate. An _Estimator_ is a function that approximates the estimand. The values of the estimator are called _Estimates_. Our goal will be to construct efficient, high quality estimators.<Sidenote n={4}> An efficient estimator is a function that has good space complexity, good sample complexity, and good computational complexity. A high quality estimator produces unbiased estimates and has low variance.</Sidenote>
 6. A random vector $\xi \in \mathbb{R}^n$ is a vector in which each entry is a random variable. If $\mathbb{E}_{\xi} = 0$ we say that the random vector is _centered_. If $\mathbb{E}_{\xi\xi^T} = I_n$ we say that the random vector is _isotropic_.<Sidenote> Recall that $\operatorname{Cov}(\xi) = \mathbb{E}_{\xi\xi^T} - \mathbb{E}_{\xi}\mathbb{E}_{\xi}^T$ </Sidenote> A centered and isotropic random vector is also known as a standardized random vector.
 
@@ -49,7 +49,7 @@ $$
 
 In this reformulation, we compute an exact value of the trace using $2n$ matvecs. But, when $n$ is quite large, this procedure can be quite expensive. Faced with this, and if an approximation of the trace suffices, we may want to construct an estimator for the trace of a matrix that minimizes the number of matvecs while maximizing the accuracy of the resultant estimate.
 
-Randomized sampling provides one of the simplest methods for constructing estimators. In our case, we can proceed as follows
+Randomized sampling provides one of the simplest methods for constructing such an estimator. A possible design path proceeds as follows:
 
 1. Let $\xi$ be a random vector of the appropriate size.<Sidenote n={5}> Of course, at this point you should immediately ask, "from what distribution are we drawing this random vector?". Let's set that aside for now. We'll choose the appropriate distribution with guidance from factors downstream of the current modelling process. </Sidenote>
 2. We want the random variable $x = \langle \xi, A \xi \rangle = \xi^TA\xi = \sum _{i, j}^n \xi_iA_{i, j} \xi_j$ to be an unbiased estimate of $\operatorname{Tr} A $.
@@ -64,7 +64,7 @@ Randomized sampling provides one of the simplest methods for constructing estima
    \end{aligned}
    $$
 4. To achieve our desired result, we need two things: first, we need the first term to vanish, i.e $\sum_{i \neq j} A_{ij} \mathbb{E}_{\xi_i\xi_j} = 0$, and second we need, in the second term, for $\mathbb{E}_{\xi_i^2} = 1$
-5. In short, we want the following to hold true $\boxed{{E}_{\xi_i\xi_j} = 0 \text{ when } i \neq j \text{ and } \mathbb{E}_{\xi_i^2} = 1}$. That is, we need to sample $\xi$ such that $\mathbb{E}_{\xi\xi^T} = I_n$. <Sidenote>This condition is called isotropy. One way of achieving it is to mandate that the directions of the probe $\xi$ be independent, and standardized (i.e have mean zero and unit variance). But isotropy is a looser condition. For instance, we can have isotropy without independ</Sidenote>
+5. In short, we want the following to hold true $\boxed{{E}_{\xi_i\xi_j} = 0 \text{ when } i \neq j \text{ and } \mathbb{E}_{\xi_i^2} = 1}$. That is, we need to sample $\xi$ such that $\mathbb{E}_{\xi\xi^T} = I_n$. <Sidenote>This condition is called isotropy. One way of achieving it is to mandate that the directions of the probe $\xi$ be independent, and standardized (i.e have mean zero and unit variance). But isotropy is a looser condition. For instance, we can have isotropy without independence</Sidenote>
 
 This gives rise to the following simple trace estimation algorithm.
 
@@ -85,11 +85,11 @@ $$
 \end{aligned}
 $$
 
-Evidently, all the complexity lies in the first term.
+Since all the complexity lies in the first term, let's unravel it.
 
 $$
 \begin{aligned}
-\mathbb{E}_{\hat x^2}  &= \mathbb{E}{\langle \xi, A \xi \rangle ^2} = \mathbb{E}{\left(\sum_{i, j} A_{ij}\xi_i\xi_j\right)^2} \\
+\mathbb{E}_{\hat x^2}  &= \mathbb{E}_{\langle \xi, A \xi \rangle ^2} = \mathbb{E}{\left(\sum_{i, j} A_{ij}\xi_i\xi_j\right)^2} \\
 &= \mathbb{E}{\left(\sum_{i, j} A_{ij}\xi_i\xi_j\sum_{k, l} A_{kl}\xi_k\xi_l\right)} \\
 &= \sum_{i, j, k, l} A_{ij}A_{kl}\mathbb{E}_{\xi_i\xi_j\xi_k\xi_l} \\
 &= \underbrace{\sum_{i=j=k=l} A_{ii}^2 \mathbb{E_{\xi_i^4} }}_{\text{I}} +
@@ -99,7 +99,7 @@ $$
 \end{aligned}
 $$
 
-Isotropy means that we can ignore all the $\mathbb{E}_{\xi_*^2}$ terms. This gives us the following expression
+Isotropy means that all the $\mathbb{E}_{\xi_*^2}$ terms are equal to one. This gives us the following expression
 
 $$
 \begin{aligned}
@@ -117,9 +117,9 @@ $$
 \text{Var}(\langle \xi, A \xi \rangle) = \phi(A, \xi) + \psi(A)
 $$
 
-with the obvious appropriate choices for $\phi$ and $\psi$. The thing to observe is that our probe only appears in $\text{I}$. We'll come back to this when considering what distribution to draw $\xi$ from in order to minimize the variance. The best we can do at this point, without considering the distribution of the probe or the structure of the matrix, is to bound this expression from above.
+with the obvious appropriate choices for $\phi$ and $\psi$. The thing to observe is that our probe only appears in the term labelled as $\text{I}$. We'll come back to this when considering what distribution to draw $\xi$ from in order to minimize the variance. The best we can do at this point, without considering the distribution of the probe or the structure of the matrix, is to bound this expression from above.
 
-To that end, note that the first term is always positive $\text{I} \geq 0$, and that we can simplify the second term as follows:
+To that end, note that the first term is always positive, that is $\text{I} \geq 0$. Further, that we can simplify the second term as follows:
 
 $$
 \text{II} = \sum_{i=j \neq k=l} A_{ii}A_{kk} \leq \sum_{i} A_{ii} \sum_{k} A_{kk} = (\operatorname{Tr} A)^2
@@ -129,7 +129,7 @@ Now, we assume that $A$ is symmetric. That is, we assume that $A^T = A$. This le
 
 <Details title="Why we can assume that A is symmetric">
 
-1. We begin by observing that $(A + A^T) = A^T + A = A + A^T$. That is, we can derive a symmetric matrix from our original matrix. If the properties we care about, in this case the trace $\operatorname{Tr} A$ and its estimate $\xi^*A\xi$, are preserved if we pass to this object, then we can use $A + A^T$ in place of $A$ in our analysis.
+1. We begin by observing that $(A + A^T)^T = A + A^T$. That is, we can derive a symmetric matrix from our original matrix. If the properties we care about, in this case the trace $\operatorname{Tr} A$ and its estimate $\xi^*A\xi$, are preserved if we pass to this object, then we can use $A + A^T$ in place of $A$ in our analysis.
 2. Now, every square matrix can be decomposed as follows: $A = \frac{A + A^T}{2} + \frac{A -A^T}{2}$.<Sidenote>c.f. Symmetric part of a matrix</Sidenote> <Sidenote> c.f. Hermitian dilation, another way of passing to the space of symmetric matrices, which is quite common, but not appropriate in our situation. $A^*$ is the conjugate transpose which coincides with $A^T$ when the field of coefficients is $\mathbb{R}$. Let
    $
   \mathcal{H}(A) = \begin{pmatrix} 0 & A \\ A^* & 0 \end{pmatrix}
@@ -163,7 +163,7 @@ $$
 
 </Details>
 
-Above, if $A^T = A$ then <Sidenote>$\lVert A \rVert_\text{F} = \sqrt{\sum_{i, j} A_{ij}^2}$. Below, we omit the diagonal entries hence the inequality.</Sidenote>
+Above, if $A^T = A$ then <Sidenote>$\lVert A \rVert_\text{F} = \sqrt{\sum_{i, j} A_{ij}^2}$. We omit the diagonal entries hence the inequality.</Sidenote>
 
 $$
 \text {IV } = \sum_{i \neq j} A_{ij}A_{ji} = \sum_{i \neq j} A_{ij}^2 = \text{ III } \leq \lVert A \rVert_\text{F}^2
@@ -207,17 +207,17 @@ The vectorized form $\hat x = \frac{1}{s}\operatorname{Tr}(X^*AX) = \frac{1}{s}\
   <Fragment slot="input">
 
 1. an $n$-square matrix $A$
-2. a budget $m \in \mathbb{N}$
+2. a budget $s \in \mathbb{N}$
 
   </Fragment>
   <Fragment slot="output">$\hat{x} \in \mathbb{R}$, an unbiased estimate of $\operatorname{Tr} A$</Fragment>
 
-1. $\hat{x} \gets 0,\quad i \gets 0$
-2. **while** $i \leq m$ **do**
+1. $\hat{x} \gets 0,\quad i \gets 1$
+2. **while** $i \leq s$ **do**
    - $\xi_i \gets \operatorname{sample}(\operatorname{Isotropic}(\mathbb{R}^n))$
    - $\hat{x} \gets \hat{x} + \langle \xi_i, A\xi_i \rangle$
    - $i \gets i + 1$
-3. **return** $\tfrac{1}{m}\hat{x}$
+3. **return** $\tfrac{1}{s}\hat{x}$
 
 </AlgorithmBox>
 
@@ -307,7 +307,7 @@ $$
 \end{aligned}
 $$
 
-But, even though we've ended up with an estimator whose variance is somewhat smaller, notice that our error bound from before takes on the following form <Sidenote>This might be as good a time as any to point out that $\lVert A \rVert_\text{F} = \operatorname{Tr}(A^*A)$. If $A$ is symmetric, then $\lVert A \rVert_\text{F} = \operatorname{Tr}(A^*A) = \sum_i \lambda_i(A)^2$, the sum of the squares of the eigenvalues.</Sidenote>
+But, even though we've ended up with an estimator whose variance is somewhat smaller, notice that our error bound from before takes on the following form <Sidenote>This might be as good a time as any to point out that $\lVert A \rVert_\text{F}^2 = \operatorname{Tr}(A^*A)$. If $A$ is symmetric, then $\lVert A \rVert_\text{F}^2 = \operatorname{Tr}(A^*A) = \sum_i \lambda_i(A)^2$, the sum of the squares of the eigenvalues.</Sidenote>
 
 $$
 \text{ std-err } = \frac{\sqrt{2}\lVert A \rVert_\text{F}}{\sqrt m}
@@ -319,29 +319,30 @@ meaning that it still decays at the slow monte carlo rate. This underscores the 
 
 Advanced methods for trace estimation build on the preceding basic monte carlo estimator by either constructing more structured probes unencumbered by the need for independence, or by exploiting information about the structure of the target matrix $A$. Below, we'll examine those of the latter flavor.
 
-All advanced trace estimators we examine follow the following general procedure
+All advanced trace estimators we examine follow the following general procedure <Sidenote>cf. Control Variates</Sidenote>
 
 1. Draw random measurement instruments $\xi_1 \ldots \xi_m$ from some well chosen candidate distribution.
 2. Collect them into a test matrix $X = [\xi_1 \ldots \xi_m]$
-3. Use a subset of these instruments to construct a sketch of the target matrix, $Y = X^*AX$. Since this sketch is a small $m \times m$ matrix, we can compute its trace exactly.
+3. Use a subset of these instruments to construct a sketch of the target matrix, call it $Y$. This sketch will be a small matrix whose trace we can compute its exactly.
 4. Use the remaining set of instruments to approximate the trace of the residual $A - Y$ using the basic hutchisson estimator.
 
-<a href="https://ram900.com/hutchplusplus/#Claim%202" target="_blank">The rough intuition for why this procedure works remarkably well is as follows</a>: Let $\lambda(A)$ be the multiset of the eigenvalues of the matrix
+<a href="https://ram900.com/hutchplusplus/#Claim%202" target="_blank">The rough intuition for why this procedure works remarkably well is as follows</a>: 
+
+Let $\lambda(A)$ be the multiset of the eigenvalues of the matrix
 <Sidenote>The spectrum of the matrix</Sidenote>. This is a set of numbers that,
 for most matrices, exhibits some sort of _spectral_ decay, wherein the
-eigenvalues values of the matrix diminish rapidly. This roughly reflects the
+magnitude of the eigenvalues, when arranged in descending order, exhibit some decay with a few dominant values and many smallervalues. This roughly reflects the
 idea that the energy of the matrix is concentrated in a few highly influential
-directions. The matrix sketch $Y = X^*AX$ constructs an approximation of these
-influential directions.
+directions. The few larger values, therefore, have a much larger influence on the trace of the matrix. This means that we should do our very best to estimate their values accurately.
 
 <Details title="What's Randomized Low Rank Matrix Approximation?">
 Randomized low rank matrix approximation is a much richer subject. It's usually taught right after trace estimation, but since the methods below may not make much sense without familiarity with its core ideas we spend some time giving a flavor of the broader subject.
 
-The story usually begins with a familiar decomposition, the svd. We know that every matrix has a singular value decomposition $A = \sum_i^N\sigma_i u_iv_i^*$ with $\sigma_i \geq \ldots \sigma_N \geq 0$. We also know that the best rank-k approximation of the matrix is the k-truncated svd $[A]_k = \sum_i^k\sigma_i u_iv_i^*$ with $\sigma_k$. But, since svd is an expensive operation, we seek to approximate it using randomized methods.
+The goal is to find a subspace that captures a lot of the action of a matrix. Put differentky, we want to easily approximate the image of the matrix under investigation. The story usually begins with a familiar universal matrix decomposition, the SVD. We know that every matrix has a singular value decomposition $A = \sum_i^N\sigma_i u_iv_i^*$ with $\sigma_1 \geq \ldots \sigma_N \geq 0$. If $\xi \in \mathbb{R}^N$ then we can express it as a linear combination of the right singular vectors $\xi = \sum_i^N c_i v_i$ where the $c_i$ are appropriate coefficients. Now, observe that because the right singular vectors are mutually orthogonal, we have $A\xi = \sum_i^N c_i\sigma_iu_i$. This means that the image $A\xi$ is strongly correlated with the leading left singular vectors and weakly correlated with the trailing left singular vectors.
 
-Similar to trace estimation, we extract information from the matrix by applying it to random probe vectors. For instance, if $X = [\xi_1 \ldots \xi_k]$ then we can, roughly, think of $XX^*A$ as a randomized low rank proxy of our target matrix.
+Similar to trace estimation, we extract information from the matrix by applying it to random probe vectors. For instance, if $X = [\xi_1 \ldots \xi_k]$, we can form $Y = AX$. We want to use the image of this _smaller_ matrix as an approximation that of our original matrix. To that end, we project our matrix to the subspace spanned by the columns of $Y$. To do so, we orthonormalize $[Q, \_] := \mathtt{orth}(Y)$, via some version of QR decomposition, and then form $QQ^*A$ which we can think of as a randomized low rank proxy of our target matrix.
 
-We hope to revisit this topic in the near future. Until then, feel free to consult <a href ="https://arxiv.org/pdf/2306.12418" target="_blank">this wonderful paper by one of the leading figures in randNLA.</a>
+We hope to revisit this topic in the near future. Until then, feel free to consult <a href ="https://arxiv.org/pdf/2306.12418" target="_blank">this wonderful paper by one of the leading figures in the field.</a>
 
 </Details>
 
@@ -359,12 +360,12 @@ We hope to revisit this topic in the near future. Until then, feel free to consu
 1. Draw iid isotropic probes $\xi_1, \ldots \xi_{\frac{m}{3}}, \ldots \xi_{\frac{2m}{3}} \in \mathbb{R}^n$
 2. $Y \gets A[\xi_{\frac{m}{3} + 1}, \ldots, \xi_{\frac{2m}{3}}] \triangleleft \text{ use half of the probes to draw a sketch of the matrix}$
 3. $Q \gets \mathtt{orth}(Y) \triangleleft \text{ orthogonalize the columns via QR}$
-4. $G \gets [\xi_1, \ldots \xi_{\frac{m}{3}}] - QQ^*[\xi_1, \ldots \xi_{\frac{m}{3}}] \text{ setup for estimating the trace of the residual}$
-5. **return** $\mathtt{trace}(Q^*AQ) + \frac{1}{m/3}\mathtt{trace}(G^*AG)$
+4. $R \gets \frac{1}{m/3}\sum_i^{m/3} \xi_i^*(A - QQ^*A)\xi \triangleleft \text{ the trace of the residual}$
+5. **return** $\mathtt{trace}(Q^*AQ) + R$
 
 </AlgorithmBox>
 
-Let's walk though this procedure. ...
+Evidently, this procedure hews quite close to the general procedure outlined above. We use half of our probes to construct a low rank approximation of the target matrix, and use the other half to estimate the trace of the residual (via the naïve GH estimator.)
 
 For now, we elide the derivations of the variance for they rely on knowledge of facts about randomized low rank matrix approximation. But here's the upshot: this estimator is unbiased and has an error decay rate of $\leq \frac{1}{m}$ which is better than the monte carlo rate of $\leq \frac{1}{\sqrt{m}}$. Practically this means that this estimator is much more sample efficient. Observe that, whereas the GH estimator needs $10^6$ samples to get an accuracy of up to 3 decimal points, $\mathtt{Hutch++}$ needs just $10^3$ samples to reach the same accuracy level.
 
@@ -372,22 +373,19 @@ For now, we elide the derivations of the variance for they rely on knowledge of 
 
 To motivate the next set of advanced trace estimators, we need to first introduce the notion of exchangeability.
 
-How the exchangeability principle leads to faster algorithms for trace estimation.
-- The principle states that given a family of exchangeable probes $\xi_1, \ldots \xi_k$, which we use them to collect information about a target matrix $A\xi_1, \ldots A\xi_k$, and we wish to obtain an estimate of $\Psi(A)$, where $\Psi$ is some function of a matrix argument, _the minimum variance unbiased estimator for $\Psi(A)$ is always a symmetric function of our probes $\{\xi_1, \ldots \xi_k\}$.
+1. A family of random variables is exchangeable if its distribution is permutation invariant. Meaning $(\xi_1, \ldots \xi_m)$ and the permuted family $(\xi_{\pi(1)}, \ldots \xi_{\pi(m)})$ have the same distribution, for any permutation $\pi \in \mathrm{S_m}$
+2. The exchangeability principle states that given a family of exchangeable probes $\xi_1, \ldots \xi_k$, which we use to collect information about a target matrix, $A\xi_1, \ldots A\xi_k$, and we wish to obtain an estimate of $\psi(A)$, where $\psi$ is some function of a matrix argument, then _the minimum variance unbiased estimator_ for $\psi(A)$ is always a symmetric function of our probes $\{\xi_1, \ldots \xi_k\}$.
+3. In our present case, since an iid family is exchangeable, we will want to ensure that the estimators we construct using iid probes are symmetric.
 
-<Details title="symmetrization reduces variance">
-- A permutation $\Pi$ is a bijection. A member of the group $\mathbb{S_n}$, the symmetric group.
-- A family of random variables, $\{\xi_1, \ldots \xi_k\}$ is said to be exchangeable if given any permutation $\Pi \in \mathbb{S_n}$, the joint probability of $\{\xi_1, \ldots \xi_k\}$ is the same as that of $\{\xi_{\Pi(1)}, \ldots \xi_{\Pi(k)}\}$. That is, the distribution of the family of random variables is invariant under permutations. More succinctly, the order in which the data arrives does not contain any information. All iid sequences are exchangeable, but not all exchangeable sequences are iid.
-- In his seminal 1946 paper, The Theory of Unbiased Estimation, Paul Halmos formalized why symmetric functions (like U-statistics) provide the Uniformly Minimum Variance Unbiased Estimators (UMVUEs) when sampling independent and identically distributed (IID) data from an unknown distribution. Core ideas: This proof demonstrates that the best estimator must be a symmetric function because any asymmetric function can be structurally improved upon simply by averaging its permutations.
-</Details>
+See this <a href="https://projecteuclid.org/journals/annals-of-mathematical-statistics/volume-17/issue-1/The-Theory-of-Unbiased-Estimation/10.1214/aoms/1177731020.full" target="_blank"> seminal paper for more details </a>
 
 ### XTrace
 
-The design of $\mathtt{XTrace}$ begins from the observation that $\mathtt{Hutch++}$, while an improvement over GH, violates the exchangeability principle since the resultant estimator is decidedly not a symmetric function of the probes $\xi_1, \ldots \xi_k$.  <Sidenote>If you exchange two probes between the two partitions, you get a different trace estimate. In fact, there's no principled argument for why we should use the first partition for sketching and the second one for estimating the trace residual.</Sidenote> This means that we can construct an estimator with a lower variance by turning $\mathtt{Hutch++}$ into a symmetric estimator. But doing so naively, by generating all the possible ways to partition our probe vectors into two groups, all ${{2m/3} \choose {m/3}} \in \Theta\left(\frac{2^{2m/3}}{\sqrt{m}}\right)$ of them, results in a computationally intractable procedure.
+The design of $\mathtt{XTrace}$ begins from the observation that $\mathtt{Hutch++}$, while an improvement over GH, violates the exchangeability principle since the resultant estimator is decidedly not a symmetric function of the probes $\xi_1, \ldots \xi_k$.  <Sidenote>If you permute the probes by exchanging two probes between the two partitions, you get a different trace estimate. In fact, there's no principled argument for why we should use the first partition for sketching and the second one for estimating the trace residual.</Sidenote> This means that we can construct an estimator with a lower variance by turning $\mathtt{Hutch++}$ into a symmetric estimator. But doing so naively, by generating all the possible ways to partition our probe vectors into two groups, all ${{2m/3} \choose {m/3}} \in \Theta\left(\frac{2^{2m/3}}{\sqrt{m}}\right)$ of them, results in a computationally intractable procedure.
 
 The key insight that allows for us to obtain a symmetric, yet computationally tractable, procedure flows from the observation that ${m \choose r} \in \mathcal{O}(m^r)$ where $r$ is any fixed non-negative integer. In fact, ${m \choose r} \in \mathcal{\Theta}(m^r)$. 
-- Now, we want to partiton our $m$ probes into two groups, one with $r$ probes and another one with $s$ probes. We'll use the $s$ probes for sketching and the remaining $r$ probes for residual trace estimation.
-- This means that to we can pick $r$ to ensure that the resultant algorithm, when symmetrized, has a favorable profile. $\mathtt{XTrace}$ uses $r=1$ to arrive at ${m \choose 1} = m$. Thus, symmetrization incurs a linear penalty instead of an exponential one.
+
+Now, we want to partiton our $m$ probes into two groups, one with $r$ probes and another one with $s$ probes. We'll use the $s$ probes for sketching and the remaining $r$ probes for residual trace estimation. We pick $r$ to ensure that the resultant algorithm, when symmetrized, has a favorable profile. $\mathtt{XTrace}$ uses $r=1$ to arrive at ${m \choose 1} = m$. Thus, symmetrization incurs a linear penalty instead of an exponential one.
 
 <AlgorithmBox title="XTrace">
 <Fragment slot="input">
@@ -412,24 +410,22 @@ The key insight that allows for us to obtain a symmetric, yet computationally tr
 
 </AlgorithmBox>
 
-Again, let's walk through this procedure. ...
-
-The derivation of the variance of this estimator is out of scope for this introductory expository note. The long and short of it is that $\mathtt{XTrace}$ gives an unbiased, exchangeable estimate of the trace
+The derivation of the a priori variance bounds for this estimator is out of scope for this introductory expository note. However, notice that this procedure returns a posterior error estimate, which is quite useful in practice when we want to use adaptive stopping startegies.
 
 ### XNYSTrace
 
-When the matrix in question is PSD, we can get further improvements by using randomized nystrom approximation instead of the general purpose randomized svd.
+When the matrix in question is PSD, we can get further improvements by using randomized nystrom approximation instead of the general purpose randomized low rank approximation.
 
 <Details title="What's Nyström Approximation?">
-    As mentioned previously, the best rank-k approximation of any matrix $A\in \mathbb{M}_n$ is the k-truncated singular value decomposition. Computing this approximation is fairly expensive, with a time complexity of $\mathcal{O}(n^2k)$. However, for positive semidefinite matrices a cheaper method, which samples a subset of the columns exists. This method, called Nyström Approximation has a time complexity of $\mathcal{O}(ns^2)$, where $s$ is the number of columns sampled.
+    The the best rank-$k$ approximation of any matrix $A\in \mathbb{M}_n$ is the $k$-truncated singular value decomposition. This is what we've been, in effect, computing when constructing sketches of our matrix. Computing this approximation is fairly expensive, with a time complexity of $\mathcal{O}(n^2k)$. However, for positive semidefinite matrices a cheaper method, which samples a subset of the columns exists. This method, called Nyström Approximation has a time complexity of $\mathcal{O}(ns^2)$, where $s$ is the number of columns sampled.
 
     We often denote the nystrom approximation of $A$ with respect to $X$, where $X$ is a column selection matrix, as $A \langle X \rangle := (AX)(X^*AX)^{\dagger}(AX)^*$.
 </Details>
 
 <AlgorithmBox title="XNYSTrace">
 <Fragment slot="input">
-    1. an `PSD` $n$-square matrix $A \in \mathbb{H}_n$
-    2. a `matvecs` budget $m \in \mathbb{N}$
+    1. `PSD` $n$-square matrix $A \in \mathbb{H}_n$
+    2. `matvecs` budget $m \in \mathbb{N}$
   </Fragment>
   <Fragment slot="output">
       1. $\hat{x} \in \mathbb{R}$, an unbiased estimate of $\operatorname{Tr} A$
@@ -460,7 +456,7 @@ In practical deployments of randomized algorithms, instead of deciding on a comp
 
 ### Numerical experiments
 
-I had initially planned to cap off this exposition with visual demonstrations of all of these procedures in action. But, alas, the roses on the counter have started to droop, and the leaves of the red maple by the back porch have started shedding their summer greens. Maybe next time.
+I had initially planned to cap off this exposition with visual demonstrations of all of these procedures in action. But, alas, the roses on the counter have started to droop, and the leaves of the red maples by the back porch have started shedding their summer greens. Maybe next time.
 
 ### What about Trace Functions?
 
@@ -473,12 +469,6 @@ This generalizes to the computation of $\operatorname{Tr}(f(A)$ where $f$ is a m
    </a>
 2. <a href="https://arxiv.org/pdf/2301.07825" target="_blank">
      XTrace, XNYSTrace, and XDiag
-   </a>
-3. <a
-     href="https://andrewcharlesjones.github.io/journal/controlvariates.html"
-     target="_blank"
-   >
-     Variance Reduction for Monte Carlo Estimators
    </a>
 4. <a
      href="https://math.nyu.edu/~goodman/teaching/MonteCarlo2005/notes/VarianceReduction.pdf"
