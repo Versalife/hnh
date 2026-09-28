@@ -365,7 +365,7 @@ article h3[id] {
     margin-top: 0;
     margin-bottom: 1.25em;
     width: var(--sidenote-width);
-    font-size: 0.82rem;
+    font-size: 0.9rem;
     line-height: 1.5;
     color: var(--color-text-muted);
     font-style: normal;
